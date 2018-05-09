@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>GIC Clients</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
@@ -13,6 +13,7 @@
         <!-- Styles -->
         <style>
             html, body {
+                background-image: url('img/home-background.jpg');
                 background-color: #fff;
                 color: #636b6f;
                 font-family: 'Raleway', sans-serif;
@@ -46,17 +47,31 @@
             }
 
             .title {
+                border-radius: 10px;
+                background-color: #FFFDA9;
+                opacity: 0.60;
                 font-size: 84px;
+                font-weight: 900;
+                color: black;
             }
 
             .links > a {
-                color: #636b6f;
+                color: #D9D8D9;
                 padding: 0 25px;
                 font-size: 12px;
                 font-weight: 600;
                 letter-spacing: .1rem;
                 text-decoration: none;
                 text-transform: uppercase;
+            }
+
+            a:link {
+                text-decoration: none;
+            }
+
+            #home-text:hover {
+                background-color: #FFB800;
+                border-radius: 10px;
             }
 
             .m-b-md {
@@ -69,7 +84,15 @@
             @if (Route::has('login'))
                 <div class="top-right links">
                     @auth
-                        <a href="{{ url('/home') }}">Home</a>
+                        <a href="{{ url('/dashboard') }}">Dashboard</a>
+                        <a href="{{ route('logout') }}"
+                            onclick="event.preventDefault();
+                                     document.getElementById('logout-form').submit();">
+                            Logout
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            {{ csrf_field() }}
+                        </form>
                     @else
                         <a href="{{ route('login') }}">Login</a>
                         <a href="{{ route('register') }}">Register</a>
@@ -77,19 +100,14 @@
                 </div>
             @endif
 
-            <div class="content">
-                <div class="title m-b-md">
-                    Laravel
+            <a id="home-text" href="/dashboard">
+                <div class="content">
+                    <div class="title">
+                        GIC CLIENTS
+                    </div>
                 </div>
+            </a>
 
-                <div class="links">
-                    <a href="https://laravel.com/docs">Documentation</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
-                </div>
-            </div>
         </div>
     </body>
 </html>
