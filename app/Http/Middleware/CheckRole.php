@@ -16,6 +16,10 @@ class CheckRole
      */
     public function handle($request, Closure $next, ...$roles)
     {
+        if(!Auth::check()) {
+            abort(500); 
+        }
+        
         $user = Auth::user();
 
         foreach($roles as $role) {

@@ -100,7 +100,7 @@
                 </div>
             @endif
 
-            <a id="home-text" href="/dashboard">
+            <a id="home-text" href="{{ url('dashboard') }}">
                 <div class="content">
                     <div class="title">
                         GIC CLIENTS
