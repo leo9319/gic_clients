@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateClientBasicInfoTable extends Migration
+class CreateFilesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,8 @@ class CreateClientBasicInfoTable extends Migration
      */
     public function up()
     {
-        Schema::create('client_basic_info', function (Blueprint $table) {
+        Schema::create('files', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('client_id');
-            $table->date('dob')->nullable();
-            $table->string('mobile')->nullable();
-            $table->string('profile_picture')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +26,6 @@ class CreateClientBasicInfoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('client_basic_info');
+        Schema::dropIfExists('files');
     }
 }

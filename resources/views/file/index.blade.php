@@ -36,10 +36,10 @@
                <div class="profile-info">
                   <h4 class="heading">Basic Info</h4>
                   <ul class="list-unstyled list-justify">
-                     <li>Birthdate <span>24 Aug, 2016</span></li>
-                     <li>Mobile <span>(124) 823409234</span></li>
-                     <li>Email <span>samuel@mydomain.com</span></li>
-                     <li>Website <span><a href="https://www.themeineed.com">www.themeineed.com</a></span></li>
+                     <li>Birthdate <span>N/A</span></li>
+                     <li>Mobile <span>N/A</span></li>
+                     <li>Email <span>N/A</span></li>
+                     <!-- <li>Website <span><a href="https://www.themeineed.com">N/A</a></span></li> -->
                   </ul>
                </div>
                <div class="profile-info">
@@ -62,9 +62,9 @@
          <!-- END LEFT COLUMN -->
          <!-- RIGHT COLUMN -->
          <div class="profile-right">
-            <h4 class="heading">Samuel's Awards</h4>
+            <h4 class="heading">{{ Auth::user()->name }}</h4>
             <!-- AWARDS -->
-            <div class="awards">
+            <!-- <div class="awards">
                <div class="row">
                   <div class="col-md-3 col-sm-6">
                      <div class="award-item">
@@ -100,7 +100,7 @@
                   </div>
                </div>
                <div class="text-center"><a href="#" class="btn btn-default">See all awards</a></div>
-            </div>
+            </div> -->
             <!-- END AWARDS -->
             <!-- TABBED CONTENT -->
             <div class="custom-tabs-line tabs-line-bottom left-aligned">

@@ -26,7 +26,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('dashboard');
+        $data['active_class'] = 'dashboard';
+        return view('dashboard', $data);
     }
 
     public function home()
@@ -36,10 +37,10 @@ class HomeController extends Controller
 
     public function users()
     {
-        $users = User::all();
+        $data['active_class'] = 'users';
+        $data['users'] = User::all();
 
-        return view('users.index')
-            ->with('users', $users);
+        return view('users.index', $data);
     }
 
     public function updateUserRole(Request $request, $id)
