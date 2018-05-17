@@ -476,7 +476,8 @@ ul.list-justify > li {
 /* fancy checkbox and radio button */
 .fancy-checkbox {
   display: block;
-  font-weight: normal; }
+  font-weight: normal; 
+}
   .fancy-checkbox input[type="checkbox"] {
     display: none; }
     .fancy-checkbox input[type="checkbox"] + span {
@@ -1763,3 +1764,6 @@ ul.activity-timeline > li {
     border: 1px solid #CCC; }
 
 /*# sourceMappingURL=main.css.map */
+.field-spacing {
+  margin: 20px 0px 20px 0px;
+}

@@ -141,6 +141,7 @@
 			</div>
 		</footer>
 	</div>
+	@yield('footer_scripts')
 	<!-- END WRAPPER -->
 	<!-- Javascript -->
 	<!-- <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script> -->
@@ -149,5 +150,6 @@
 	<script src="{{ asset('vendor/jquery.easy-pie-chart/jquery.easypiechart.min.js') }}"></script>
 	<script src="{{ asset('vendor/chartist/js/chartist.min.js') }}"></script>
 	<script src="{{ asset('scripts/klorofil-common.js') }}"></script>
+
 </body>
 </html>

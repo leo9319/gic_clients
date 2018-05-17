@@ -24,3 +24,5 @@ Route::post('users/{id}', 'HomeController@updateUserRole')->name('users.update.r
 Route::post('users/{id}', 'HomeController@updateUserRole')->name('users.update.role')->middleware('role:admin');
 
 Route::resource('file', 'FileController');
+
+Route::get('test', 'FileController@test')->name('test');
