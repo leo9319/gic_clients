@@ -10,27 +10,28 @@
          <!-- INPUTS -->
          <div class="panel">
             <div class="panel-heading">
-               <h3 class="panel-title">GIC Registration Form</h3>
+               <h1 class="text-center" style="border: black 1px solid; border-radius: 6px;">:: GIC Registration Form ::</h1>
             </div>
             <div class="panel-body">
                {{ Form::open(['route'=>'file.store']) }}
-               <h3>Choose your Desired Country & Program:</h3>
+
+               <h3 class="sub-header-padding"><i class="fa fa-globe"></i> Choose your Desired Country & Program:</h3>
                <div class="row">
                   @foreach($programs as $index => $program)
                   <div class="col-md-6">
                      <label>
-                     {{ Form::checkbox('program[]', $program->id) }}
+                     {{ Form::checkbox('programs[]', $program->id) }}
                      <span style="font-weight: lighter;">{{ $program->program_name }}</span>
                      </label>    
                   </div>
                   @endforeach
                </div>
-               <h3>Type of Visa you are interested for *</h3>
+               <h3 class="sub-header-padding"><i class="fa fa-cc-visa"></i> Type of Visa you are interested for *</h3>
                <div class="row">
                   @foreach($visa_types as $index => $visa_type)
                   <div class="col-md-6">
                      <label>
-                     {{ Form::checkbox('visa_types[]', $visa_type->id) }}
+                     {{ Form::checkbox('visa_type[]', $visa_type->id) }}
                      <span style="font-weight: lighter;">{{ $visa_type->visa_type }}</span>
                      </label>    
                   </div>
@@ -41,7 +42,7 @@
                      <div class="field-spacing"">
                         <div class="input-group">
                            <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                           {!! Form::text('first_name', null, ['class'=>'form-control', 'placeholder'=>'First Name', 'required']) !!}
+                           {!! Form::text('first_name', null, ['class'=>'form-control', 'placeholder'=>'First Name']) !!}
                         </div>
                      </div>
                   </div>
@@ -49,7 +50,7 @@
                      <div class="field-spacing"">
                         <div class="input-group">
                            <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                           {!! Form::text('last_name', null, ['class'=>'form-control', 'placeholder'=>'Last Name', 'required']) !!}
+                           {!! Form::text('last_name', null, ['class'=>'form-control', 'placeholder'=>'Last Name']) !!}
                         </div>
                      </div>
                   </div>
@@ -60,7 +61,7 @@
                         <div class="field-spacing"">
                            <div class="input-group">
                               <span class="input-group-addon"><i class="glyphicon glyphicon-phone"></i></span>
-                              {!! Form::text('mobile', null, ['class'=>'form-control', 'placeholder'=>'Mobile', 'required']) !!}
+                              {!! Form::text('mobile', null, ['class'=>'form-control', 'placeholder'=>'Mobile']) !!}
                            </div>
                         </div>
                      </div>
@@ -70,28 +71,31 @@
                         <div class="field-spacing"">
                            <div class="input-group">
                               <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-                              {!! Form::email('email', null, ['class'=>'form-control', 'placeholder'=>'Email', 'required']) !!}
+                              {!! Form::email('email', null, ['class'=>'form-control', 'placeholder'=>'Email']) !!}
                            </div>
                         </div>
                      </div>
                   </div>
                </div>
+
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                     {!! Form::label('dob', 'Date of Birth', ['class' => 'small text-muted']) !!}
-                     {!! Form::date('dob', null, ['class'=>'form-control', 'placeholder'=>'Date of Birth', 'required']) !!}
+                     <span class="input-group-addon"><i class="fa fa-birthday-cake"></i></span>
+                     {!! Form::date('dob', null, ['class'=>'form-control', 'placeholder'=>'Date of Birth']) !!}
                   </div>
                </div>
+
+               <h3 class="sub-header-padding"><i class="fa fa-venus-mars"></i> Marital Status *</h3>
                <label class="fancy-radio">
-               <input name="gender" value="male" type="radio">
-               <span><i></i>Male</span>
+               <input name="marital_status" value="married" type="radio">
+               <span><i></i>Married</span>
                </label>
                <label class="fancy-radio">
-               <input name="gender" value="female" type="radio">
-               <span><i></i>Female</span>
+               <input name="marital_status" value="single" type="radio">
+               <span><i></i>Single</span>
                </label>
-               <h3>Education *</h3>
+
+               <h3 class="sub-header-padding"><i class="fa fa-graduation-cap"></i> Education *</h3>
                <div class="row">
                   @foreach($education_levels as $index => $education_level)
                   <div class="col-md-6">
@@ -102,145 +106,95 @@
                   </div>
                   @endforeach
                </div>
+               <h3><i class="fa fa-university"></i> Select your University *</h3>
                <div class="field-spacing"">
                   <div class="">
                      <span class="input-group-addon"><i class="fa fa-university"></i></span>
-                     {!! Form::select('education', $education_levels->pluck('education_level', 'id'), null, ['class'=>'form-control select2']) !!}
+                     {!! Form::select('university_attended', $universities->pluck('university_name', 'id'), null, ['class'=>'form-control select2']) !!}
                   </div>
                </div>
-               {!! Form::submit('Submit', ['class'=>'btn btn-primary']) !!}
+
+               <h3 class="sub-header-padding"><i class="fa fa-user-md"></i> Profession *</h3>
+               <div class="row">
+                  @foreach($professions as $index => $profession)
+                  <div class="col-md-6">
+                     <label>
+                     {{ Form::checkbox('professions[]', $profession->id) }}
+                     <span style="font-weight: lighter;">{{ $profession->profession_type }}</span>
+                     </label>    
+                  </div>
+                  @endforeach
+               </div>
+
+               <h3 class="sub-header-padding"><i class="fa fa-suitcase"></i> Total Job Experience *</h3>
+
+               <div class="field-spacing"">
+                  <div class="input-group">
+                     <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
+                     {!! Form::select('work_experience', [
+                           'No Experience' => 'No Experience', 
+                           'Less than 1 year' => 'Less than 1 year',
+                           '1 year' => '1 year', 
+                           '2 years' => '2 year', 
+                           '3 years' => '3 year', 
+                           '4 years' => '4 year', 
+                           '5 years or more' => '5 years or more', 
+                        ], null, ['class'=>'form-control']) !!}
+                  </div>
+               </div>
+
+               <h3 class="sub-header-padding"><i class="fa fa-wrench"></i> Field of Work *</h3>
+               <div class="field-spacing"">
+                  <div class="">
+                     <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
+                     {!! Form::select('field_of_work', $fields->pluck('field_type', 'id'), null, ['class'=>'form-control select2']) !!}
+                  </div>
+               </div>
+
+               <h3 class="sub-header-padding"><i class="fa fa-facebook-square"></i> How did you hear about GIC *</h3>
+               <div class="row">
+                  @foreach($knowledge as $index => $source)
+                  <div class="col-md-6">
+                     <label>
+                     {{ Form::checkbox('hear_about_us[]', $source->id) }}
+                     <span style="font-weight: lighter;">{{ $source->source }}</span>
+                     </label>    
+                  </div>
+                  @endforeach
+               </div>
+
+               <h3 class="sub-header-padding"><i class="fa fa-map-marker"></i> Did you visit or work in any country other than Bangladesh?</h3>
+               <label class="fancy-radio">
+               <input name="foreign_country_visited" value="1" type="radio">
+               <span><i></i>Yes</span>
+               </label>
+               <label class="fancy-radio">
+               <input name="foreign_country_visited" value="0" type="radio" checked="checked">
+               <span><i></i>NO</span>
+               </label>
+
+               <br><br>
+
+               {!! Form::submit('Submit', ['class'=>'btn btn-primary btn-block button4']) !!}
                {{ Form::close() }}
-               <br><br><br>
-               <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                  {!! Form::text('total_sales', null, ['class'=>'form-control', 'placeholder'=>'Name', 'required']) !!}
-               </div>
-               <input type="text" class="form-control" placeholder="text field">
-               <br>
-               <input type="password" class="form-control" value="asecret">
-               <br>
-               <textarea class="form-control" placeholder="textarea" rows="4"></textarea>
-               <br>
-               <select class="form-control">
-                  <option value="cheese">Cheese</option>
-                  <option value="tomatoes">Tomatoes</option>
-                  <option value="mozarella">Mozzarella</option>
-                  <option value="mushrooms">Mushrooms</option>
-                  <option value="pepperoni">Pepperoni</option>
-                  <option value="onions">Onions</option>
-               </select>
-               <br>
-               <label class="fancy-checkbox">
-               <input type="checkbox">
-               <span>Fancy Checkbox 1</span>
-               </label>
-               <label class="fancy-checkbox">
-               <input type="checkbox">
-               <span>Fancy Checkbox 2</span>
-               </label>
-               <label class="fancy-checkbox">
-               <input type="checkbox">
-               <span>Fancy Checkbox 3</span>
-               </label>
-               <br>
-               <label class="fancy-radio">
-               <input name="gender" value="male" type="radio">
-               <span><i></i>Male</span>
-               </label>
-               <label class="fancy-radio">
-               <input name="gender" value="female" type="radio">
-               <span><i></i>Female</span>
-               </label>
-            </div>
-         </div>
-         <!-- END INPUTS -->
-         <!-- INPUT SIZING -->
-         <div class="panel">
-            <div class="panel-heading">
-               <h3 class="panel-title">Input Sizing</h3>
-            </div>
-            <div class="panel-body">
-               <input class="form-control input-lg" placeholder=".input-lg" type="text">
-               <br>
-               <input class="form-control" placeholder="Default input" type="text">
-               <br>
-               <input class="form-control input-sm" placeholder=".input-sm" type="text">
-               <br>
-               <select class="form-control input-lg">
-                  <option value="cheese">Cheese</option>
-                  <option value="tomatoes">Tomatoes</option>
-                  <option value="mozarella">Mozzarella</option>
-                  <option value="mushrooms">Mushrooms</option>
-                  <option value="pepperoni">Pepperoni</option>
-                  <option value="onions">Onions</option>
-               </select>
-               <br>
-               <select class="form-control">
-                  <option value="cheese">Cheese</option>
-                  <option value="tomatoes">Tomatoes</option>
-                  <option value="mozarella">Mozzarella</option>
-                  <option value="mushrooms">Mushrooms</option>
-                  <option value="pepperoni">Pepperoni</option>
-                  <option value="onions">Onions</option>
-               </select>
-               <br>
-               <select class="form-control input-sm">
-                  <option value="cheese">Cheese</option>
-                  <option value="tomatoes">Tomatoes</option>
-                  <option value="mozarella">Mozzarella</option>
-                  <option value="mushrooms">Mushrooms</option>
-                  <option value="pepperoni">Pepperoni</option>
-                  <option value="onions">Onions</option>
-               </select>
-            </div>
-         </div>
-         <!-- END INPUT SIZING -->
-      </div>
-      <div class="col-md-12">
-         <!-- PROGRESS BARS -->
-         <!-- INPUT GROUPS -->
-         <div class="panel">
-            <div class="panel-heading">
-               <h3 class="panel-title">Input Groups</h3>
-            </div>
-            <div class="panel-body">
-               <div class="input-group">
-                  <input class="form-control" type="text">
-                  <span class="input-group-btn"><button class="btn btn-primary" type="button">Go!</button></span>
-               </div>
-               <br>
-               <div class="input-group">
-                  <span class="input-group-btn">
-                  <button class="btn btn-primary" type="button">Go!</button>
-                  </span>
-                  <input class="form-control" type="text">
-               </div>
-               <br>
-               <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                  <input class="form-control" placeholder="Username" type="text">
-               </div>
-               <br>
-               <div class="input-group">
-                  <input class="form-control" placeholder="Username" type="text">
-                  <span class="input-group-addon"><i class="fa fa-user"></i></span>
-               </div>
-               <br>
-               <div class="input-group">
-                  <span class="input-group-addon">$</span>
-                  <input class="form-control" type="text">
-                  <span class="input-group-addon">.00</span>
-               </div>
+               
+               
             </div>
          </div>
       </div>
+      
    </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 <script>
    $(".select2").select2({
-   placeholder: 'Select a value', 
-   allowClear: true
+      placeholder: "Select your University", 
+      allowClear: true,
+      data: [{id: -1,
+        text: 'None Selected',
+        selected: 'selected',
+        search:'',
+        hidden:true}]
    });
 </script>
 @endsection

@@ -23,7 +23,7 @@ class CreateFilesTable extends Migration
             $table->string('mobile');
             $table->date('dob');
             $table->string('email');
-            $table->string('maritial_status');
+            $table->string('marital_status');
             $table->string('education');
             $table->string('university_attended');
             $table->string('profession');
