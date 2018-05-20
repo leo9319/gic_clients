@@ -35,6 +35,9 @@ class FileController extends Controller
      */
     public function create()
     {
+        $user = Auth::user();
+
+        $data['file'] = File::where('user_id', $user->id)->first();
         $data['active_class'] = 'file';
         $data['programs'] = Program::all();
         $data['visa_types'] = VisaType::all();
@@ -44,7 +47,24 @@ class FileController extends Controller
         $data['fields'] = Field::all();
         $data['knowledge'] = knowledge::all();
 
-        return view('file.create', $data);
+        if($data['file']) {
+            $data['programs_array'] = $this->stringToIntegerArray($data['file']->programs);
+            $data['visa_array'] = $this->stringToIntegerArray($data['file']->visa_type);
+            $data['education_array'] = $this->stringToIntegerArray($data['file']->education);
+            $data['profession_array'] = $this->stringToIntegerArray($data['file']->profession);
+            $data['knowledge_array'] = $this->stringToIntegerArray($data['file']->hear_about_us);
+            return view('file.create', $data);
+        }
+
+        else {
+            return view('file.create_empty', $data);
+        }
+
+          
+
+        // echo $data['file']->marital_status;     
+
+        
     }
 
     /**

@@ -16,14 +16,14 @@
                <h1 class="text-center" style="border: black 1px solid; border-radius: 6px;">:: GIC Registration Form ::</h1>
             </div>
             <div class="panel-body">
-               {{ Form::model($file, ['route' => ['file.store']]) }}
+               {{ Form::open(['route' => ['file.store']]) }}
 
                <h3 class="sub-header-padding"><i class="fa fa-globe"></i> Choose your Desired Country & Program:</h3>
                <div class="row">
                   @foreach($programs as $index => $program)
                   <div class="col-md-6">
                      <label>
-                     {{ Form::checkbox('programs[]', $program->id, in_array($program->id, $programs_array) ? 'true' : '') }}
+                     {{ Form::checkbox('programs[]', $program->id) }}
                      <span style="font-weight: lighter;">{{ $program->program_name }}</span>
                      </label>    
                   </div>
@@ -34,7 +34,7 @@
                   @foreach($visa_types as $index => $visa_type)
                   <div class="col-md-6">
                      <label>
-                     {{ Form::checkbox('visa_type[]', $visa_type->id, in_array($visa_type->id, $visa_array) ? 'true' : '') }}
+                     {{ Form::checkbox('visa_type[]', $visa_type->id) }}
                      <span style="font-weight: lighter;">{{ $visa_type->visa_type }}</span>
                      </label>    
                   </div>
@@ -90,11 +90,11 @@
 
                <h3 class="sub-header-padding"><i class="fa fa-venus-mars"></i> Marital Status *</h3>
                <label class="fancy-radio">
-               {{ Form::radio('marital_status', 'married', $file->marital_status == "married" ? 'true' : '') }}
+               {{ Form::radio('marital_status', 'married') }}
                <span><i></i>Married</span>
                </label>
                <label class="fancy-radio">
-               {{ Form::radio('marital_status', 'single', $file->marital_status == "single" ? 'true' : '') }}
+               {{ Form::radio('marital_status', 'single') }}
                
                <span><i></i>Single</span>
                </label>
@@ -104,7 +104,7 @@
                   @foreach($education_levels as $index => $education_level)
                   <div class="col-md-6">
                      <label>
-                     {{ Form::checkbox('education_levels[]', $education_level->id, in_array($education_level->id, $education_array) ? 'true' : '') }}
+                     {{ Form::checkbox('education_levels[]', $education_level->id) }}
                      <span style="font-weight: lighter;">{{ $education_level->education_level }}</span>
                      </label>    
                   </div>
@@ -114,7 +114,7 @@
                <div class="field-spacing"">
                   <div class="">
                      <span class="input-group-addon"><i class="fa fa-university"></i></span>
-                     {!! Form::select('university_attended', $universities->pluck('university_name', 'id'), $file->university_attended, ['class'=>'form-control select2']) !!}
+                     {!! Form::select('university_attended', $universities->pluck('university_name', 'id'), null, ['class'=>'form-control select2']) !!}
                   </div>
                </div>
 
@@ -123,7 +123,7 @@
                   @foreach($professions as $index => $profession)
                   <div class="col-md-6">
                      <label>
-                     {{ Form::checkbox('professions[]', $profession->id, in_array($profession->id, $profession_array) ? 'true' : '') }}
+                     {{ Form::checkbox('professions[]', $profession->id) }}
                      <span style="font-weight: lighter;">{{ $profession->profession_type }}</span>
                      </label>    
                   </div>
@@ -151,7 +151,7 @@
                <div class="field-spacing"">
                   <div class="">
                      <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
-                     {!! Form::select('field_of_work', $fields->pluck('field_type', 'id'), $file->field_of_work, ['class'=>'form-control select2']) !!}
+                     {!! Form::select('field_of_work', $fields->pluck('field_type', 'id'), null, ['class'=>'form-control select2']) !!}
                   </div>
                </div>
 
@@ -160,7 +160,7 @@
                   @foreach($knowledge as $index => $source)
                   <div class="col-md-6">
                      <label>
-                     {{ Form::checkbox('hear_about_us[]', $source->id, in_array($source->id, $knowledge_array) ? 'true' : '') }}
+                     {{ Form::checkbox('hear_about_us[]', $source->id) }}
                      <span style="font-weight: lighter;">{{ $source->source }}</span>
                      </label>    
                   </div>
@@ -169,11 +169,11 @@
 
                <h3 class="sub-header-padding"><i class="fa fa-map-marker"></i> Did you visit or work in any country other than Bangladesh?</h3>
                <label class="fancy-radio">
-               {{ Form::radio('foreign_country_visited', 1, $file->foreign_country_visited == 1 ? 'true' : '') }}
+               {{ Form::radio('foreign_country_visited', 1) }}
                <span><i></i>Yes</span>
                </label>
                <label class="fancy-radio">
-               {{ Form::radio('foreign_country_visited', 0, $file->foreign_country_visited == 0 ? 'true' : '') }}
+               {{ Form::radio('foreign_country_visited', 0) }}
                <span><i></i>NO</span>
                </label>
 
@@ -194,7 +194,11 @@
    $(".select2").select2({
       placeholder: "Select your University", 
       allowClear: true,
-      
+      data: [{id: -1,
+        text: 'None Selected',
+        selected: 'selected',
+        search:'',
+        hidden:true}]
    });
 </script>
 @endsection
