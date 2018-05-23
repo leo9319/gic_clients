@@ -26,3 +26,8 @@ Route::post('users/{id}', 'HomeController@updateUserRole')->name('users.update.r
 Route::resource('file', 'FileController');
 
 Route::get('test', 'FileController@test')->name('test');
+Route::post('additional-info', 'FileController@storeAddition')->name('store.addition');
+
+Route::get('thank-you', function () {
+    return view('file.acknowledgement');
+})->name('thanks');

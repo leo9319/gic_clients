@@ -30,7 +30,7 @@
 
 		<!-- LEFT SIDEBAR -->
 		@include('layouts.left-nav')
-		<!-- END LEFT SIDEBAR -->
+
 		<!-- MAIN -->
 		<div class="main">
 			<!-- MAIN CONTENT -->

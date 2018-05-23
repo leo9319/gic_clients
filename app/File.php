@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class File extends Model
 {
-	protected $fillable = ['user_id', 'programs', 'visa_type', 'first_name', 'last_name', 'mobile', 'dob', 'email', 'marital_status', 'education', 'university_attended', 'profession', 'work_experience', 'field_of_work', 'hear_about_us', 'foreign_country_visited', 'created_at', 'updated_at'];
+	protected $fillable = ['user_id', 'province', 'language1', 'date1', 'speaking1', 'listening1', 'reading1', 'writing1', 'language2', 'date2', 'speaking2', 'listening2', 'reading2', 'writing2', 'we_three_years', 'we_ten_years', 'skill_trades', 'canadian_dollars', 'family_members', 'job_offer', 'currently_working', 'skill_type_three_years'];
 	
     public static function userFileInformation($user_id)
     {

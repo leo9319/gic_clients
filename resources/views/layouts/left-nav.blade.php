@@ -11,7 +11,8 @@
                <a href="#subProfile" data-toggle="collapse" class="collapsed {{ $active_class == 'file' ? 'active' : '' }}"><i class="lnr lnr-file-empty"></i> <span>File</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
                <div id="subProfile" class="collapse ">
                   <ul class="nav">
-                     <li><a href="{{ route('file.create') }}" class="">My File</a></li>
+                     <li><a href="{{ route('file.create') }}" class="">Create Your File</a></li>
+                     <li><a href="#" class="">My File</a></li>
                      <li><a href="#" class="">View File</a></li>
                      <li><a href="#" class="">Edit File</a></li>
                   </ul>
