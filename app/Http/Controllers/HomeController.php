@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use DB;
+use Exception;
 
 class HomeController extends Controller
 {
@@ -17,6 +18,7 @@ class HomeController extends Controller
     {
         $this->middleware('auth');
         $this->middleware('role:admin')->only('users', 'updateUserRole');
+        $this->middleware('role:accountant')->only('createUser', 'storeUser');
     }
 
     /**
@@ -52,5 +54,33 @@ class HomeController extends Controller
         DB::table('users')->where('id', $id)->update(['user_role' => $assigned_role]);
         
         return redirect()->back();
+    }
+
+    public function createUser()
+    {
+        return view('users.create');
+    }
+
+    public function storeUser(Request $request)
+    {
+        
+
+        try {
+              DB::table('users')->insert([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+                'user_role' => 'client',
+            ]);
+
+              return redirect()->route('thanks');
+        }
+
+        //catch exception
+        catch(Exception $e) {
+          echo 'Duplicate entries!';
+        }
+
+        
     }
 }

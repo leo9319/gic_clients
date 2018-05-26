@@ -18,6 +18,25 @@
                   </ul>
                </div>
             </li>
+
+            @if (Auth::user()->user_role == 'rm')
+            <li>
+               <a href="#subTask" data-toggle="collapse" class="collapsed {{ $active_class == 'tasks' ? 'active' : '' }}"><i class="lnr lnr-file-empty"></i> <span>Tasks</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+               <div id="subTask" class="collapse ">
+                  <ul class="nav">
+                     <li><a href="{{ route('task.create') }}" class="">Create Task</a></li>
+                  </ul>
+               </div>
+            </li>
+            @endif
+
+            @if (Auth::user()->user_role == 'accountant')
+            <li>
+               <a href="{{ route('client.index') }}" class="{{ $active_class == 'clients' ? 'active' : '' }}">
+                  <i class="fa fa-users"></i> 
+                  <span>Clients</span></a>
+            </li>
+            @endif
             <!-- <li><a href="tables.html" class=""><i class="lnr lnr-dice"></i> <span>Tables</span></a></li> -->
             <!-- <li><a href="typography.html" class=""><i class="lnr lnr-text-format"></i> <span>Typography</span></a></li> -->
             <!-- <li><a href="icons.html" class=""><i class="lnr lnr-linearicons"></i> <span>Icons</span></a></li> -->

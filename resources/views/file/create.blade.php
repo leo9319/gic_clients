@@ -320,7 +320,7 @@
                   </div>
                </div>
 
-               {{ Form::submit('Submit', ['class'=>'btn btn-primary btn-block', 'style'=>'margin-top: 50px; border-radius: 20px;']) }}
+               {{ Form::submit('Next', ['class'=>'btn btn-primary btn-block', 'style'=>'margin-top: 50px; border-radius: 20px;']) }}
             </div>
          </div>
       </div>

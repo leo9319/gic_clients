@@ -11,6 +11,7 @@ use App\University;
 use App\Profession;
 use App\Field;
 use App\Knowledge;
+use DB;
 use Auth;
 use Illuminate\Http\Request;
 
@@ -109,7 +110,42 @@ class FileController extends Controller
         $user = Auth::user();
         $data['active_class'] = 'file';
 
-        echo $user->id;
+        $work_counter = count($request->job_start);
+
+        DB::table('work_histories')->where('user_id', $user->id)->delete();
+
+        for ($i=0; $i < $work_counter; $i++) { 
+            DB::table('work_histories')->insert([
+                'user_id' => $user->id,
+                'job_start' => $request->job_start[$i] . '-01',
+                'job_end' => $request->job_end[$i] . '-01',
+                'work_hours' => $request->work_hours[$i],
+                'noc' => $request->noc[$i],
+                'job_title' => $request->job_title[$i],
+                'employer_name' => $request->employer_name[$i],
+                'job_in_country' => $request->job_in_country[$i]
+            ]);
+        }
+
+        $edu_counter = count($request->edu_start);
+
+        DB::table('education_histories')->where('user_id', $user->id)->delete();
+
+        for ($i=0; $i < $edu_counter; $i++) { 
+            DB::table('education_histories')->insert([
+                'user_id' => $user->id,
+                'field_of_study' => $request->field_of_study[$i],
+                'edu_start' => $request->edu_start[$i] . '-01',
+                'edu_end' => $request->edu_end[$i] . '-01',
+                'complete_years' => $request->complete_years[$i],
+                'full_or_part' => $request->full_or_part[$i],
+                'country' => $request->country[$i],
+                'city' => $request->city[$i],
+                'school' => $request->school[$i],
+                'level' => $request->level[$i],
+                'degree_canada' => $request->degree_canada[$i]
+            ]);
+        }
 
         AddtionalInfo::updateOrCreate(
             ['user_id' => $user->id],
@@ -203,9 +239,9 @@ class FileController extends Controller
 
     public function test()
     {
-        $data['user_info'] = File::find(1);
-        $data['programs'] = Program::all();
-        $data['array'] = $this->stringToIntegerArray($data['user_info']->programs);
+        // $data['user_info'] = File::find(1);
+        $data['active_class'] = 'file';
+        // $data['array'] = $this->stringToIntegerArray($data['user_info']->programs);
 
         return view('a', $data);
 
@@ -250,5 +286,10 @@ class FileController extends Controller
         }
     
         
+    }
+
+    public function storeTest(Request $request)
+    {
+        echo count($request->job_start);
     }
 }

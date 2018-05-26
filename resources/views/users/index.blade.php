@@ -37,9 +37,10 @@
 						<td>
 							{{ Form::open(['route'=>['users.update.role', $user->id]]) }}
 			            		{!! Form::select('user_role_id', [
-				            			'1' => 'client', 
-				            			'2' => 'admin',
-				            			'3' => 'guest'
+				            			'1' => 'admin', 
+				            			'2' => 'rm',
+				            			'3' => 'accountant',
+				            			'4' => 'client'
 		            				], null, ['class' => 'form-control']) 
 	            				!!}
     			            
