@@ -39,5 +39,29 @@
 			{{ Form::close() }}
 		</div>
 	</div>
+
+   <div class="panel">
+      <div class="panel-body">
+         <h3 class="sub-header-padding">:: List of tasks</h3>
+         <table class="table table-striped table-bordered">
+            <thead>
+               <tr>
+                  <th>SL.</th>
+                  <th>Task Name</th>
+                  <th>Task Type</th>
+               </tr>
+            </thead>
+            <tbody>
+               @foreach($tasks as $index => $task)
+               <tr>
+                  <td>{{ $index + 1 }}</td>
+                  <td>{{ $task->task_name}}</td>
+                  <td>{{ $task->task_type}}</td>
+               </tr>
+               @endforeach
+            </tbody>
+         </table>
+      </div>
+   </div>
 </div>
 @endsection

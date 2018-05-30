@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\RmClient;
+use App\Program;
+use App\ClientProgram;
 use DB;
 use Exception;
 
@@ -18,7 +21,7 @@ class HomeController extends Controller
     {
         $this->middleware('auth');
         $this->middleware('role:admin')->only('users', 'updateUserRole');
-        $this->middleware('role:accountant')->only('createUser', 'storeUser');
+        $this->middleware('role:admin,accountant')->only('createUser', 'storeUser');
     }
 
     /**
@@ -58,29 +61,59 @@ class HomeController extends Controller
 
     public function createUser()
     {
-        return view('users.create');
+        $data['rms'] = User::where('user_role', 'rm')->get();
+        $data['programs'] = Program::all();
+
+        $last_entry = DB::table('users')->orderBy('id', 'desc')->limit(1)->first();
+
+        if($last_entry != NULL) {
+            $data['client_code'] = 'CMS' . sprintf('%06d', ($last_entry->id + 1));
+        }
+        else {
+            $data['client_code'] = 'CMS000001';
+        }
+
+        return view('users.create', $data);
     }
 
     public function storeUser(Request $request)
     {
-        
+        // try {
 
-        try {
-              DB::table('users')->insert([
+            DB::table('users')->insert([
+                'client_code' => $request->client_code,
                 'name' => $request->name,
+                'mobile' => $request->mobile,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
                 'user_role' => 'client',
             ]);
 
-              return redirect()->route('thanks');
-        }
+            $user = User::where('email', $request->email)->first();
 
-        //catch exception
-        catch(Exception $e) {
-          echo 'Duplicate entries!';
-        }
+            RmClient::insert([
+                'client_id' => $user->id,
+                'rm_id' => $request->rm_one
+            ]);
 
-        
+            if ($request->rm) {
+                foreach ($request->rm as $rm) {
+                    RmClient::insert([
+                        'client_id' => $user->id,
+                        'rm_id' => $rm
+                    ]);
+                } 
+            }
+
+            if ($request->programs) {
+                foreach($request->programs as $program) {
+                    ClientProgram::insert([
+                        'client_id' => $user->id,
+                        'program_id' => $program
+                    ]);
+                }
+            }
+
+            return redirect()->back()->with('message', 'Client Created!');
     }
 }

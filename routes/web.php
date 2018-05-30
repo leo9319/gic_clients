@@ -23,11 +23,13 @@ Route::get('thank-you', function () {
 
 Route::resource('file', 'FileController');
 
-Route::resource('task', 'TaskController')->middleware('role:rm');
-Route::get('assign-task/{client}', 'TaskController@assignClient')->name('assign.task')->middleware('role:accountant');
-Route::post('assign-task/{client_id}', 'TaskController@storeClientTasks')->name('store.client.task')->middleware('role:accountant');
+Route::resource('task', 'TaskController')->middleware('role:admin,rm');
+Route::get('assign-task/{client}', 'TaskController@assignClient')->name('assign.task')->middleware('role:admin,rm,accountant');
+Route::post('assign-task/{client_id}', 'TaskController@storeClientTasks')->name('store.client.task')->middleware('role:admin,rm,accountant');
+Route::post('upload/{client_id}', 'TaskController@storeFiles')->name('upload.files');
 
-Route::resource('client', 'ClientController')->middleware('role:accountant');
+Route::resource('client', 'ClientController')->middleware('role:admin,rm,accountant');
+Route::get('mytasks/{client_id}', 'ClientController@mytasks')->name('client.mytasks');
 
 Route::get('home', 'HomeController@home')->name('home');
 Route::get('dashboard', 'HomeController@index')->name('dashboard');
@@ -40,3 +42,4 @@ Route::post('user-create', 'HomeController@storeUser')->name('user.store');
 Route::get('test', 'FileController@test')->name('test');
 Route::post('additional-info', 'FileController@storeAddition')->name('store.addition');
 Route::post('additional-test', 'FileController@storeTest')->name('store.test');
+

@@ -8,7 +8,7 @@
             <!-- <li><a href="panels.html" class=""><i class="lnr lnr-cog"></i> <span>Panels</span></a></li> -->
             <!-- <li><a href="notifications.html" class=""><i class="lnr lnr-alarm"></i> <span>Notifications</span></a></li> -->
             <li>
-               <a href="#subProfile" data-toggle="collapse" class="collapsed {{ $active_class == 'file' ? 'active' : '' }}"><i class="lnr lnr-file-empty"></i> <span>File</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+               <a href="#subProfile" data-toggle="collapse" class="collapsed {{ $active_class == 'file' ? 'active' : '' }}"><i class="fa fa-file"></i> <span>File</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
                <div id="subProfile" class="collapse ">
                   <ul class="nav">
                      <li><a href="{{ route('file.create') }}" class="">Create Your File</a></li>
@@ -19,9 +19,9 @@
                </div>
             </li>
 
-            @if (Auth::user()->user_role == 'rm')
+            @if (Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'admin')
             <li>
-               <a href="#subTask" data-toggle="collapse" class="collapsed {{ $active_class == 'tasks' ? 'active' : '' }}"><i class="lnr lnr-file-empty"></i> <span>Tasks</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+               <a href="#subTask" data-toggle="collapse" class="collapsed {{ $active_class == 'tasks' ? 'active' : '' }}"><i class="fa fa-tasks"></i> <span>Tasks</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
                <div id="subTask" class="collapse ">
                   <ul class="nav">
                      <li><a href="{{ route('task.create') }}" class="">Create Task</a></li>
@@ -30,7 +30,13 @@
             </li>
             @endif
 
-            @if (Auth::user()->user_role == 'accountant')
+            @if (Auth::user()->user_role == 'client')
+            <li>
+               <a href="{{ route('client.mytasks', ['client_id'=>Auth::user()->id]) }}" class="{{ $active_class == 'my-tasks' ? 'active' : '' }}"><i class="fa fa-tasks"></i> <span>My Tasks</span></a>
+            </li>
+            @endif
+
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'accountant')
             <li>
                <a href="{{ route('client.index') }}" class="{{ $active_class == 'clients' ? 'active' : '' }}">
                   <i class="fa fa-users"></i> 
@@ -41,7 +47,7 @@
             <!-- <li><a href="typography.html" class=""><i class="lnr lnr-text-format"></i> <span>Typography</span></a></li> -->
             <!-- <li><a href="icons.html" class=""><i class="lnr lnr-linearicons"></i> <span>Icons</span></a></li> -->
             @if(Auth::user()->user_role == 'admin')
-            <li><a href="{{ route('users') }}" class="{{ $active_class == 'users' ? 'active' : '' }}"><i class="fa fa-users"></i> <span>Users</span></a></li>
+            <li><a href="{{ route('users') }}" class="{{ $active_class == 'users' ? 'active' : '' }}"><i class="fa fa-user-circle"></i></i> <span>Users</span></a></li>
             @endif
          </ul>
       </nav>

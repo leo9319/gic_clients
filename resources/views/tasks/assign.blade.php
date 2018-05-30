@@ -32,6 +32,8 @@
 						<th>Select</th>
 						<th>Task Names</th>
 						<th>Task Type</th>
+						<th>Set Date</th>
+						<th>Assign To</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -43,10 +45,21 @@
 								</th>
 								<th>{{ $task->task_name }}</th>
 								<th>{{ $task->task_type }}</th>
+
+								@if($task->task_type == 'Task with deadline')
+								<th>
+									{!! Form::date('date' . $task->id, null, ['class'=>'form-control']) !!}
+								</th>
+								@else
+								<th></th>
+								@endif
+								<th>
+									{{ Form::select($task->id, $rms, 0, ['class'=>'form-control']) }}
+								</th>
 							</tr>							
 						@endforeach
 						<tr>
-							<td colspan="3">
+							<td colspan="4">
 								{{ Form::submit('Submit', ['class'=>'btn btn-info btn-block button4', 'style'=>'margin-top: 20px']) }}
 							</td>
 						</tr>

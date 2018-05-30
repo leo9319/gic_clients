@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\ClientTask;
 
 class ClientController extends Controller
 {
@@ -15,7 +16,7 @@ class ClientController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:accountant')->only('index');
+        $this->middleware('role:admin,accountant,rm')->only('index');
     }
     
     public function index()
@@ -95,4 +96,14 @@ class ClientController extends Controller
     {
         //
     }
+
+    public function mytasks($client_id)
+    {
+        $data['active_class'] = 'my-tasks';
+
+        $data['client_tasks'] = ClientTask::where('client_id', $client_id)->get();
+
+        return view('clients.tasks', $data);
+    }
+
 }

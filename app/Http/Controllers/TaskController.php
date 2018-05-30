@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Task;
 use App\User;
 use App\ClientTask;
+use App\RmClient;
+use Storage;
 
 class TaskController extends Controller
 {
@@ -17,7 +19,7 @@ class TaskController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:rm')->only('create', 'store');
+        $this->middleware('role:admin,rm,accountant')->only('create', 'store', 'assignClient', 'storeClientTasks');
     }
 
     public function index()
@@ -33,6 +35,7 @@ class TaskController extends Controller
     public function create()
     {
         $data['active_class'] = 'tasks';
+        $data['tasks'] = Task::all();
 
         return view('tasks.create', $data);
     }
@@ -109,22 +112,83 @@ class TaskController extends Controller
 
         $data['client_task_array'] = $client_task_array;
 
+        // Time to get all the rm's assigned to the client from which table?? ;) Ans : rm_clients
+        $client_rm_profiles = RmClient::getAssignedRms($client->id);
+
+        $client_rm_id= [];
+
+        foreach($client_rm_profiles as $index => $client_rm_profile) {
+            array_push($client_rm_id, $client_rm_profile->rm_id);
+        }
+
+        $listOfRms = User::whereIn('id', $client_rm_id)->get()->pluck('name', 'id');
+        $listOfRms[0] = 'Client';
+
+        $data['rms'] = $listOfRms;
+
         return view('tasks.assign', $data);
     }
 
     public function storeClientTasks(Request $request, $client_id)
     {
         $rows = $request->task_array;
-
+        
         ClientTask::where('client_id', $client_id)->delete();
 
         foreach ($rows as $row) {
+            $date = 'date' . $row;
+
             ClientTask::insert([
                 'client_id' => $client_id,
-                'task_id' => $row
+                'task_id' => $row,
+                'assignee_id' => $request->$row,
+                'assigned_date' => $request->$date
             ]);
         }
 
         return redirect()->back()->with('message', 'Task Assigned!');
+
+    }
+
+    public function storeFiles(Request $request, $client_id)
+    {
+        if ($request->file('image')) {
+            // $image = $request->file('image');
+            // $filename = 'file_' . $request->task_id . $client_id;
+            // Storage::put('upload/images/' . $filename, file_get_contents($request->file('image')->getRealPath()));
+
+            // echo $client_id;
+            // echo $request->task_id;
+           
+
+            ClientTask::where([
+                    'client_id'=> $client_id,
+                    'task_id'=> $request->task_id
+                ])
+            ->update(['status'=>'complete']);
+
+
+        }
+        else {
+            $filename = '';
+        }
+
+        if($request->status) {
+            ClientTask::where([
+                    'client_id'=> $client_id,
+                    'task_id'=> $request->task_id
+                ])
+            ->update(['status'=>'complete']);
+        }
+        else if($request->status == NULL) {
+            ClientTask::where([
+                    'client_id'=> $client_id,
+                    'task_id'=> $request->task_id
+                ])
+            ->update(['status'=>'incomplete']);
+        }
+
+        return redirect()->back();
+
     }
 }

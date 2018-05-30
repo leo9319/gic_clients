@@ -19,8 +19,9 @@
 			<table id="clients" class="table table-striped" style="width:100%">
 				<thead>
 					<tr>
-						<th>SL.</th>
+						<th>Client ID.</th>
 						<th>Name</th>
+						<th>Phone</th>
 						<th>Email</th>
 						<th>Action</th>
 					</tr>
@@ -28,8 +29,9 @@
 				<tbody>
 					@foreach($clients as $index => $client)
 					<tr>
-						<td>{{ $index+1 }}</td>
+						<td>{{ $client->client_code }}</td>
 						<td>{{ $client->name }}</td>
+						<td>{{ $client->mobile }}</td>
 						<td>{{ $client->email }}</td>
 						<td>
 							<a href="{{ route('assign.task', ['client_id'=> $client->id ]) }}">
