@@ -25,7 +25,7 @@
                            <span class="title">{{ $task->task_name }}</span>
                            <span class="short-description"></span>
                            @if($client_task->assigned_date)
-                              <span class="date">Deadline: {{ Carbon\Carbon::parse($client_task->assigned_date)->format('d/m/Y') }}</span>
+                              <span class="text-info">Deadline: {{ Carbon\Carbon::parse($client_task->assigned_date)->format('d/m/Y') }}</span>
                            @else
                               <span></span>
                            @endif
@@ -37,6 +37,11 @@
                               <span class="text-danger">Incomplete</span>
                               @endif
                            </span>
+                           @if($client_task->status == 'complete')
+                           <span class="date">Date Submitted: {{ Carbon\Carbon::parse($client_task->updated_at)->format('d/m/Y') }}</span>
+                           @else
+                           <span class="date"></span>
+                           @endif
                         </p>
                      </div>
 

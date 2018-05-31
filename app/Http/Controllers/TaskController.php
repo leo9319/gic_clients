@@ -105,12 +105,21 @@ class TaskController extends Controller
         $data['tasks'] = Task::all();
 
         $client_task_array = array();
+        $client_task_date_array = array();
+        $client_task_rm_array = array();
+
         $client_tasks = ClientTask::where('client_id', $client->id)->get();
         foreach($client_tasks as $index => $client_task){
             $client_task_array[$index] = $client_task->task_id;
+            if($client_task->assigned_date) {
+                $client_task_date_array[$client_task->task_id] = $client_task->assigned_date;
+            }
+            $client_task_rm_array[$client_task->task_id] = $client_task->assignee_id;
         }
 
         $data['client_task_array'] = $client_task_array;
+        $data['client_task_date_array'] = $client_task_date_array;
+        $data['client_task_rm_array'] = $client_task_rm_array;
 
         // Time to get all the rm's assigned to the client from which table?? ;) Ans : rm_clients
         $client_rm_profiles = RmClient::getAssignedRms($client->id);
@@ -152,33 +161,14 @@ class TaskController extends Controller
 
     public function storeFiles(Request $request, $client_id)
     {
-        if ($request->file('image')) {
-            // $image = $request->file('image');
-            // $filename = 'file_' . $request->task_id . $client_id;
-            // Storage::put('upload/images/' . $filename, file_get_contents($request->file('image')->getRealPath()));
-
-            // echo $client_id;
-            // echo $request->task_id;
-           
-
-            ClientTask::where([
-                    'client_id'=> $client_id,
-                    'task_id'=> $request->task_id
-                ])
-            ->update(['status'=>'complete']);
-
-
-        }
-        else {
-            $filename = '';
-        }
-
         if($request->status) {
             ClientTask::where([
                     'client_id'=> $client_id,
                     'task_id'=> $request->task_id
                 ])
             ->update(['status'=>'complete']);
+
+            return redirect()->back();
         }
         else if($request->status == NULL) {
             ClientTask::where([
@@ -186,6 +176,40 @@ class TaskController extends Controller
                     'task_id'=> $request->task_id
                 ])
             ->update(['status'=>'incomplete']);
+
+            return redirect()->back();
+        }
+
+        if ($request->file('image')) {
+            $image = $request->file('image');
+            $ext = pathinfo($image->getClientOriginalName(), PATHINFO_EXTENSION);
+            $filename = 'file_' . $request->task_id . $client_id .'.'. $ext;
+            Storage::put('upload/images/' . $filename, file_get_contents($request->file('image')->getRealPath()));
+
+            ClientTask::where([
+                    'client_id'=> $client_id,
+                    'task_id'=> $request->task_id
+                ])
+            ->update([
+                'status'=>'complete',
+                'uploaded_file_name'=>$filename
+            ]);
+
+            return redirect()->back();
+
+        }
+
+        else {
+            ClientTask::where([
+                    'client_id'=> $client_id,
+                    'task_id'=> $request->task_id
+                ])
+            ->update([
+                'status'=>'incomplete',
+                'uploaded_file_name'=> ''
+            ]);
+
+            return redirect()->back();
         }
 
         return redirect()->back();

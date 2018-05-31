@@ -48,18 +48,18 @@
 
 								@if($task->task_type == 'Task with deadline')
 								<th>
-									{!! Form::date('date' . $task->id, null, ['class'=>'form-control']) !!}
+									{!! Form::date('date' . $task->id, (isset($client_task_date_array[$task->id])) ? Carbon\Carbon::parse($client_task_date_array[$task->id])->format('Y-m-d') : null, ['class'=>'form-control']) !!}
 								</th>
 								@else
 								<th></th>
 								@endif
 								<th>
-									{{ Form::select($task->id, $rms, 0, ['class'=>'form-control']) }}
+									{{ Form::select($task->id, $rms, (isset($client_task_rm_array[$task->id])) ? $client_task_rm_array[$task->id] : 0, ['class'=>'form-control']) }}
 								</th>
 							</tr>							
 						@endforeach
 						<tr>
-							<td colspan="4">
+							<td colspan="5">
 								{{ Form::submit('Submit', ['class'=>'btn btn-info btn-block button4', 'style'=>'margin-top: 20px']) }}
 							</td>
 						</tr>
