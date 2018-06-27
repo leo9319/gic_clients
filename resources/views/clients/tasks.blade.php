@@ -45,7 +45,7 @@
                         </p>
                      </div>
 
-                     {{ Form::open(['route'=> ['upload.files', $client_task->client_id], 'files'=>true]) }}
+                     {{ Form::open(['route'=> ['upload.files', $program_id, $client_task->client_id], 'files'=>true]) }}
                      @if($task->task_type == 'File upload')          
                      <div class="col-md-4" style="margin-top: 15px;">
                         {{ Form::file('image', ['class'=>'form-control']) }}
@@ -73,6 +73,37 @@
                @endforeach
             @endforeach
          </ul>
+      </div>
+   </div>
+
+   <div class="panel">
+      <div class="panel-body">
+         <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>
+                  Task Name
+                  [Status: <span class="text-primary font-weight-bold">{{ $status }}</span>] 
+               </th>
+            </tr>
+          </thead>
+          <tbody>
+            {{ Form::open(['route'=>['client.group.complete.store', Auth::user()->id , $program_id]]) }}
+               @foreach($group_tasks as $group_task)
+               <tr>
+                 <td>{{ $group_task->task_name }}</td>
+               </tr>
+               @endforeach
+                     <tr>
+                        <td>{{ Form::checkbox('check_all', 1, ($status == 'complete') ? true : '') }} <strong>All Completed</strong></td>
+                     </tr>
+                  <tr>
+                     <td>{{ Form::submit('Submit', ['class'=>'btn btn-primary btn-block button3']) }}</td>
+                     
+                  </tr>
+            {{ Form::close() }}
+          </tbody>
+        </table> 
       </div>
    </div>
 </div>

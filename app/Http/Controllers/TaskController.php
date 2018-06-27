@@ -7,6 +7,8 @@ use App\Task;
 use App\User;
 use App\ClientTask;
 use App\RmClient;
+use App\Program;
+use DB;
 use Storage;
 
 class TaskController extends Controller
@@ -24,7 +26,10 @@ class TaskController extends Controller
 
     public function index()
     {
-        //
+        $data['active_class'] = 'tasks'; 
+        $data['programs'] = Program::all();
+
+        return view('tasks.index', $data);
     }
 
     /**
@@ -98,7 +103,7 @@ class TaskController extends Controller
         //
     }
 
-    public function assignClient(User $client)
+    public function assignClient($program_id, User $client)
     {
         $data['active_class'] = 'clients';
         $data['client'] = $client;
@@ -108,7 +113,11 @@ class TaskController extends Controller
         $client_task_date_array = array();
         $client_task_rm_array = array();
 
-        $client_tasks = ClientTask::where('client_id', $client->id)->get();
+        $client_tasks = ClientTask::where([
+            'client_id' => $client->id,
+            'program_id' => $program_id
+        ])->get();
+
         foreach($client_tasks as $index => $client_task){
             $client_task_array[$index] = $client_task->task_id;
             if($client_task->assigned_date) {
@@ -121,7 +130,6 @@ class TaskController extends Controller
         $data['client_task_date_array'] = $client_task_date_array;
         $data['client_task_rm_array'] = $client_task_rm_array;
 
-        // Time to get all the rm's assigned to the client from which table?? ;) Ans : rm_clients
         $client_rm_profiles = RmClient::getAssignedRms($client->id);
 
         $client_rm_id= [];
@@ -134,21 +142,26 @@ class TaskController extends Controller
         $listOfRms[0] = 'Client';
 
         $data['rms'] = $listOfRms;
+        $data['program_id'] = $program_id;
 
         return view('tasks.assign', $data);
     }
 
-    public function storeClientTasks(Request $request, $client_id)
+    public function storeClientTasks(Request $request, $program_id, $client_id)
     {
         $rows = $request->task_array;
         
-        ClientTask::where('client_id', $client_id)->delete();
+        ClientTask::where([
+            'client_id' => $client_id,
+            'program_id' => $program_id,
+        ])->delete();
 
         foreach ($rows as $row) {
             $date = 'date' . $row;
-
+                        
             ClientTask::insert([
                 'client_id' => $client_id,
+                'program_id' => $program_id,
                 'task_id' => $row,
                 'assignee_id' => $request->$row,
                 'assigned_date' => $request->$date
@@ -159,11 +172,12 @@ class TaskController extends Controller
 
     }
 
-    public function storeFiles(Request $request, $client_id)
+    public function storeFiles(Request $request, $program_id, $client_id)
     {
         if($request->status) {
             ClientTask::where([
                     'client_id'=> $client_id,
+                    'program_id'=> $program_id,
                     'task_id'=> $request->task_id
                 ])
             ->update(['status'=>'complete']);
@@ -173,11 +187,12 @@ class TaskController extends Controller
         else if($request->status == NULL) {
             ClientTask::where([
                     'client_id'=> $client_id,
+                    'program_id'=> $program_id,
                     'task_id'=> $request->task_id
                 ])
             ->update(['status'=>'incomplete']);
 
-            return redirect()->back();
+            // return redirect()->back();
         }
 
         if ($request->file('image')) {
@@ -188,6 +203,7 @@ class TaskController extends Controller
 
             ClientTask::where([
                     'client_id'=> $client_id,
+                    'program_id'=> $program_id,
                     'task_id'=> $request->task_id
                 ])
             ->update([
@@ -197,11 +213,14 @@ class TaskController extends Controller
 
             return redirect()->back();
 
+            // echo 'adf';
+
         }
 
         else {
             ClientTask::where([
                     'client_id'=> $client_id,
+                    'program_id'=> $program_id,
                     'task_id'=> $request->task_id
                 ])
             ->update([
@@ -209,10 +228,98 @@ class TaskController extends Controller
                 'uploaded_file_name'=> ''
             ]);
 
-            return redirect()->back();
+            // return redirect()->back();
         }
 
         return redirect()->back();
 
+    }
+
+    public function taskGroup($program_id)
+    {
+        $data['active_class'] = 'tasks';
+        $data['program'] = Program::find($program_id);
+        $data['group_tasks'] = DB::table('group_tasks')->where('program_id', $program_id)->get();
+
+        return view('tasks.groups', $data);
+    }
+
+    public function taskGroupStore(Request $request, $client_id, $program_id)
+    {
+        // DB::table('group_tasks')->insert([
+        //     'program_id' => $program_id,
+        //     'task_name' => $request->task_name,
+        //     'task_type' => $request->task_type
+        // ]);
+
+        // return redirect()->route('task.group', $program_id);
+
+        $program_group_id = $request->program_group_id;
+        $assignee_id = $request->rms;
+
+        DB::table('client_group_tasks')->where([
+            'client_id' => $client_id,
+            'program_id' => $program_id
+        ])->delete();
+
+        DB::table('client_group_tasks')->insert([
+            'client_id' => $client_id,
+            'program_id' => $program_id,
+            'program_group_id' => $program_group_id,
+            'assignee_id' => $assignee_id,
+        ]);
+
+        return redirect()->back();
+
+    }
+
+    public function taskTableGroupStore(Request $request, $program_id)
+    {
+        DB::table('group_tasks')->insert([
+            'program_id' => $program_id,
+            'task_name' => $request->task_name,
+            'task_type' => $request->task_type
+        ]);
+
+        return redirect()->route('task.group', $program_id);
+    }
+
+    public function assignGroupClient($program_id, User $client) 
+    {
+        $data['active_class'] = 'tasks';
+
+        // Get all the unique program id
+        $data['group_tasks'] = DB::table('group_tasks')
+            ->distinct()
+            ->orderBy('program_id', 'asc')
+            ->get(['program_id']);
+
+        // return view('tasks.assign_group', $data);
+    }
+
+    public function storeIndividualTasks(Request $request, $client_id, $program_id)
+    {
+        DB::table('tasks')->insert([
+            'task_name' => $request->task_name,
+            'task_type' => $request->task_type
+        ]);
+
+        // time to get its id:
+
+        $task_from_table_id = DB::table('tasks')->where([
+            'task_name' => $request->task_name,
+            'task_type' => $request->task_type,
+        ])->first()->id;
+
+        DB::table('client_tasks')->insert([
+            'client_id' => $client_id,
+            'program_id' => $program_id,
+            'task_id' => $task_from_table_id,
+            'assignee_id' => $request->rm_id,
+            'assigned_date' => $request->deadline,
+            'status' => 'pending'
+        ]);
+
+        return redirect()->back();
     }
 }

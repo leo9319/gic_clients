@@ -37,7 +37,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{{ Form::open(['route' => ['store.client.task', $client->id]]) }}
+					{{ Form::open(['route' => ['store.client.task', $program_id, $client->id]]) }}
 						@foreach($tasks as $task)
 							<tr>
 								<th>

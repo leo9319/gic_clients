@@ -11,6 +11,8 @@ use App\University;
 use App\Profession;
 use App\Field;
 use App\Knowledge;
+use App\ClientTask;
+use App\ClientProgram;
 use DB;
 use Auth;
 use Illuminate\Http\Request;
@@ -26,6 +28,13 @@ class FileController extends Controller
     {
         // $users = User::all();
         $data['active_class'] = 'file';
+
+        $data['completed_tasks'] = ClientTask::where([
+                                    'client_id' => Auth::user()->id,
+                                    'status' => 'complete'
+                                ])->get();
+
+        $data['client_programs'] = ClientProgram::where('client_id', Auth::user()->id)->get();
 
         return view('file.index', $data);
     }
@@ -61,8 +70,6 @@ class FileController extends Controller
         else {
             return view('file.create', $data);
         }
-
-        // echo $data['file']->marital_status;     
         
     }
 
@@ -82,24 +89,33 @@ class FileController extends Controller
             ['province' => $request->province,
             'language1' => $request->language1,
             'date1' => $request->date1,
+            'date_of_test_result1' => $request->date_of_test_result1,
+            'certificate_number' => $request->certificate_number,
+            'test_pin1' => $request->test_pin1,
+            'test_version' => $request->test_version,
             'speaking1' => $request->speaking1,
             'listening1' => $request->listening1,
             'reading1' => $request->reading1,
             'writing1' => $request->writing1,
             'language2' => $request->language2,
             'date2' => $request->date2,
+            'certificate_number2' => $request->certificate_number2,
+            'result_date2' => $request->result_date2,
+            'test_version2' => $request->test_version2,
+            'test_pin2' => $request->test_pin2,
             'speaking2' => $request->speaking2,
             'listening2' => $request->listening2,
             'reading2' => $request->reading2,
             'writing2' => $request->writing2,
             'we_three_years' => $request->we_three_years,
-            'skill_type_three_years' => $request->skill_type_three_years,
             'we_ten_years' => $request->we_ten_years,
             'skill_trades' => $request->skill_trades,
             'canadian_dollars' => $request->canadian_dollars,
             'family_members' => $request->family_members,
             'job_offer' => $request->job_offer,
-            'currently_working' => $request->currently_working]
+            'currently_working' => $request->currently_working,
+            'skill_type_three_years' => $request->skill_type_three_years
+            ]
         );
 
         return view('file.additional_info', $data);
@@ -200,7 +216,7 @@ class FileController extends Controller
      */
     public function show(File $file)
     {
-        //
+        // 
     }
 
     /**
@@ -245,6 +261,17 @@ class FileController extends Controller
 
         return view('a', $data);
 
+    }
+
+    public function myFile()
+    {
+        $data['active_class'] = 'file';
+
+        // retrieve all the valies from the file table
+        $data['file'] = File::where('user_id', Auth::user()->id)->first();
+        $data['file_additional'] = AddtionalInfo::where('user_id', Auth::user()->id)->first();
+
+        return view('file.my_file', $data);
     }
 
     public function stringToIntegerArray($array)

@@ -45,7 +45,7 @@
                <h3 class="sub-header-padding">Which language test did you take for your <strong class="text-primary">first</strong> official language?</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::select('language1', [
                      'None' => 'None',
                      'IELTS' => 'IELTS',
@@ -57,35 +57,35 @@
                <h3 class="sub-header-padding">What date did you take this test?</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::date('date1', null, ['class'=>'form-control', 'placeholder'=>'Date of Birth']) !!}
                   </div>
                </div>
                <h3 class="sub-header-padding">Date of test results</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::date('date_of_test_result1', null, ['class'=>'form-control', 'placeholder'=>'Date of Birth']) !!}
                   </div>
                </div>
                <h3 class="sub-header-padding">Language test result form or certificate number</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::text('certificate_number', null, ['class'=>'form-control', 'placeholder'=>'Language test certificate number']) !!}
                   </div>
                </div>
                <h3 class="sub-header-padding">Language test PIN</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::text('test_pin1', null, ['class'=>'form-control', 'placeholder'=>'Language test PIN']) !!}
                   </div>
                </div>
                <h3 class="sub-header-padding">Language test version</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::text('test_version', null, ['class'=>'form-control', 'placeholder'=>'Language test version']) !!}
                   </div>
                </div>
@@ -116,7 +116,7 @@
                <h3 class="sub-header-padding">Which language test did you take for your <strong class="text-info">second</strong> official language?</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::select('language2', [
                      'None' => 'None',
                      'IELTS' => 'IELTS',
@@ -128,7 +128,7 @@
                <h3 class="sub-header-padding">What date did you take this test?</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::date('date2', null, ['class'=>'form-control', 'placeholder'=>'Date of Birth']) !!}
                   </div>
                </div>
@@ -136,28 +136,28 @@
                <h3 class="sub-header-padding">Language test result form or certificate number</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::text('certificate_number2', null, ['class'=>'form-control', 'placeholder'=>'Language test certificate number']) !!}
                   </div>
                </div>
                <h3 class="sub-header-padding">Date of result</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::date('result_date2', null, ['class'=>'form-control', 'placeholder'=>'Date of test result']) !!}
                   </div>
                </div>
                <h3 class="sub-header-padding">Language test version</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::text('test_version2', null, ['class'=>'form-control', 'placeholder'=>'Language test version']) !!}
                   </div>
                </div>
                <h3 class="sub-header-padding">Language test PIN</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::text('test_pin2', null, ['class'=>'form-control', 'placeholder'=>'Language test PIN']) !!}
                   </div>
                </div>
@@ -190,7 +190,7 @@
                <h3 class="sub-header-padding">In the last three years, how many years of skilled work experience do you have in Canada? It must have been full-time (or an equal amount in part time).</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::select('we_three_years', [
                      'None' => 'None',
                      'Less than one year' => 'Less than one year',
@@ -201,7 +201,7 @@
                <h3 class="sub-header-padding">If you do not have any Canadian work experience during this period, please choose "None of the above".</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::select('skill_type_three_years', [
                      'None' => 'None',
                      'Skill Level A (professional occupations)' => 'Skill Level A (professional occupations)',
@@ -219,7 +219,7 @@
                <h3 class="sub-header-padding">In the last 10 years, how many years of skilled work experience do you have? It must have been continuous, paid, full-time (or an equal amount in part-time), and in only one occupation.</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::select('we_ten_years', [
                      'Please make a selection' => 'Please make a selection',
                      'None' => 'None',
@@ -243,7 +243,7 @@
 
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::select('skill_trades', [
                      'Please make a selection' => 'Please make a selection',
                      'None' => 'None',
@@ -260,7 +260,7 @@
                <h3 class="sub-header-padding">How much money (in Canadian dollars) will you bring to Canada?</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::select('canadian_dollars', [
                      'Please make a selection' => 'Please make a selection',
                      'Less than 12,475 - not enough settlement funds' => 'Less than 12,475 - not enough settlement funds',
@@ -278,7 +278,7 @@
                <h3 class="sub-header-padding">How many family members do you have?</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::select('family_members', [
                      '1' => '1',
                      '2' => '2',
@@ -299,7 +299,7 @@
                <h3 class="sub-header-padding">Do you have a valid job offer in Canada?</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::select('job_offer', [
                      'Please make a selection' => 'Please make a selection',
                      'Yes' => 'Yes',
@@ -311,7 +311,7 @@
                <h3 class="sub-header-padding">Are you currently working legally in Canada?</h3>
                <div class="field-spacing"">
                   <div class="input-group">
-                     <span class="input-group-addon"><i class="fa fa-suitcase"></i></span>
+                     <span class="input-group-addon"><i class="fa fa-globe"></i></span>
                      {!! Form::select('currently_working', [
                      'Please make a selection' => 'Please make a selection',
                      'Yes' => 'Yes',
