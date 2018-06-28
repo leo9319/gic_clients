@@ -21,12 +21,7 @@
          <div class="field-spacing"">
             <div class="input-group">
                <span class="input-group-addon"><i class="fa fa-globe"></i></span>
-               {!! Form::select('task_type', [
-	               'Task with deadline' => 'Task with deadline', 
-	               'Task with without deadline' => 'Task without deadline',
-	               'File upload' => 'File upload', 
-	               'Form fillup' => 'Form fillup'
-               ], null, ['class'=>'form-control']) !!}
+               {!! Form::select('type_id', $task_types->pluck('type', 'id'), null, ['class'=>'form-control']) !!}
             </div>
          </div>
          @if(session()->has('message'))
@@ -51,12 +46,14 @@
                </tr>
             </thead>
             <tbody>
-               @foreach($group_tasks as $index => $group_task)
-               <tr>
-                  <td>{{ $index + 1 }}</td>
-                  <td>{{ $group_task->task_name }}</td>
-                  <td>{{ $group_task->task_type }}</td>
-               </tr>
+               @foreach($program_tasks as $index => $program_task)
+                  @foreach($program_task->types as $type)
+                  <tr>
+                     <td>{{ $index + 1 }}</td>
+                     <td>{{ $program_task->task_name }}</td>
+                     <td>{{ $type->type }}</td>
+                  </tr>
+                  @endforeach
                @endforeach
             </tbody>
          </table>

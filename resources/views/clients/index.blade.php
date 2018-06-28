@@ -35,7 +35,7 @@
 						<td>{{ $client->email }}</td>
 						<td>
 							<a href="{{ route('client.programs', ['client_id'=> $client->id ]) }}">
-								<button class="btn btn-basic button4">View Programs</button>
+								<button class="btn btn-info button4">View Programs</button>
 							</a>
 						</td>
 					</tr>

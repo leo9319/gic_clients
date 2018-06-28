@@ -6,5 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
-    protected $fillable = ['task_name', 'task_type'];
+    protected $fillable = ['task_name', 'type_id', 'program_id'];
+
+    public function types() 
+    {
+    	return $this->hasMany('App\TaskType', 'id', 'type_id');
+    }
 }

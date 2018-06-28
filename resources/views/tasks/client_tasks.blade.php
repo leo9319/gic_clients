@@ -31,22 +31,13 @@
             	<div class="tab-pane fade in active" id="group-bottom-left1">
                   <ul class="list-unstyled activity-timeline">
                   	 @foreach($all_tasks as $all_task)
+              	 		@foreach($all_task->tasks as $task)
 	                      <li>
 	                         <i class="fa fa-tasks activity-icon"></i>
-	                         <p> <a href="#"></a> <span class="timestamp">{{ $all_task->task_name }}</span></p>
+	                         <p> <a href="#"></a> <span class="timestamp">{{ $task->task_name }}</span></p>
 	                      </li>
+                        @endforeach
                       @endforeach
-                  </ul>
-
-                  <ul class="list-unstyled activity-timeline">
-                  	@foreach($individual_tasks as  $individual_task)
-                  		@foreach($individual_task->tasks as $task)
-	                  	<li>
-	                  		<i class="fa fa-tasks activity-icon"></i>
-	                  		<p> <a href="#"></a> <span class="timestamp">{{ $task->task_name }}</span></p>
-	                  	</li>
-	                  	@endforeach
-                  	@endforeach
                   </ul>
               		
           		  <h4>Assign More Tasks::</h4>
@@ -61,12 +52,7 @@
 			         <div class="field-spacing"">
 			            <div class="input-group">
 			               <span class="input-group-addon"><i class="fa fa-globe"></i></span>
-			               {!! Form::select('task_type', [
-				               'Task with deadline' => 'Task with deadline', 
-				               'Task with without deadline' => 'Task without deadline',
-				               'File upload' => 'File upload', 
-				               'Form fillup' => 'Form fillup'
-			               ], null, ['class'=>'form-control']) !!}
+			               {!! Form::select('type_id', $task_types->pluck('type', 'id'), null, ['class'=>'form-control']) !!}
 			            </div>
 			         </div>
 			         <div class="field-spacing"">
@@ -88,46 +74,28 @@
                </div>
 
                <div class="tab-pane fade in" id="group-bottom-left2">
-               		<ul class="list-unstyled activity-timeline">
-                  	 @foreach($complete_group as $complete)
-	                      <li>
-	                         <i class="fa fa-check activity-icon"></i>
-	                         <p> <a href="#"></a> <span class="timestamp">{{ $complete->task_name }}</span></p>
-	                      </li>
-                      @endforeach
-                  </ul>
-
                   <ul class="list-unstyled activity-timeline">
-                  	 @foreach($individual_completed_tasks as $individual_completed_task)
-                  	 	@foreach($individual_completed_task->tasks as $completed_task)
-	                      <li>
-	                         <i class="fa fa-check activity-icon"></i>
-	                         <p> <a href="#"></a> <span class="timestamp">{{ $completed_task->task_name }}</span></p>
-	                      </li>
-	                      @endforeach
-                      @endforeach
+                  		@foreach($complete_tasks as $complete_task)
+               				@foreach($complete_task->tasks as $c_task)
+		                      <li>
+		                         <i class="fa fa-check activity-icon"></i>
+		                         <p> <a href="#"></a> <span class="timestamp">{{ $c_task->task_name }}</span></p>
+		                      </li>
+	                    	@endforeach
+	                    @endforeach
                   </ul>
                </div>
 
                <div class="tab-pane fade in" id="group-bottom-left3">
                		<ul class="list-unstyled activity-timeline">
-                  	 @foreach($pending_group as $pending)
-	                      <li>
-	                         <i class="fa fa-times activity-icon"></i>
-	                         <p> <a href="#"></a> <span class="timestamp">{{ $pending->task_name }}</span></p>
-	                      </li>
-                      @endforeach
-                  </ul>
-
-                  <ul class="list-unstyled activity-timeline">
-                  	 @foreach($individual_pending_tasks as $individual_pending_task)
-                  	 	@foreach($individual_pending_task->tasks as $pending_task)
-	                      <li>
-	                         <i class="fa fa-times activity-icon"></i>
-	                         <p> <a href="#"></a> <span class="timestamp">{{ $pending_task->task_name }}</span></p>
-	                      </li>
-	                      @endforeach
-                      @endforeach
+               			@foreach($pending_tasks as $pending_task)
+               				@foreach($pending_task->tasks as $p_task)
+		                      <li>
+		                         <i class="fa fa-times activity-icon"></i>
+		                         <p> <a href="#"></a> <span class="timestamp">{{ $p_task->task_name }}</span></p>
+		                      </li>
+		                    @endforeach
+	                    @endforeach
                   </ul>
                </div>
             </div>

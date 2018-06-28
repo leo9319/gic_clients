@@ -8,6 +8,8 @@ use App\RmClient;
 use App\CounsellorClient;
 use App\Program;
 use App\ClientProgram;
+use App\Task;
+use App\ClientTask;
 use DB;
 use Exception;
 
@@ -94,7 +96,7 @@ class HomeController extends Controller
                 'user_role' => 'client',
             ]);
 
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('client_code', $request->client_code)->first();
 
             RmClient::insert([
                 'client_id' => $user->id,
@@ -130,6 +132,24 @@ class HomeController extends Controller
                         'client_id' => $user->id,
                         'program_id' => $program
                     ]);
+                }
+            }
+
+            $request->programs;
+            if ($request->programs) {
+                foreach($request->programs as $program) {
+                    $program_tasks = Task::where('program_id', $program)->get();
+                    foreach ($program_tasks as $program_task) {
+                        // $program->id;
+                        echo $program_task->id;
+                        echo '<br>';
+                        ClientTask::insert([
+                            'client_id' => $user->id,
+                            'program_id' => $program,
+                            'task_id' => $program_task->id,
+                        ]);
+                    }
+
                 }
             }
 

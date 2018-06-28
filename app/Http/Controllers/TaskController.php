@@ -8,6 +8,7 @@ use App\User;
 use App\ClientTask;
 use App\RmClient;
 use App\Program;
+use App\TaskType;
 use DB;
 use Storage;
 
@@ -239,7 +240,10 @@ class TaskController extends Controller
     {
         $data['active_class'] = 'tasks';
         $data['program'] = Program::find($program_id);
-        $data['group_tasks'] = DB::table('group_tasks')->where('program_id', $program_id)->get();
+        $data['task_types'] = TaskType::all();
+        $data['group_tasks'] = DB::table('group_tasks')->where('program_id', $program_id)->get(); //not needed
+
+        $data['program_tasks'] = Task::where('program_id', $program_id)->get(); 
 
         return view('tasks.groups', $data);
     }
@@ -275,10 +279,20 @@ class TaskController extends Controller
 
     public function taskTableGroupStore(Request $request, $program_id)
     {
-        DB::table('group_tasks')->insert([
-            'program_id' => $program_id,
+        // DB::table('group_tasks')->insert([
+        //     'program_id' => $program_id,
+        //     'task_name' => $request->task_name,
+        //     'task_type' => $request->task_type
+        // ]);
+
+        // return redirect()->route('task.group', $program_id);
+
+        // New Changes
+
+        Task::create([
             'task_name' => $request->task_name,
-            'task_type' => $request->task_type
+            'type_id' => $request->type_id,
+            'program_id' => $program_id,
         ]);
 
         return redirect()->route('task.group', $program_id);
@@ -299,25 +313,45 @@ class TaskController extends Controller
 
     public function storeIndividualTasks(Request $request, $client_id, $program_id)
     {
-        DB::table('tasks')->insert([
+        // DB::table('tasks')->insert([
+        //     'task_name' => $request->task_name,
+        //     'task_type' => $request->task_type
+        // ]);
+
+        // // time to get its id:
+
+        // $task_from_table_id = DB::table('tasks')->where([
+        //     'task_name' => $request->task_name,
+        //     'task_type' => $request->task_type,
+        // ])->first()->id;
+
+        // DB::table('client_tasks')->insert([
+        //     'client_id' => $client_id,
+        //     'program_id' => $program_id,
+        //     'task_id' => $task_from_table_id,
+        //     'assignee_id' => $request->rm_id,
+        //     'assigned_date' => $request->deadline,
+        //     'status' => 'pending'
+        // ]);
+
+        // Add the task to the 
+
+        Task::create([
             'task_name' => $request->task_name,
-            'task_type' => $request->task_type
+            'type_id' => $request->type_id,
         ]);
 
-        // time to get its id:
-
-        $task_from_table_id = DB::table('tasks')->where([
+        $task_id = Task::where([
             'task_name' => $request->task_name,
-            'task_type' => $request->task_type,
+            'type_id' => $request->type_id,
         ])->first()->id;
 
-        DB::table('client_tasks')->insert([
+        ClientTask::create([
             'client_id' => $client_id,
             'program_id' => $program_id,
-            'task_id' => $task_from_table_id,
+            'task_id' => $task_id,
             'assignee_id' => $request->rm_id,
             'assigned_date' => $request->deadline,
-            'status' => 'pending'
         ]);
 
         return redirect()->back();
