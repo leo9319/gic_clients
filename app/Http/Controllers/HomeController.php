@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\RmClient;
+use App\CounsellorClient;
 use App\Program;
 use App\ClientProgram;
 use DB;
@@ -67,6 +68,7 @@ class HomeController extends Controller
     public function createUser()
     {
         $data['rms'] = User::where('user_role', 'rm')->get();
+        $data['counsellors'] = User::where('user_role', 'counsellor')->get();
         $data['programs'] = Program::all();
 
         $last_entry = DB::table('users')->orderBy('id', 'desc')->limit(1)->first();
@@ -83,8 +85,6 @@ class HomeController extends Controller
 
     public function storeUser(Request $request)
     {
-        // try {
-
             DB::table('users')->insert([
                 'client_code' => $request->client_code,
                 'name' => $request->name,
@@ -98,7 +98,12 @@ class HomeController extends Controller
 
             RmClient::insert([
                 'client_id' => $user->id,
-                'rm_id' => $request->rm_one
+                'rm_id' => $request->rm_one,
+            ]);
+
+            CounsellorClient::insert([
+                'client_id' => $user->id,
+                'counsellor_id' => $request->counsellor_one,
             ]);
 
             if ($request->rm) {
@@ -106,6 +111,15 @@ class HomeController extends Controller
                     RmClient::insert([
                         'client_id' => $user->id,
                         'rm_id' => $rm
+                    ]);
+                } 
+            }
+
+            if ($request->counsellor) {
+                foreach ($request->counsellor as $counsellor) {
+                    CounsellorClient::insert([
+                        'client_id' => $user->id,
+                        'counsellor_id' => $counsellor
                     ]);
                 } 
             }
@@ -120,5 +134,17 @@ class HomeController extends Controller
             }
 
             return redirect()->back()->with('message', 'Client Created!');
+    }
+
+    public function customStaffRegister(Request $request)
+    {
+        DB::table('users')->insert([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'user_role' => $request->user_role,
+        ]);
+
+        return redirect()->back();
     }
 }

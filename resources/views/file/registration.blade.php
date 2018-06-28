@@ -1,12 +1,31 @@
-@extends('layouts.master')
-
-@section('title', 'Add File')
-
-@section('header_scripts')
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
-@endsection
-
-@section('content')
+<!DOCTYPE html>
+<html>
+<head>
+   <title>GIC Registration Form</title>
+   <meta charset="utf-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+   <!-- VENDOR CSS -->
+   <link rel="stylesheet" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
+   <link rel="stylesheet" href="{{ asset('vendor/font-awesome/css/font-awesome.min.css') }}">
+   <link rel="stylesheet" href="{{ asset('vendor/linearicons/style.css') }}">
+   <link rel="stylesheet" href="{{ asset('vendor/chartist/css/chartist-custom.css') }}">
+   <!-- MAIN CSS -->
+   <link rel="stylesheet" href="{{ asset('css/main.css') }}">
+   <!-- GOOGLE FONTS -->
+   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+   <!-- ICONS -->
+   <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('img/apple-icon.png') }}">
+   <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('img/favicon.png') }}">
+   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+   <style type="text/css">
+      body {
+         margin: 20px;
+      }
+   </style>
+</head>
+<body>
 <div class="container-fluid">
    <div class="row">
       <div class="col-md-12">
@@ -16,7 +35,7 @@
                <h1 class="text-center" style="border: black 1px solid; border-radius: 6px;">:: GIC Registration Form ::</h1>
             </div>
             <div class="panel-body">
-               {{ Form::open(['route' => ['file.store']]) }}
+               {{ Form::open(['route' => 'home.form.store']) }}
 
                <h3 class="sub-header-padding"><i class="fa fa-globe"></i> Choose your Desired Country & Program:</h3>
                <div class="row">
@@ -45,7 +64,7 @@
                      <div class="field-spacing"">
                         <div class="input-group">
                            <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                           {!! Form::text('first_name', null, ['class'=>'form-control', 'placeholder'=>'First Name']) !!}
+                           {!! Form::text('first_name', null, ['class'=>'form-control', 'placeholder'=>'First Name', 'required']) !!}
                         </div>
                      </div>
                   </div>
@@ -53,7 +72,7 @@
                      <div class="field-spacing"">
                         <div class="input-group">
                            <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                           {!! Form::text('last_name', null, ['class'=>'form-control', 'placeholder'=>'Last Name']) !!}
+                           {!! Form::text('last_name', null, ['class'=>'form-control', 'placeholder'=>'Last Name', 'required']) !!}
                         </div>
                      </div>
                   </div>
@@ -64,7 +83,7 @@
                         <div class="field-spacing"">
                            <div class="input-group">
                               <span class="input-group-addon"><i class="glyphicon glyphicon-phone"></i></span>
-                              {!! Form::text('mobile', null, ['class'=>'form-control', 'placeholder'=>'Mobile']) !!}
+                              {!! Form::text('mobile', null, ['class'=>'form-control', 'placeholder'=>'Mobile', 'required']) !!}
                            </div>
                         </div>
                      </div>
@@ -74,7 +93,7 @@
                         <div class="field-spacing"">
                            <div class="input-group">
                               <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-                              {!! Form::email('email', null, ['class'=>'form-control', 'placeholder'=>'Email']) !!}
+                              {!! Form::email('email', null, ['class'=>'form-control', 'placeholder'=>'Email', 'required']) !!}
                            </div>
                         </div>
                      </div>
@@ -189,6 +208,7 @@
       
    </div>
 </div>
+</body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 <script>
    $(".select2").select2({
@@ -201,4 +221,4 @@
         hidden:true}]
    });
 </script>
-@endsection
+</html>

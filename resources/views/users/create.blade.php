@@ -121,6 +121,29 @@
                         <div id="rm-container"></div>
 
                         <div class="form-group">
+                            <label for="counsellor" class="col-md-3 control-label">Counsellor</label>
+
+                            <div class="col-md-6">
+                                <select id="counsellor" class="form-control" name="counsellor_one" required>
+                                    @foreach($counsellors as $counsellor)
+                                    <option value="{{ $counsellor->id }}">{{ $counsellor->name }}</option>
+                                    @endforeach
+                                </select>
+
+                                @if ($errors->has('user_type'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('user_type') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" onclick="addCounsellor()" class="btn btn-sm btn-success">+ Add More</button>
+                            </div>
+                        </div>
+
+                        <div id="counsellor-container"></div>
+
+                        <div class="form-group">
                             <div class="col-md-6 col-md-offset-3">
                                 <button type="submit" class="btn btn-primary btn-block button3">
                                     Register
@@ -144,6 +167,18 @@
             $('#rm-container').append(html);
 
             $('#rm-container').on('click', '#remove', function(e){
+                $(this).parent('div').parent('div').remove();
+                removeIndex.push(Number(this.name));
+            });
+        }
+
+        function addCounsellor() {
+
+            var html = '<div class="form-group"> <label for="counsellor" class="col-md-3 control-label">Counsellor</label> <div class="col-md-6"> <select id="counsellor" class="form-control" name="counsellor[]" required> @foreach($counsellors as $counsellor) <option value="{{ $counsellor->id }}">{{ $counsellor->name }}</option> @endforeach </select> @if ($errors->has("user_type")) <span class="help-block"> <strong>{{ $errors->first("user_type") }}</strong> </span> @endif </div> <div class="col-md-1"> <button type="button" onclick="addRm()" class="btn btn-sm btn-success">+ Add More</button> </div> <div class="col-md-1"> <button type="button" id="removeCounsellor" class="btn btn-sm btn-danger" style="margin-left: 10px">Remove</button> </div> </div>';
+
+            $('#counsellor-container').append(html);
+
+            $('#counsellor-container').on('click', '#removeCounsellor', function(e){
                 $(this).parent('div').parent('div').remove();
                 removeIndex.push(Number(this.name));
             });

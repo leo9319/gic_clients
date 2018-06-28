@@ -13,7 +13,7 @@
                <hr>
                
                <p class="lead">
-                  <a class="btn btn-primary btn-sm" href="{{ route('dashboard') }}" role="button">Continue to Dashboard</a>
+                  <a class="btn btn-primary btn-sm" href="{{ route('main') }}" role="button">Return To Home</a>
                </p>
             </div>
         </div>

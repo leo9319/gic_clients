@@ -107,6 +107,10 @@
                     <div class="title">
                         GIC CLIENTS
                     </div>
+
+                    <div class="links">
+                        <a href="{{ route('home.form') }}"><h2>Registration Form</h2></a>
+                    </div>
                 </div>
             </a>
 

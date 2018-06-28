@@ -15,13 +15,16 @@ Auth::routes();
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('main');
+
+Route::get('form', 'FormController@index')->name('home.form');
+Route::post('form', 'FormController@store')->name('home.form.store');
 
 Route::get('thank-you', function () {
     	return view('file.acknowledgement');
 })->name('thanks');
 
-Route::resource('file', 'FileController')->middleware('role:client');
+Route::resource('file', 'FileController');
 Route::get('myfile', 'FileController@myFile')->name('file.myfile');
 
 Route::resource('task', 'TaskController')->middleware('role:admin,rm');
@@ -53,6 +56,8 @@ Route::post('users/{id}', 'HomeController@updateUserRole')->name('users.update.r
 Route::post('users/{id}', 'HomeController@updateUserRole')->name('users.update.role')->middleware('role:admin');
 Route::get('user-create', 'HomeController@createUser')->name('user.create');
 Route::post('user-create', 'HomeController@storeUser')->name('user.store');
+Route::post('register-staff', 'HomeController@customStaffRegister')->name('staff.store');
+
 
 Route::get('test', 'FileController@test')->name('test');
 Route::post('additional-info', 'FileController@storeAddition')->name('store.addition');
@@ -63,4 +68,5 @@ Route::get('invoice', function () {
 });
 
 Route::resource('rms', 'RmController');
+
 

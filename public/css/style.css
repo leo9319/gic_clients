@@ -80,3 +80,7 @@ textarea:hover, textarea:focus, #items td.total-value textarea:hover, #items td.
 	font-size: 20px;
 
 }
+
+.mb {
+  margin-bottom: 25px;
+}
