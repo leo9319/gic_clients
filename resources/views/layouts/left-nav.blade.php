@@ -40,7 +40,7 @@
             </li>
             @endif
 
-            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'accountant')
+            @if (Auth::user()->user_role != 'client')
             <li>
                <a href="{{ route('client.index') }}" class="{{ $active_class == 'clients' ? 'active' : '' }}">
                   <i class="fa fa-users"></i> 

@@ -15,6 +15,7 @@ use App\Knowledge;
 use App\ClientTask;
 use App\ClientProgram;
 use App\RegistrationForm;
+use App\User;
 use DB;
 use Auth;
 
@@ -60,6 +61,36 @@ class FormController extends Controller
                 'hear_about_us'    => json_encode($request->hear_about_us),
                 'other_countries'  => $request->foreign_country_visited,
             ]);
+
+        $last_entry = DB::table('users')->orderBy('id', 'desc')->limit(1)->first();
+
+        if($last_entry != NULL) {
+            $data['client_code'] = 'CMS' . sprintf('%06d', ($last_entry->id + 1));
+        }
+        else {
+            $data['client_code'] = 'CMS000001';
+        }
+
+        $name = $request->first_name . ' ' . $request->last_name;
+
+        DB::table('users')
+            ->insert([
+                'client_code' => $data['client_code'],
+                'name' => $name,
+                'mobile' => $request->mobile,
+                'email' => $request->email,
+                'password' => bcrypt('Gener!c123'),
+                'user_role' => 'client',
+            ]);
+
+        $user = User::where('client_code', $data['client_code'])->first();
+
+        foreach ($request->programs as $key => $program) {
+            ClientProgram::create([
+                'client_id' => $user->id,
+                'program_id' => $program,
+            ]);
+        }
 
         return redirect()->route('thanks');
     }

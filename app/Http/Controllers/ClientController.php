@@ -8,6 +8,7 @@ use App\ClientTask;
 use App\ClientProgram;
 use App\Program;
 use App\TaskType;
+use App\CounsellorClient;
 use DB;
 
 class ClientController extends Controller
@@ -20,7 +21,7 @@ class ClientController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin,accountant,rm')->only('index');
+        $this->middleware('role:admin,accountant,rm,operation')->only('index');
     }
     
     public function index()
@@ -301,6 +302,20 @@ class ClientController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function getClientCounsellor(Request $request)
+    {
+        // $data = CounsellorClient::where([
+        //     'client_id' => $request->client_id
+        // ])->get();
+
+        $data = DB::table('counsellor_clients')
+            ->join('users', 'counsellor_clients.counsellor_id', '=', 'users.id')
+            ->where('client_id', '=', $request->client_id)
+            ->get();
+
+        return response()->json($data);
     }
 
 }
