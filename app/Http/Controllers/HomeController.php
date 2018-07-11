@@ -35,10 +35,10 @@ class HomeController extends Controller
     public function index()
     {
         $data['active_class'] = 'dashboard';
-        $data['number_of_clients'] = User::where('user_role', 'client')->count();
-        $data['number_of_rms'] = User::where('user_role', 'rm')->count();
-        $data['number_of_accountants'] = User::where('user_role', 'accountant')->count();
-        $data['number_of_programs'] = Program::all()->count();
+        $data['number_of_clients'] = User::userRole('client')->count();
+        $data['number_of_rms'] = User::userRole('rm')->count();
+        $data['number_of_accountants'] = User::userRole('accountant')->count();
+        $data['number_of_counsellor'] = User::userRole('counsellor')->count();
 
         return view('dashboard', $data);
     }

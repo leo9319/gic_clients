@@ -27,4 +27,9 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public static function userRole($role) 
+    {
+        return static::where('user_role', $role)->get();
+    }
+
 }

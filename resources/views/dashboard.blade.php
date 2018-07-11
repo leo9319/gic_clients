@@ -43,8 +43,8 @@
                <div class="metric">
                   <span class="icon"><i class="fa fa-bar-chart"></i></span>
                   <p>
-                     <span class="number">{{ $number_of_programs }}</span>
-                     <span class="title">Programs</span>
+                     <span class="number">{{ $number_of_counsellor }}</span>
+                     <span class="title">Counsellors</span>
                   </p>
                </div>
             </div>

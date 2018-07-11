@@ -37,6 +37,7 @@ Route::get('group/{program_id}', 'TaskController@taskGroup')->name('task.group')
 Route::post('group/{client_id}/{program_id}', 'TaskController@taskGroupStore')->name('task.group.store');
 Route::post('group-table/{program_id}', 'TaskController@taskTableGroupStore')->name('task.table.group.store');
 Route::post('individual-tasks/{client_id}/{program_id}', 'TaskController@storeIndividualTasks')->name('task.add.individual');
+Route::get('approval/{client_task_id}/{approval}', 'TaskController@approval')->name('task.approval');
 
 Route::resource('client', 'ClientController')->middleware('role:admin,rm,accountant,operation');
 Route::get('mytasks/{program_id}/{client_id}', 'ClientController@mytasks')->name('client.mytasks');
@@ -45,6 +46,8 @@ Route::get('profile/{client_id}', 'ClientController@profile')->name('client.prof
 Route::get('view-tasks/{client_id}/{program_id}', 'ClientController@clientTasks')->name('client.tasks.all');
 Route::get('programs/{client_id}', 'ClientController@programs')->name('client.programs');
 Route::post('complete-group/{client_id}/{program_id}', 'ClientController@completeGroupStore')->name('client.group.complete.store');
+Route::get('client/counsellor/{client_id}', 'ClientController@assignCounsellor')->name('client.counsellor');
+Route::post('client/counsellor/{client_id}', 'ClientController@assignCounsellorStore')->name('client.counsellor.store');
 
 Route::get('home', 'HomeController@home')->name('home');
 Route::get('dashboard', 'HomeController@index')->name('dashboard');
@@ -65,7 +68,11 @@ Route::get('invoice', function () {
 });
 
 Route::resource('rms', 'RmController');
+Route::resource('gcalendar', 'gCalendarController');
+Route::get('appointment/{client_id}', 'gCalendarController@setAppointment')->name('appointment.client');
+Route::get('oauth', ['as' => 'oauthCallback', 'uses' => 'gCalendarController@oauth']);
+// Route::get('getClientCounsellors', 'ClientController@getClientCounsellor');
+Route::get('email/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendEmail')->name('email');
+Route::get('sms/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendSMS')->name('sms');
 
-Route::get('getClientCounsellors', 'ClientController@getClientCounsellor');
-
-
+Route::get('appointment/client/{client_id}', 'AppointmentController@clientWithRm')->name('appointment.client.rm');

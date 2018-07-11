@@ -26,12 +26,13 @@
                   <th>Email</th>
                   <th>Action</th>
                   <th>Action</th>
+                  <th>Action</th>
                </tr>
             </thead>
             <tbody>
                @foreach($clients as $index => $client)
                <tr>
-                  <td>{{ $client->client_code }}</td>
+                  <td><a href="{{ route('client.profile', ['client_id'=> $client->id ]) }}">{{ $client->client_code }}</a></td>
                   <td>{{ $client->name }}</td>
                   <td>{{ $client->mobile }}</td>
                   <td>{{ $client->email }}</td>
@@ -41,7 +42,10 @@
                      </a>
                   </td>
                   <td>
-                     <button class="btn btn-success button4 view_data" id="{{ $client->id }}">Assign Counsellors</button>
+                     <a href="{{ route('client.counsellor', $client->id) }}" class="btn btn-danger button4 view_data" id="{{ $client->id }}">Assign Counsellors</a>
+                  </td>
+                  <td>
+                     <a href="{{ route('appointment.client', $client->id) }}" class="btn btn-outline-warning button4">Set Appointment</a>
                   </td>
                </tr>
                @endforeach
@@ -57,53 +61,94 @@
                      <h4 class="modal-title">Assign Counsellors</h4>
                   </div>
                   <div class="modal-body">
-                     {!! Form::open() !!}
+                     {!! Form::open(['route' => ['client.counsellor', $client->id]]) !!}
                      	<div class="form-group">
                      		{!! Form::label('counsellor', 'Counsellor:') !!}
                      	</div>
-                     {!! Form::close() !!}
-                     <p id="client_name"></p>
                      <ul id="list"></ul>
+                  </div>
+                  <div class="modal-body">
+                    <div class="form-group">
+                      <label for="rm" class="control-label">Counsellors:</label>
+
+                      <div class="row">
+                        <div class="col-xs-7">
+                          <select id="counsellor_one" class="form-control" name="counsellor_one" required> 
+                            @foreach($counsellors as $counsellor)
+                              <option value="{{ $counsellor->id }}">{{ $counsellor->name }}</option>
+                            @endforeach
+                        </select>
+                        </div>
+
+                        <div class="col-xs-2">
+                            <button type="button" class="btn btn-sm btn-success button4">+ Add More</button>
+                        </div>
+
+                        <div id="counsellor-container">
+                          {{ Form::text('test') }}
+                        </div>
+                      </div> 
+
+                      <input type="submit" name="" class="btn btn-info btn-block button4" style="margin-top: 20px">
+                      
+                       
+                    </div>
+
                   </div>
                   <div class="modal-footer">
                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                   </div>
+
                </div>
             </div>
          </div>
-
       </div>
    </div>
 </div>
+{!! Form::close() !!} 
 @endsection
 
 @section('footer_scripts')
 <script>
- $(document).ready(function(){  
-      $('.view_data').click(function(){  
-      	   var list = '';
-           var client_id = $(this).attr("id");  
-           var ul = document.getElementById("list");
+ // $(document).ready(function(){  
+      // $('.view_data').click(function(){  
+      	   // var list = '';
+          //  var client_id = $(this).attr("id");  
+          //  var ul = document.getElementById("list");
 
-           $.ajax({  
-           		type: 'get',
-           		url: '{!!URL::to('getClientCounsellors')!!}',
-                data: {'client_id': client_id},  
-                success:function(data) {  
-                    if(data.length > 0) {
-                    	for (var i = 0; i < data.length; i++) {
-                    		list += '<li>' + data[i].name + '</li>';
-                    	}
+           // $.ajax({  
+           // 		type: 'get',
+           // 		url: '{!!URL::to('getClientCounsellors')!!}',
+           //      data: {'client_id': client_id},  
+           //      success:function(data) {  
+           //          if(data.length > 0) {
+           //          	for (var i = 0; i < data.length; i++) {
+           //          		list += '<li>' + data[i].name + '</li>';
+           //          	}
 
-                    	ul.innerHTML = list;
-                    }
+           //          } else {
+           //            list += '<li>No Counsellors Assigned!</li>';
+           //          }
 
-                    $('#client-counsellors').modal("show");
-                }  
-           });     
-           ul.innerHTML = '';
-        });  
-     });  
+           //          ul.innerHTML = list;
+           //          $('#client-counsellors').modal("show");
+           //      }  
+           // });     
+         // ul.innerHTML = '';
+      // });  
+  // });  
+
+ // function addCounsellors() {
+ //    var html = '<div class="form-group"><div class="col-xs-7"> {!! Form::text("product_type", "asdf", ["class"=>"form-control"]) !!}<select id="counsellor" class="form-control" name="counsellor[]"> @foreach($counsellors as $counsellor) <option value="{{ $counsellor->id }}">{{ $counsellor->name }}</option> @endforeach </select></div> <div class="col-xs-2"> <button type="button" onclick="addCounsellors()" class="btn btn-sm btn-success button4">+ Add More</button> </div> <div class="col-xs-2"> <button type="button" id="removeCounsellor" class="btn btn-sm btn-danger button4" style="margin-left: 10px">Remove</button> </div> </div>';
+
+ //    $('#counsellor-container').append(html);
+
+ //    $('#counsellor-container').on('click', '#removeCounsellor', function(e){
+ //        $(this).parent('div').parent('div').remove();
+ //        removeIndex.push(Number(this.name));
+ //    });
+ // }
+
 </script>
 
 @endsection

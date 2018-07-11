@@ -28,6 +28,7 @@ class ClientController extends Controller
     {
         $data['active_class'] = 'clients';
         $data['clients'] = User::where('user_role', 'client')->get();
+        $data['counsellors'] = User::where('user_role', 'counsellor')->get();
 
         return view('clients.index', $data);
     }
@@ -306,10 +307,6 @@ class ClientController extends Controller
 
     public function getClientCounsellor(Request $request)
     {
-        // $data = CounsellorClient::where([
-        //     'client_id' => $request->client_id
-        // ])->get();
-
         $data = DB::table('counsellor_clients')
             ->join('users', 'counsellor_clients.counsellor_id', '=', 'users.id')
             ->where('client_id', '=', $request->client_id)
@@ -318,4 +315,32 @@ class ClientController extends Controller
         return response()->json($data);
     }
 
+    public function assignCounsellor($client_id)
+    {
+        $data['active_class'] = 'clients';
+        $data['assigned_councellors'] = CounsellorClient::where('client_id', $client_id)->get();
+        $data['client'] = User::find($client_id);
+        $data['counsellors'] = User::where('user_role', 'counsellor')->get();
+ 
+        return view('clients.assign_councellors', $data);
+    }
+
+    public function assignCounsellorStore(Request $request, $client_id)
+    {
+        CounsellorClient::updateOrCreate(
+            ['client_id' => $client_id, 'counsellor_id' => $request->counsellor_one],
+            ['client_id' => $client_id, 'counsellor_id' => $request->counsellor_one]
+        );
+
+        if ($request->counsellor) {
+            foreach ($request->counsellor as $key => $value) {
+                CounsellorClient::updateOrCreate(
+                    ['client_id' => $client_id, 'counsellor_id' => $value],
+                    ['client_id' => $client_id, 'counsellor_id' => $value]
+                );
+            }
+        }
+
+        return redirect()->back();
+    }
 }

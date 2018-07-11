@@ -11,6 +11,7 @@ use App\Program;
 use App\TaskType;
 use DB;
 use Storage;
+use Mail;
 
 class TaskController extends Controller
 {
@@ -353,6 +354,58 @@ class TaskController extends Controller
             'assignee_id' => $request->rm_id,
             'assigned_date' => $request->deadline,
         ]);
+
+        return redirect()->back();
+    }
+
+    public function approval($client_task_id, $approval)
+    {
+        ClientTask::where('id', $client_task_id)->update(['approval' => $approval]);
+
+        $client_task = ClientTask::where('id', $client_task_id)->first();
+        $client = User::find($client_task->client_id);
+        $assignee = User::find($client_task->assignee_id);
+        $task = Task::find($client_task->task_id);
+
+        ($approval == 1) ? $status = 'approved' : $status = 'dissapproved';
+
+        $data = [
+            'client' => $client,
+            'status' => $status,
+            'assignee' => $assignee,
+            'task' => $task,
+            // 'email' => $client->email,
+            'email' => 'leo_9319@yahoo.com',
+            'subject' => 'GIC Task Notification'
+        ];
+
+        Mail::send('mail.approval', $data, function($message) use ($data) {
+            $message->from('s.simab@gmail.com', 'GIC Task Notification');
+            $message->to($data['email']);
+            $message->subject($data['subject']);
+        });
+
+        $phone = $client->mobile;
+        $username = 'admin';
+        $password = 'Generic!1234';
+        $message ="Dear $client->name,\nThe task: $task->task_name has been $status by $assignee->name.For more information give is a call at 01778-000400.\nThank you.";
+
+        $message = urlencode($message);
+
+        $url = "http://gicl.powersms.net.bd/httpapi/sendsms?userId=form_sms&password=gicsms123&smsText=$message&commaSeperatedReceiverNumbers=$phone";
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true );
+        curl_setopt($ch, CURLOPT_ENCODING, "gzip,deflate");     
+        $response = curl_exec($ch);
+        curl_close($ch);
+        echo $phone . ': ';
+        $response = str_replace('Success Count : 1 and Fail Count : 0', 'Sent Successfully!', $response);
+        $response = str_replace('Success Count : 0 and Fail Count : 1', 'Failed!', $response);
+        echo $response . '<br>';
 
         return redirect()->back();
     }
