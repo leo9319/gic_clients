@@ -75,4 +75,5 @@ Route::get('oauth', ['as' => 'oauthCallback', 'uses' => 'gCalendarController@oau
 Route::get('email/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendEmail')->name('email');
 Route::get('sms/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendSMS')->name('sms');
 
-Route::get('appointment/client/{client_id}', 'AppointmentController@clientWithRm')->name('appointment.client.rm');
+Route::get('appointment/client/rm/{client_id}', 'AppointmentController@clientWithRm')->name('appointment.client.rm');
+Route::get('appointment/client/counsellor/{client_id}', 'AppointmentController@clientWithCounsellor')->name('appointment.client.counsellor');

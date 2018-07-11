@@ -43,7 +43,7 @@
                <div id="setAppointment" class="collapse ">
                   <ul class="nav">
                      <li><a href="{{ route('appointment.client.rm', ['client_id'=>Auth::user()->id]) }}" class="">With RMs</a></li>
-                     <li><a href="{{ route('task.create') }}" class="">With Counsellors</a></li>
+                     <li><a href="{{ route('appointment.client.counsellor', ['client_id'=>Auth::user()->id]) }}" class="">With Counsellors</a></li>
                   </ul>
                </div>
             </li>

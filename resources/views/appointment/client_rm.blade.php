@@ -31,10 +31,22 @@
 
 		      <div class="col-md-6">
 		         <div class="field-spacing">
-		         	{!! Form::label('rm', 'Select RM: ') !!}
+		         	{!! Form::label('Select your email', 'Your Email Address: ') !!}
 		            <div class="input-group">
 		               <span class="input-group-addon"><i class="fa fa-user"></i></span>
-		               {!! Form::select('rm', $rms->pluck('name', 'id'), null, ['class'=>'form-control']) !!}
+		               {!! Form::text('client_email', Auth::user()->email, ['class'=>'form-control', 'placeholder'=>'Description', /*'required'*/]) !!}
+		            </div>
+		         </div>
+		      </div>
+
+
+
+		      <div class="col-md-6">
+		         <div class="field-spacing">
+		         	{!! Form::label('appointee', 'Select RM: ') !!}
+		            <div class="input-group">
+		               <span class="input-group-addon"><i class="fa fa-user"></i></span>
+		               {!! Form::select('appointee', $rms->pluck('name', 'id'), null, ['class'=>'form-control']) !!}
 		            </div>
 		         </div>
 		      </div>

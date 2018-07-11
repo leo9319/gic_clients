@@ -92,6 +92,7 @@ class gCalendarController extends Controller
      */
     public function store(Request $request)
     {
+        // echo $request->appointee;
         session_start();
         $appointee_id = $request->appointee;
         $appointee = User::find($appointee_id);
