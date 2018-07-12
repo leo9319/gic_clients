@@ -43,7 +43,18 @@ class HomeController extends Controller
         $data['number_of_counsellor'] = User::userRole('counsellor')->count();
 
         if (Auth::user()->user_role == 'client') {
-            $data['tasks'] = ClientTask::where('client_id', Auth::user()->id)->get(); 
+            $tasks = $data['tasks'] = ClientTask::where('client_id', Auth::user()->id)->get(); 
+            $programs = $data['programs'] = ClientProgram::where('client_id', Auth::user()->id)->get(); 
+            $completion_array = [];
+
+            foreach ($programs as $key => $program) {
+                foreach ($program->programInfo as $pi) {
+                    $completion_array[$pi->program_name] = $this->programProgress(Auth::user()->id, $pi->id);
+                }
+            }
+
+            $data['program_progresses'] = $completion_array;
+
             return view('dashboard.client', $data);
         }
         else {
@@ -212,5 +223,17 @@ class HomeController extends Controller
         ]);
 
         return redirect()->back();
+    }
+
+    public function programProgress($client_id, $program_id)
+    {
+        $tasks = ClientTask::where([
+            'client_id' => $client_id,
+            'program_id' => $program_id,
+        ])->get();
+
+        $ratio = ($tasks->where('status', 'complete')->count() / $tasks->count()) * 100;
+
+        return $ratio;
     }
 }
