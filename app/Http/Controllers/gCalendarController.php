@@ -286,7 +286,9 @@ class gCalendarController extends Controller
     {
         $data['active_class'] = 'clients';
         $data['user'] = User::find($client_id);
-        $data['rms'] = User::where('user_role', 'rm')->get();
+        $data['rms_counsellors'] = User::whereIn(
+            'user_role', ['rm', 'counsellor']
+        )->get();
 
         return view('appointment.set', $data);
     }

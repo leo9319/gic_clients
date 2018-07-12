@@ -12,4 +12,9 @@ class Task extends Model
     {
     	return $this->hasMany('App\TaskType', 'id', 'type_id');
     }
+
+    public function programs()
+    {
+    	return $this->hasMany('App\Program', 'id', 'program_id');
+    }
 }

@@ -12,6 +12,8 @@ use App\Task;
 use App\ClientTask;
 use DB;
 use Exception;
+use Mail;
+use Auth;
 
 class HomeController extends Controller
 {
@@ -40,7 +42,15 @@ class HomeController extends Controller
         $data['number_of_accountants'] = User::userRole('accountant')->count();
         $data['number_of_counsellor'] = User::userRole('counsellor')->count();
 
-        return view('dashboard', $data);
+        if (Auth::user()->user_role == 'client') {
+            $data['tasks'] = ClientTask::where('client_id', Auth::user()->id)->get(); 
+            return view('dashboard.client', $data);
+        }
+        else {
+            return view('dashboard.admin', $data);
+        }
+
+        
     }
 
     public function home()
@@ -149,11 +159,47 @@ class HomeController extends Controller
                             'task_id' => $program_task->id,
                         ]);
                     }
-
                 }
             }
 
-            return redirect()->back()->with('message', 'Client Created!');
+
+        $url = 'https://ticklepicklebd.com/leos/gicclients';
+
+        $data = [
+            'client_name' => $request->name,
+            'url' => $url,
+            'email' => $request->email,
+            'password' => $request->password,
+            'subject' => 'GIC File Opened'
+        ];
+
+        Mail::send('mail.file_open', $data, function($message) use ($data) {
+            $message->from('s.simab@gmail.com', 'GIC File Opened');
+            $message->to($data['email']);
+            $message->subject($data['subject']);
+        });
+
+        $phone = $request->mobile;
+        $username = 'admin';
+        $password = 'Generic!1234';
+        $message ="Dear $request->name,\nYour file has been opened with GIC. Visit link $url Your password is $request->password.\nThank you.";
+
+        $message = urlencode($message);
+
+        $url = "http://gicl.powersms.net.bd/httpapi/sendsms?userId=form_sms&password=gicsms123&smsText=$message&commaSeperatedReceiverNumbers=$phone";
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true );
+        curl_setopt($ch, CURLOPT_ENCODING, "gzip,deflate");     
+        $response = curl_exec($ch);
+        curl_close($ch);
+        $response = str_replace('Success Count : 1 and Fail Count : 0', 'Sent Successfully!', $response);
+        $response = str_replace('Success Count : 0 and Fail Count : 1', 'Failed!', $response);
+
+        return redirect()->back()->with('message', 'Client Created!');
     }
 
     public function customStaffRegister(Request $request)

@@ -54,10 +54,10 @@
 
 		      <div class="col-md-6">
 		         <div class="field-spacing">
-		         	{!! Form::label('appointee', 'Select RM: ') !!}
+		         	{!! Form::label('appointee', 'Select RM / Counsellor: ') !!}
 		            <div class="input-group">
 		               <span class="input-group-addon"><i class="fa fa-user"></i></span>
-		               {!! Form::select('appointee', $rms->pluck('name', 'id'), null, ['class'=>'form-control']) !!}
+		               {!! Form::select('appointee', $rms_counsellors->pluck('name', 'id'), null, ['class'=>'form-control']) !!}
 		            </div>
 		         </div>
 		      </div>

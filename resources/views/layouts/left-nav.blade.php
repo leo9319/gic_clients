@@ -2,9 +2,7 @@
    <div class="sidebar-scroll">
       <nav>
          <ul class="nav">
-            @if(Auth::user()->user_role != 'client')
             <li><a href="{{ route('dashboard') }}" class="{{ $active_class == 'dashboard' ? 'active' : '' }}"><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>
-            @endif
             <!-- <li><a href="elements.html" class=""><i class="lnr lnr-code"></i> <span>Elements</span></a></li> -->
             <!-- <li><a href="charts.html" class=""><i class="lnr lnr-chart-bars"></i> <span>Charts</span></a></li> -->
             <!-- <li><a href="panels.html" class=""><i class="lnr lnr-cog"></i> <span>Panels</span></a></li> -->
@@ -22,7 +20,7 @@
             </li>
             @endif
 
-            @if (Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'admin')
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'counsellor')
             <li>
                <a href="#subTask" data-toggle="collapse" class="collapsed {{ $active_class == 'tasks' ? 'active' : '' }}"><i class="fa fa-tasks"></i> <span>Tasks</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
                <div id="subTask" class="collapse ">

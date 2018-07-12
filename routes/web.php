@@ -27,9 +27,9 @@ Route::get('thank-you', function () {
 Route::resource('file', 'FileController');
 Route::get('myfile', 'FileController@myFile')->name('file.myfile');
 
-Route::resource('task', 'TaskController')->middleware('role:admin,rm');
+Route::resource('task', 'TaskController')->middleware('role:admin,rm,counsellor');
 
-Route::get('assign-task/{program_id}/{client}', 'TaskController@assignClient')->name('assign.task')->middleware('role:admin,rm,accountant');
+Route::get('assign-task/{program_id}/{client}', 'TaskController@assignClient')->name('assign.task')->middleware('role:admin,rm,accountant,counsellor');
 Route::get('assign-group-task/{program_id}/{client}', 'TaskController@assignGroupClient')->name('assign.group.task')->middleware('role:admin,rm,accountant');
 Route::post('assign-task/{program_id}/{client_id}', 'TaskController@storeClientTasks')->name('store.client.task')->middleware('role:admin,rm,accountant');
 Route::post('upload/{program_id}/{client_id}', 'TaskController@storeFiles')->name('upload.files');
@@ -39,7 +39,7 @@ Route::post('group-table/{program_id}', 'TaskController@taskTableGroupStore')->n
 Route::post('individual-tasks/{client_id}/{program_id}', 'TaskController@storeIndividualTasks')->name('task.add.individual');
 Route::get('approval/{client_task_id}/{approval}', 'TaskController@approval')->name('task.approval');
 
-Route::resource('client', 'ClientController')->middleware('role:admin,rm,accountant,operation');
+Route::resource('client', 'ClientController')->middleware('role:admin,rm,accountant,operation,counsellor');
 Route::get('mytasks/{program_id}/{client_id}', 'ClientController@mytasks')->name('client.mytasks');
 Route::get('myprograms/{client_id}', 'ClientController@myPrograms')->name('client.myprograms');
 Route::get('profile/{client_id}', 'ClientController@profile')->name('client.profile');

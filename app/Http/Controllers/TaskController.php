@@ -23,7 +23,7 @@ class TaskController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin,rm,accountant')->only('create', 'store', 'assignClient', 'storeClientTasks');
+        $this->middleware('role:admin,rm,accountant,counsellor')->only('index', 'create', 'store', 'assignClient', 'storeClientTasks');
     }
 
     public function index()

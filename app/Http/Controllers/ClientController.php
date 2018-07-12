@@ -21,7 +21,7 @@ class ClientController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin,accountant,rm,operation')->only('index');
+        $this->middleware('role:admin,accountant,rm,operation,counsellor')->only('index');
     }
     
     public function index()
