@@ -10,6 +10,7 @@ use App\Program;
 use App\ClientProgram;
 use App\Task;
 use App\ClientTask;
+use App\Appointment;
 use DB;
 use Exception;
 use Mail;
@@ -36,6 +37,8 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $client_id = Auth::user()->id; 
+
         $data['active_class'] = 'dashboard';
         $data['number_of_clients'] = User::userRole('client')->count();
         $data['number_of_rms'] = User::userRole('rm')->count();
@@ -43,15 +46,17 @@ class HomeController extends Controller
         $data['number_of_counsellor'] = User::userRole('counsellor')->count();
 
         if (Auth::user()->user_role == 'client') {
-            $tasks = $data['tasks'] = ClientTask::where('client_id', Auth::user()->id)->get(); 
-            $programs = $data['programs'] = ClientProgram::where('client_id', Auth::user()->id)->get(); 
+            $tasks = $data['tasks'] = ClientTask::where('client_id', $client_id)->get(); 
+            $programs = $data['programs'] = ClientProgram::where('client_id', $client_id)->get(); 
             $completion_array = [];
 
             foreach ($programs as $key => $program) {
                 foreach ($program->programInfo as $pi) {
-                    $completion_array[$pi->program_name] = $this->programProgress(Auth::user()->id, $pi->id);
+                    $completion_array[$pi->program_name] = $this->programProgress($client_id, $pi->id);
                 }
             }
+
+            $data['appointments'] = Appointment::where('client_id', $client_id)->get();
 
             $data['program_progresses'] = $completion_array;
 
