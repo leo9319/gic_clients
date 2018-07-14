@@ -102,16 +102,16 @@ class ClientController extends Controller
     public function mytasks($program_id, $client_id)
     {
         $data['active_class'] = 'my-tasks';
-        $data['program_id'] = $program_id;
+        // $data['program_id'] = $program_id;
 
-        $data['client_tasks'] = ClientTask::where([
-            'client_id' => $client_id,
-            'program_id' => $program_id
-        ])->get();
+        // $data['client_tasks'] = ClientTask::where([
+        //     'client_id' => $client_id,
+        //     'program_id' => $program_id
+        // ])->get();
 
-        $data['group_tasks'] = DB::table('group_tasks')->where([
-            'program_id' => $program_id 
-        ])->get();
+        // $data['group_tasks'] = DB::table('group_tasks')->where([
+        //     'program_id' => $program_id 
+        // ])->get();
 
         // $data['status'] = DB::table('client_group_tasks')->where([
         //     'client_id' => $client_id,
@@ -119,6 +119,23 @@ class ClientController extends Controller
         //     'program_group_id' => $program_id,
         // ])->first()->status;
 
+        // echo $data['tasks'] = ClientTask::where('client_id', $client_id)->get();
+
+        // SELECT CT.client_id, CT.program_id, T.task_name, TP.type
+        // FROM `client_tasks` AS CT 
+        // JOIN tasks AS T 
+        // on T.id = CT.task_id
+        // JOIN task_types AS TP
+        // on T.type_id = TP.id
+
+        $data['tasks'] = DB::table('client_tasks AS CT')
+                ->select('T.task_name', 'TP.type', 'CT.id', 'CT.assigned_date', 'CT.client_id', 'CT.program_id', 'CT.status', 'CT.approval', 'CT.assignee_id', 'CT.updated_at', 'U.name')
+                ->join('tasks AS T', 'T.id', 'CT.task_id')
+                ->join('task_types AS TP', 'T.type_id', 'TP.id')
+                ->join('users AS U', 'U.id', 'CT.assignee_id')
+                ->where('CT.client_id', $client_id)
+                ->where('CT.program_id', $program_id)
+                ->get();
 
         return view('clients.tasks', $data);
     }
@@ -274,8 +291,9 @@ class ClientController extends Controller
         $data['pending_tasks'] = ClientTask::where([
             'client_id' => $client_id,
             'program_id' => $program_id,
-            'status' => 'pending',
-        ])->get();
+        ])
+        ->where('status', '!=', 'complete')
+        ->get();
 
         $data['complete_tasks'] = ClientTask::where([
             'client_id' => $client_id,
@@ -295,7 +313,8 @@ class ClientController extends Controller
                     'client_id' => $client_id,
                     'program_id' => $program_id
             ])->update(['status'=>'complete']);
-        } else {
+        } 
+        else {
             DB::table('client_group_tasks')->where([
                     'client_id' => $client_id,
                     'program_id' => $program_id

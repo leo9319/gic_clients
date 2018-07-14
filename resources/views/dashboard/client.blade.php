@@ -105,13 +105,14 @@
                      @foreach($appointments as $appointment)
                         @foreach($appointment->appointer as $appointer_profile)
                         <li>
+                           @if( Carbon\Carbon::parse($appointment->app_date) > Carbon\Carbon::now())
                            <i class="fa fa-calendar"></i>
-                           <p>You have an appointment with {{ $appointer_profile->name }} on {{ Carbon\Carbon::parse($appointment->app_date)->format('d-M-Y') }} <span class="timestamp">{{Carbon\Carbon::parse($appointment->app_date)->diffInDays(Carbon\Carbon::now())}} day(s) to go</span></p>
+                           <p>You have an appointment with {{ $appointer_profile->name }} on {{ Carbon\Carbon::parse($appointment->app_date)->format('d-M-Y') }} <span class="timestamp">{{Carbon\Carbon::parse($appointment->app_date)->diffInDays(Carbon\Carbon::now(), false) }} day(s) to go</span></p>
+                           @endif
                         </li>
                         @endforeach
                      @endforeach
                   </ul>
-                  <button type="button" class="btn btn-primary btn-bottom center-block">Load More</button>
                </div>
             </div>
          </div>

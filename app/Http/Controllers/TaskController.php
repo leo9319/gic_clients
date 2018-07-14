@@ -176,21 +176,18 @@ class TaskController extends Controller
 
     public function storeFiles(Request $request, $program_id, $client_id)
     {
+        echo $request->task_id;
         if($request->status) {
             ClientTask::where([
-                    'client_id'=> $client_id,
-                    'program_id'=> $program_id,
-                    'task_id'=> $request->task_id
+                    'id'=> $request->task_id,
                 ])
-            ->update(['status'=>'complete']);
+            ->update(['status'=>'pending']);
 
             return redirect()->back();
         }
         else if($request->status == NULL) {
             ClientTask::where([
-                    'client_id'=> $client_id,
-                    'program_id'=> $program_id,
-                    'task_id'=> $request->task_id
+                    'id'=> $request->task_id,
                 ])
             ->update(['status'=>'incomplete']);
 
@@ -204,33 +201,24 @@ class TaskController extends Controller
             Storage::put('upload/images/' . $filename, file_get_contents($request->file('image')->getRealPath()));
 
             ClientTask::where([
-                    'client_id'=> $client_id,
-                    'program_id'=> $program_id,
-                    'task_id'=> $request->task_id
+                    'id'=> $request->task_id,
                 ])
             ->update([
-                'status'=>'complete',
+                'status'=>'pending',
                 'uploaded_file_name'=>$filename
             ]);
 
             return redirect()->back();
-
-            // echo 'adf';
-
         }
 
         else {
             ClientTask::where([
-                    'client_id'=> $client_id,
-                    'program_id'=> $program_id,
-                    'task_id'=> $request->task_id
+                    'id'=> $request->task_id,
                 ])
             ->update([
                 'status'=>'incomplete',
                 'uploaded_file_name'=> ''
             ]);
-
-            // return redirect()->back();
         }
 
         return redirect()->back();
@@ -360,7 +348,11 @@ class TaskController extends Controller
 
     public function approval($client_task_id, $approval)
     {
-        ClientTask::where('id', $client_task_id)->update(['approval' => $approval]);
+        ClientTask::where('id', $client_task_id)
+            ->update([
+                'approval' => $approval,
+                'status' => ($approval == 1) ? 'complete' : 'incomplete'
+            ]);
 
         $client_task = ClientTask::where('id', $client_task_id)->first();
         $client = User::find($client_task->client_id);
@@ -374,7 +366,6 @@ class TaskController extends Controller
             'status' => $status,
             'assignee' => $assignee,
             'task' => $task,
-            // 'email' => $client->email,
             'email' => 'leo_9319@yahoo.com',
             'subject' => 'GIC Task Notification'
         ];
