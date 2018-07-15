@@ -129,7 +129,7 @@
                   <ul class="list-unstyled task-list">
                      @foreach($program_progresses as $index => $program_progress)
                      <li>
-                        <p>{{ $index }} <span class="label-percent">{{ number_format($program_progress, 2) }}%</span></p>
+                        <p>{{ $index }} <span class="label-percent">{{ number_format($program_progress, 0) }}%</span></p>
                         <div class="progress progress-xs">
                            <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="23" aria-valuemin="0" aria-valuemax="100" style="width:{{ $program_progress }}%">
                            </div>

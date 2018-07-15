@@ -118,21 +118,19 @@
                            </tr>
                         </thead>
                         <tbody>
-                           @foreach($client_programs as $client_program)
-                              @foreach($client_program->programInfo as $program)
+                           @foreach($program_progresses as $program_name => $program_progress)
                               <tr>
-                                 <td><a href="#">{{ $program->program_name }}</a></td>
+                                 <td><a href="#">{{ $program_name }}</a></td>
                                  <td>
                                     <div class="progress">
-                                       <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-                                          <span>60% Complete</span>
+                                       <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{$program_progress}}%;">
+                                          <span>{{ number_format($program_progress, 0) }}% Complete</span>
                                        </div>
                                     </div>
                                  </td>
                                  <td><span class="label label-success">ACTIVE</span></td>
                               </tr>
                               @endforeach
-                           @endforeach
                         </tbody>
                      </table>
                   </div>

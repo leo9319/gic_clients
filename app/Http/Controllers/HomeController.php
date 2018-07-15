@@ -62,6 +62,7 @@ class HomeController extends Controller
 
             return view('dashboard.client', $data);
         }
+        
         else {
             return view('dashboard.admin', $data);
         }

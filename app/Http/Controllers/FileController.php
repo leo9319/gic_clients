@@ -26,7 +26,7 @@ class FileController extends Controller
      */
     public function index()
     {
-        // $users = User::all();
+        $client_id = Auth::user()->id;
         $data['active_class'] = 'file';
 
         $data['completed_tasks'] = ClientTask::where([
@@ -34,7 +34,16 @@ class FileController extends Controller
                                     'status' => 'complete'
                                 ])->get();
 
-        $data['client_programs'] = ClientProgram::where('client_id', Auth::user()->id)->get();
+        $programs = $data['client_programs'] = ClientProgram::where('client_id', $client_id)->get();
+        $completion_array = [];
+
+        foreach ($programs as $key => $program) {
+            foreach ($program->programInfo as $pi) {
+                $completion_array[$pi->program_name] = $this->programProgress($client_id, $pi->id);
+            }
+        }
+
+        $data['program_progresses'] = $completion_array;
 
         return view('file.index', $data);
     }
@@ -271,7 +280,12 @@ class FileController extends Controller
         $data['file'] = File::where('user_id', Auth::user()->id)->first();
         $data['file_additional'] = AddtionalInfo::where('user_id', Auth::user()->id)->first();
 
-        return view('file.my_file', $data);
+        if (!$data['file_additional']) {
+            abort(500);
+        }
+        else {
+             return view('file.my_file', $data);
+        }
     }
 
     public function stringToIntegerArray($array)
@@ -318,5 +332,17 @@ class FileController extends Controller
     public function storeTest(Request $request)
     {
         echo count($request->job_start);
+    }
+
+    public function programProgress($client_id, $program_id)
+    {
+        $tasks = ClientTask::where([
+            'client_id' => $client_id,
+            'program_id' => $program_id,
+        ])->get();
+
+        $percentage = ($tasks->where('status', 'complete')->count() / $tasks->count()) * 100;
+
+        return $percentage;
     }
 }
