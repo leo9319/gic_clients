@@ -10,6 +10,30 @@
    </div>
    <div class="panel-body">
       <div class="row">
+         <div class="col-md-12">
+            <div class="panel">
+               <div class="panel-heading">
+                  <h3 class="panel-title">My Progress</h3>
+                  <div class="right">
+                     <button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
+                     <button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
+                  </div>
+               </div>
+               <div class="panel-body">
+                  <ul class="list-unstyled task-list">
+                     @foreach($program_progresses as $index => $program_progress)
+                     <li>
+                        <p>{{ $index }} <span class="label-percent">{{ number_format($program_progress, 0) }}%</span></p>
+                        <div class="progress progress-xs">
+                           <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="23" aria-valuemin="0" aria-valuemax="100" style="width:{{ $program_progress }}%">
+                           </div>
+                        </div>
+                     </li>
+                     @endforeach
+                  </ul>
+               </div>
+            </div>
+         </div>
          <div class="col-md-8">
             <div class="panel">
                <div class="panel-heading">
@@ -94,7 +118,7 @@
          <div class="col-md-7">
             <div class="panel panel-scrolling">
                <div class="panel-heading">
-                  <h3 class="panel-title">My appointments</h3>
+                  <h3 class="panel-title">My Upcoming Appointments</h3>
                   <div class="right">
                      <button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
                      <button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
@@ -102,39 +126,19 @@
                </div>
                <div class="panel-body">
                   <ul class="list-unstyled activity-list">
-                     @foreach($appointments as $appointment)
-                        @foreach($appointment->appointer as $appointer_profile)
-                        <li>
-                           <i class="fa fa-calendar"></i>
-                           <p>You have an appointment with {{ $appointer_profile->name }} on {{ Carbon\Carbon::parse($appointment->app_date)->format('d-M-Y') }} <span class="timestamp">{{Carbon\Carbon::parse($appointment->app_date)->diffInDays(Carbon\Carbon::now())}} day(s) to go</span></p>
-                        </li>
-                        @endforeach
-                     @endforeach
-                  </ul>
-                  <button type="button" class="btn btn-primary btn-bottom center-block">Load More</button>
-               </div>
-            </div>
-         </div>
-         <div class="col-md-5">
-            <div class="panel">
-               <div class="panel-heading">
-                  <h3 class="panel-title">My Progress</h3>
-                  <div class="right">
-                     <button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
-                     <button type="button" class="btn-remove"><i class="lnr lnr-cross"></i></button>
-                  </div>
-               </div>
-               <div class="panel-body">
-                  <ul class="list-unstyled task-list">
-                     @foreach($program_progresses as $index => $program_progress)
+                     @forelse($appointments as $appointment)
+                     @forelse($appointment->appointer as $appointer_profile)
                      <li>
-                        <p>{{ $index }} <span class="label-percent">{{ number_format($program_progress, 2) }}%</span></p>
-                        <div class="progress progress-xs">
-                           <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="23" aria-valuemin="0" aria-valuemax="100" style="width:{{ $program_progress }}%">
-                           </div>
-                        </div>
+                        <i class="fa fa-calendar"></i>
+                        <p>You have an appointment with {{ $appointer_profile->name }} on {{ Carbon\Carbon::parse($appointment->app_date)->format('d-M-Y') }} at {{ Carbon\Carbon::parse($appointment->app_time)->format('h:i a') }}<span class="timestamp">{{Carbon\Carbon::parse($appointment->app_date)->diffInDays(Carbon\Carbon::now(), false) }} day(s) to go</span></p>
                      </li>
-                     @endforeach
+                     @empty
+                     @endforelse
+                     @empty
+                     <li>
+                        <p>You dont have any upcoming appointments!</p>
+                     </li>
+                     @endforelse
                   </ul>
                </div>
             </div>

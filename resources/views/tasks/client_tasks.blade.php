@@ -25,8 +25,8 @@
 			<div class="custom-tabs-line tabs-line-bottom left-aligned">
                <ul class="nav" role="tablist">
                	<li class=""><a href="#group-bottom-left1" role="tab" data-toggle="tab">All Tasks</a></li>
-                  <li class="active"><a href="#group-bottom-left2" role="tab" data-toggle="tab">Completed Tasks</a></li>
-                  <li><a href="#group-bottom-left3" role="tab" data-toggle="tab">Pending Tasks <span class="badge"></span></a></li>
+                  <li><a href="#group-bottom-left2" role="tab" data-toggle="tab">Completed Tasks</a></li>
+                  <li class="active"><a href="#group-bottom-left3" role="tab" data-toggle="tab">Pending Tasks <span class="badge"></span></a></li>
                </ul>
             </div>
 
@@ -76,38 +76,38 @@
           		  <hr>
                </div>
 
-               <div class="tab-pane fade in active" id="group-bottom-left2">
+               <div class="tab-pane fade in" id="group-bottom-left2">
                   <ul class="list-unstyled activity-timeline">
                   		@foreach($complete_tasks as $complete_task)
                				@foreach($complete_task->tasks as $c_task)
 		                      <li> 
 		                         <i class="fa fa-check activity-icon"></i>
 		                         <p>{{ $c_task->task_name }}</p>
-		                         <span class="pull-right">
-		                         	@if($complete_task->approval == 1)
-		                         	<strong class="text-success">Approved</strong>
-		                         	@elseif($complete_task->approval == 0)
-		                         	<strong class="text-danger">Dissapproved</strong>
-		                         	@endif
-
-		                         	@if($complete_task->approval == -1)
-		                         	<a href="{{ route('task.approval', [$complete_task, 1]) }}" onclick='check()' class="btn btn-success btn-sm">Approve</a>
-     		                        <a href="{{ route('task.approval', [$complete_task, 0]) }}" class="btn btn-danger btn-sm">Disapprove</a>
-     		                        @endif
-     		                    </span>
 		                      </li>
 	                    	@endforeach
 	                    @endforeach
                   </ul>
                </div>
 
-               <div class="tab-pane fade in" id="group-bottom-left3">
+               <div class="tab-pane fade in active" id="group-bottom-left3">
                		<ul class="list-unstyled activity-timeline">
                			@foreach($pending_tasks as $pending_task)
                				@foreach($pending_task->tasks as $p_task)
 		                      <li>
 		                         <i class="fa fa-times activity-icon"></i>
-		                         <p><a href="#"></a><span class="timestamp">{{ $p_task->task_name }}</span></p>
+		                         <p>{{ $p_task->task_name }}</p>
+		                         <span class="pull-right">
+		                         	@if($pending_task->approval == 1)
+		                         	<strong class="text-success">Approved</strong>
+		                         	@elseif($pending_task->approval == 0)
+		                         	<strong class="text-danger">Dissapproved</strong>
+		                         	@endif
+
+		                         	@if($pending_task->approval == -1)
+		                         	<a href="{{ route('task.approval', [$pending_task, 1]) }}" onclick='check()' class="btn btn-success btn-sm">Approve</a>
+     		                        <a href="{{ route('task.approval', [$pending_task, 0]) }}" class="btn btn-danger btn-sm">Disapprove</a>
+     		                        @endif
+     		                    </span>
 		                      </li>
 		                    @endforeach
 	                    @endforeach
