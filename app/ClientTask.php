@@ -21,4 +21,7 @@ class ClientTask extends Model
     {
     	return $this->hasMany('App\Task', 'id', 'task_id');
     }
+    public function taskName(){
+        return $this->hasOne('App\Task','id','task_id');
+    }
 }
