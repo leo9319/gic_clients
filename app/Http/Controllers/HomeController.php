@@ -15,6 +15,7 @@ use DB;
 use Exception;
 use Mail;
 use Auth;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
@@ -40,10 +41,10 @@ class HomeController extends Controller
         $client_id = Auth::user()->id; 
 
         $data['active_class'] = 'dashboard';
-        $data['number_of_clients'] = User::userRole('client')->count();
-        $data['number_of_rms'] = User::userRole('rm')->count();
-        $data['number_of_accountants'] = User::userRole('accountant')->count();
-        $data['number_of_counsellor'] = User::userRole('counsellor')->count();
+        $data['number_of_clients'] = User::userRole('client')->get()->count();
+        $data['number_of_rms'] = User::userRole('rm')->get()->count();
+        $data['number_of_accountants'] = User::userRole('accountant')->get()->count();
+        $data['number_of_counsellor'] = User::userRole('counsellor')->get()->count();
 
         if (Auth::user()->user_role == 'client') {
             $tasks = $data['tasks'] = ClientTask::where('client_id', $client_id)->get(); 
@@ -56,18 +57,38 @@ class HomeController extends Controller
                 }
             }
 
-            $data['appointments'] = Appointment::where('client_id', $client_id)->get();
-
+            $data['appointments'] = Appointment::where('client_id', $client_id)->where('app_date', '<=', '2018-07-16')->get();
             $data['program_progresses'] = $completion_array;
 
             return view('dashboard.client', $data);
         }
+
+        elseif(Auth::user()->user_role == 'counsellor' || Auth::user()->user_role == 'rm') {
+            $user_id = Auth::user()->id;
+            $todays_date = Carbon::now();
+
+            $data['appointments'] = Appointment::where([
+                                        'appointer_id' => $user_id,
+                                        'app_date' => $todays_date->format('y-m-d')
+                                    ])->get();
+
+            if (Auth::user()->user_role == 'counsellor') {
+                $data['files_opened_this_month'] = CounsellorClient::fileOpenedThisMonth($user_id);
+                $data['total_files_opened'] = CounsellorClient::totalFilesOpened($user_id);
+            }
+            else {
+                $data['files_opened_this_month'] = RmClient::fileOpenedThisMonth($user_id);
+                $data['total_files_opened'] = RmClient::totalFilesOpened($user_id);
+            }
+
+            return view('dashboard.rm_counsellor', $data);
+        }
         
         else {
+            $data['recent_clients'] = User::userRole('client')->orderBy('created_at', 'desc')->limit(5)->get();
+            $data['appointments'] = Appointment::limit(5)->where('app_date', '>', Carbon::now())->get();
             return view('dashboard.admin', $data);
         }
-
-        
     }
 
     public function home()
@@ -85,7 +106,7 @@ class HomeController extends Controller
 
     public function updateUserRole(Request $request, $id)
     {
-        $roles = array('N/A', 'client', 'admin', 'guest');
+        $roles = array('N/A', 'admin', 'rm', 'accountant', 'backend', 'counsellor', 'client');
 
         $assigned_role = $roles[$request->user_role_id];
         
@@ -114,30 +135,31 @@ class HomeController extends Controller
 
     public function storeUser(Request $request)
     {
-            DB::table('users')->insert([
+            User::create([
                 'client_code' => $request->client_code,
                 'name' => $request->name,
                 'mobile' => $request->mobile,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
                 'user_role' => 'client',
+                'remember_token' => str_random(60)
             ]);
 
             $user = User::where('client_code', $request->client_code)->first();
 
-            RmClient::insert([
+            RmClient::create([
                 'client_id' => $user->id,
                 'rm_id' => $request->rm_one,
             ]);
 
-            CounsellorClient::insert([
+            CounsellorClient::create([
                 'client_id' => $user->id,
                 'counsellor_id' => $request->counsellor_one,
             ]);
 
             if ($request->rm) {
                 foreach ($request->rm as $rm) {
-                    RmClient::insert([
+                    RmClient::create([
                         'client_id' => $user->id,
                         'rm_id' => $rm
                     ]);
@@ -146,7 +168,7 @@ class HomeController extends Controller
 
             if ($request->counsellor) {
                 foreach ($request->counsellor as $counsellor) {
-                    CounsellorClient::insert([
+                    CounsellorClient::create([
                         'client_id' => $user->id,
                         'counsellor_id' => $counsellor
                     ]);
@@ -155,7 +177,7 @@ class HomeController extends Controller
 
             if ($request->programs) {
                 foreach($request->programs as $program) {
-                    ClientProgram::insert([
+                    ClientProgram::create([
                         'client_id' => $user->id,
                         'program_id' => $program
                     ]);

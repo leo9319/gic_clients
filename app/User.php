@@ -15,7 +15,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'user_role'
+        'client_code', 'name', 'mobile', 'email', 'password', 'user_role', 'remember_token'
     ];
 
     /**
@@ -29,7 +29,7 @@ class User extends Authenticatable
 
     public static function userRole($role) 
     {
-        return static::where('user_role', $role)->get();
+        return static::where('user_role', $role);
     }
 
 }

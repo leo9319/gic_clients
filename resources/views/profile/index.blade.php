@@ -6,9 +6,7 @@
 <div class="container-fluid">
    <div class="panel panel-profile">
       <div class="clearfix">
-         <!-- LEFT COLUMN -->
          <div class="profile-left">
-            <!-- PROFILE HEADER -->
             <div class="profile-header">
                <div class="overlay"></div>
                <div class="profile-main">
@@ -17,8 +15,6 @@
                   <span><a href="#"><i class="fa fa-edit"></i> Edit Profile</a></span>
                </div>
             </div>
-            <!-- END PROFILE HEADER -->
-            <!-- PROFILE DETAIL -->
             <div class="profile-detail">
                <div class="profile-info">
                   <h4 class="heading">Basic Info</h4>
@@ -26,7 +22,6 @@
                      <li>Client Code <span>{{ $client->client_code }}</span></li>
                      <li>Mobile <span>{{ $client->mobile }}</span></li>
                      <li>Email <span>{{ $client->email }}</span></li>
-                     <!-- <li>Website <span><a href="https://www.themeineed.com">N/A</a></span></li> -->
                   </ul>
                </div>
                <div class="profile-info">
@@ -41,10 +36,7 @@
                <div class="profile-info">
                </div>
             </div>
-            <!-- END PROFILE DETAIL -->
          </div>
-         <!-- END LEFT COLUMN -->
-         <!-- RIGHT COLUMN -->
          <div class="profile-right">
             <h4 class="heading">{{ $client->name }}</h4>
             <!-- AWARDS -->

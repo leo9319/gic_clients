@@ -4,21 +4,34 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use User;
+use Carbon\Carbon;
 
 class RmClient extends Model
 {
+    protected $fillable = ['client_id', 'rm_id'];
+
     public static function getAssignedRms($client_id) 
     {
     	return RmClient::where('client_id', '=', $client_id)->get();
     }
 
-    public function profiles() 
+    public function clients() 
     {
-    	return $this->hasMany('App\User', 'id', 'client_id');
+        return $this->hasMany('App\User', 'id', 'client_id');
     }
 
-    public static function clients($rm_id)
+    // public static function clients($rm_id)
+    // {
+    // 	return RmClient::where('rm_id', $rm_id)->get();
+    // }
+
+    public static function fileOpenedThisMonth($rm_id)
     {
-    	return RmClient::where('rm_id', $id)->get();
+        return static::where('rm_id', $rm_id)->whereMonth('created_at', '=', Carbon::now()->month)->get();;
+    }
+
+    public static function totalFilesOpened($rm_id)
+    {
+        return static::where('rm_id', $rm_id)->get();
     }
 }

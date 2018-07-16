@@ -24,7 +24,7 @@
                   <th>Name</th>
                   <th>Phone</th>
                   <th>Email</th>
-                  <th>Action</th>
+                  <!-- <th>Action</th> -->
                   <th>Action</th>
                   <th>Action</th>
                </tr>
@@ -36,11 +36,11 @@
                   <td>{{ $client->name }}</td>
                   <td>{{ $client->mobile }}</td>
                   <td>{{ $client->email }}</td>
-                  <td>
+                  <!-- <td>
                      <a href="{{ route('client.programs', ['client_id'=> $client->id ]) }}" class="btn btn-info button4">
                      View Programs
                      </a>
-                  </td>
+                  </td> -->
                   <td>
                      <a href="{{ route('client.counsellor', $client->id) }}" class="btn btn-danger button4 view_data" id="{{ $client->id }}">Assign Counsellors</a>
                   </td>
