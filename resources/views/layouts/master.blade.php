@@ -20,6 +20,8 @@
 	<!-- ICONS -->
 	<link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/img/apple-icon.png') }}">
 	<link rel="icon" type="image/png" sizes="96x96" href="{{ asset('assets/img/favicon.png') }}">
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	@yield('header_scripts')
 </head>
 
@@ -50,7 +52,7 @@
 	<script src="{{ asset('assets/vendor/jquery.easy-pie-chart/jquery.easypiechart.min.js') }}"></script>
 	<script src="{{ asset('assets/vendor/chartist/js/chartist.min.js') }}"></script>
 	<script src="{{ asset('assets/scripts/klorofil-common.js') }}"></script>
-	<script src="{{ asset('js/app.js') }}"></script>
+	<!-- <script src="{{ asset('js/app.js') }}"></script> -->
 </body>
 
 </html>
