@@ -221,7 +221,7 @@ class HomeController extends Controller
         $phone = $request->mobile;
         $username = 'admin';
         $password = 'Generic!1234';
-        $message ="Dear $request->name,\nYour file has been opened with GIC. Visit link $url Your password is $request->password.\nThank you.";
+        $message ="Dear $request->name,\nYour file has been opened with GIC. Visit link $url\nYour Email ID is $request->email and your password is $request->password.\nThank you.";
 
         $message = urlencode($message);
 

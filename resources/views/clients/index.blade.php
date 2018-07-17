@@ -27,6 +27,7 @@
                   <!-- <th>Action</th> -->
                   <th>Action</th>
                   <th>Action</th>
+                  <th>Action</th>
                </tr>
             </thead>
             <tbody>
@@ -43,6 +44,9 @@
                   </td> -->
                   <td>
                      <a href="{{ route('client.counsellor', $client->id) }}" class="btn btn-danger button4 view_data" id="{{ $client->id }}">Assign Counsellors</a>
+                  </td>
+                  <td>
+                     <a href="{{ route('client.rm', $client->id) }}" class="btn btn-primary button4 view_data" id="{{ $client->id }}">Assign RMs</a>
                   </td>
                   <td>
                      <a href="{{ route('appointment.client', $client->id) }}" class="btn btn-outline-warning button4">Set Appointment</a>

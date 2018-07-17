@@ -10,6 +10,11 @@ class RmClient extends Model
 {
     protected $fillable = ['client_id', 'rm_id'];
 
+    public function users()
+    {
+        return $this->hasMany('App\User', 'id', 'rm_id');
+    }
+
     public static function getAssignedRms($client_id) 
     {
     	return RmClient::where('client_id', '=', $client_id)->get();
