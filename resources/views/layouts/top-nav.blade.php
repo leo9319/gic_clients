@@ -1,6 +1,6 @@
 <nav class="navbar navbar-default navbar-fixed-top">
    <div class="brand">
-      <a href="{{ route('main') }}"><img src="{{ asset('img/logo.png') }}" alt="GIC Logo" class="img-responsive logo"></a>
+      <a href="{{ route('main') }}"><img src="{{ asset('img/GIC-Logo.png') }}" alt="GIC Logo" class="img-responsive logo"></a>
    </div>
    <div class="container-fluid">
       <div class="navbar-btn">

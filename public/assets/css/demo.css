@@ -14,5 +14,19 @@
   display: block;
   margin-top: 5px;
   margin-left: 5px; }
+.logo{
+
+  height: 2.5em;
+  margin-top: -.6em;
+
+
+
+}
+.brand{
+  height: 5em;
+  box-sizing: border-box;
+
+
+}
 
 /*# sourceMappingURL=demo.css.map */
