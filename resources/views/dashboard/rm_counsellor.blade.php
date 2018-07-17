@@ -148,8 +148,8 @@
                      </div>
                      <div class="col-md-12">
                         <p>
-                           <span class="number"><strong>32</strong></span>
-                           <span class="title">Prospect Left Todays</span>
+                           <span class="number"><strong>??</strong></span>
+                           <span class="title">Not available yet</span>
                         </p>
                      </div>
                   </div>
