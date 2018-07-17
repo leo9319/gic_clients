@@ -57,7 +57,7 @@ class HomeController extends Controller
                 }
             }
 
-            $data['appointments'] = Appointment::where('client_id', $client_id)->where('app_date', '<=', '2018-07-16')->get();
+            $data['appointments'] = Appointment::where('client_id', $client_id)->where('app_date', '>=', Carbon::now()->format('Y-m-d'))->get();
             $data['program_progresses'] = $completion_array;
 
             return view('dashboard.client', $data);
@@ -127,7 +127,7 @@ class HomeController extends Controller
             $data['client_code'] = 'CMS' . sprintf('%06d', ($last_entry->id + 1));
         }
         else {
-            $data['client_code'] = 'CMS000001';
+            $data['client_code'] = 'CMS000001'; 
         }
 
         return view('users.create', $data);
@@ -221,7 +221,7 @@ class HomeController extends Controller
         $phone = $request->mobile;
         $username = 'admin';
         $password = 'Generic!1234';
-        $message ="Dear $request->name,\nYour file has been opened with GIC. Visit link $url Your password is $request->password.\nThank you.";
+        $message ="Dear $request->name,\nYour file has been opened with GIC. Visit link $url\nYour Email ID is $request->email and your password is $request->password.\nThank you.";
 
         $message = urlencode($message);
 

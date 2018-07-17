@@ -23,7 +23,7 @@
 <div class="container-fluid">
 	<div class="panel">
 		<div class="panel-body">
-			<h3>:: Assign Tasks</h3>
+			<h3>:: List of RMs</h3>
 
 			<table id="rms" class="table table-striped">
 				<thead>

@@ -20,6 +20,8 @@
 	<!-- ICONS -->
 	<link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/img/apple-icon.png') }}">
 	<link rel="icon" type="image/png" sizes="96x96" href="{{ asset('assets/img/favicon.png') }}">
+	
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	@yield('header_scripts')
 </head>
 
@@ -43,14 +45,14 @@
 		</footer>
 	</div>
 	<!-- Javascript -->
-<<<<<<< HEAD
 	@yield('footer_scripts')
-	<script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
+	<!-- <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script> -->
 	<script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.min.js') }}"></script>
 	<script src="{{ asset('assets/vendor/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>
 	<script src="{{ asset('assets/vendor/jquery.easy-pie-chart/jquery.easypiechart.min.js') }}"></script>
 	<script src="{{ asset('assets/vendor/chartist/js/chartist.min.js') }}"></script>
 	<script src="{{ asset('assets/scripts/klorofil-common.js') }}"></script>
+<<<<<<< HEAD
 	
 =======
 	<!-- <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script> -->
@@ -62,6 +64,9 @@
 	<script src="{{ asset('js/app.js') }}"></script>
 
 
+=======
+	<!-- <script src="{{ asset('js/app.js') }}"></script> -->
+>>>>>>> 7cd97921fe33bfbc2bbf8f693f3d7b37d24993f6
 </body>
 
 </html>

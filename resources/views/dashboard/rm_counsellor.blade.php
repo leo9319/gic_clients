@@ -76,7 +76,7 @@
                      <tr>
                         <td>{{ $index + 1 }}</td>
                         <td>{{ $client->name }}</td>
-                        <td><a href="#"><span class="label label-info">CHECK STATUS</span></a></td>
+                        <td><a href="{{ route('client.profile', $client->id) }}"><span class="label label-info">CHECK PROFILE</span></a></td>
                      </tr>
                      @empty
                      @endforelse
@@ -148,8 +148,8 @@
                      </div>
                      <div class="col-md-12">
                         <p>
-                           <span class="number"><strong>32</strong></span>
-                           <span class="title">Prospect Left Todays</span>
+                           <span class="number"><strong>??</strong></span>
+                           <span class="title">Not available yet</span>
                         </p>
                      </div>
                   </div>

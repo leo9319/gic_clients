@@ -9,6 +9,7 @@ use App\ClientProgram;
 use App\Program;
 use App\TaskType;
 use App\CounsellorClient;
+use App\RmClient;
 use DB;
 
 class ClientController extends Controller
@@ -344,6 +345,16 @@ class ClientController extends Controller
         return view('clients.assign_councellors', $data);
     }
 
+    public function assignRm($client_id)
+    {
+        $data['active_class'] = 'clients';
+        $data['assigned_rms'] = RmClient::where('client_id', $client_id)->get();
+        $data['client'] = User::find($client_id);
+        $data['rms'] = User::where('user_role', 'rm')->get();
+ 
+        return view('clients.assign_rms', $data);
+    }
+
     public function assignCounsellorStore(Request $request, $client_id)
     {
         CounsellorClient::updateOrCreate(
@@ -356,6 +367,25 @@ class ClientController extends Controller
                 CounsellorClient::updateOrCreate(
                     ['client_id' => $client_id, 'counsellor_id' => $value],
                     ['client_id' => $client_id, 'counsellor_id' => $value]
+                );
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    public function assignRmStore(Request $request, $client_id)
+    {
+        RmClient::updateOrCreate(
+            ['client_id' => $client_id, 'rm_id' => $request->rm_one],
+            ['client_id' => $client_id, 'rm_id' => $request->rm_one]
+        );
+
+        if ($request->rm) {
+            foreach ($request->rm as $key => $value) {
+                RmClient::updateOrCreate(
+                    ['client_id' => $client_id, 'rm_id' => $value],
+                    ['client_id' => $client_id, 'rm_id' => $value]
                 );
             }
         }

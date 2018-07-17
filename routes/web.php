@@ -49,7 +49,9 @@ Route::get('view-tasks/{client_id}/{program_id}', 'ClientController@clientTasks'
 Route::get('programs/{client_id}', 'ClientController@programs')->name('client.programs');
 Route::post('complete-group/{client_id}/{program_id}', 'ClientController@completeGroupStore')->name('client.group.complete.store');
 Route::get('client/counsellor/{client_id}', 'ClientController@assignCounsellor')->name('client.counsellor');
+Route::get('client/rm/{client_id}', 'ClientController@assignRm')->name('client.rm');
 Route::post('client/counsellor/{client_id}', 'ClientController@assignCounsellorStore')->name('client.counsellor.store');
+Route::post('client/rm/{client_id}', 'ClientController@assignRmStore')->name('client.rm.store');
 
 Route::get('home', 'HomeController@home')->name('home');
 Route::get('dashboard', 'HomeController@index')->name('dashboard');
