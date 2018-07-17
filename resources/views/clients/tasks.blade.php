@@ -22,13 +22,8 @@
                         </label>
                         <p>
                            <span class="title">{{ $task->task_name }}</span>
-                           <span class="short-description"></span>
-                           @if($task->assigned_date)
-                              <span class="text-info">Deadline: {{ Carbon\Carbon::parse($task->assigned_date)->format('d/m/Y') }}</span>
-                           @else
-                              <span></span>
-                           @endif
-                           <span class="short-description">
+                           <br>
+                           <span>
                               Status: 
                               @if($task->status == 'complete')
                               <span class="text-success">Complete</span>
@@ -38,15 +33,23 @@
                               <span class="text-danger">Incomplete</span>
                               @endif
                            </span>
-                           <span class="short-description">
-                              @if($task->status == 'complete')
-                              <span class="date"><strong>Approved By: {{ $task->name }}</strong></span>
-                              @elseif($task->status == 'pending')
-                              <span class="text-info">Pending</span>
+                           <br>
+                           <span>
+                              @if($task->approval == 1)
+                              <span class="text-success">Approved By: {{ $task->name }}</span>
+                              @elseif($task->approval == -1)
+                              <span class="text-warning">Pending Approval</span>
                               @else
-                              <span class="text-danger">Incomplete</span>
+                              <span class="text-danger">Dissapproved By: {{ $task->name }}</span>
                               @endif
                            </span>
+                           <br>
+                           @if($task->assigned_date)
+                              <span class="text-info">Deadline: {{ Carbon\Carbon::parse($task->assigned_date)->format('d/m/Y') }}</span>
+                           @else
+                              <span></span>
+                           @endif
+                           <br>
                            @if($task->status != 'incomplete')
                            <span class="date">Date Submitted: {{ Carbon\Carbon::parse($task->updated_at)->format('d/m/Y') }}</span>
                            @else
@@ -65,7 +68,6 @@
                      @else
                      <div class="col-md-4" style="margin-top: 30px;">
                         <label class="control-inline fancy-checkbox">
-                              <input type="checkbox" name="status" {{$task->status == 'complete' ? 'checked' : ''}}>
                               <span></span>
                         </label>
                      </div>
