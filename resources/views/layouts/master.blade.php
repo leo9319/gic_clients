@@ -61,7 +61,7 @@
 	<script src="{{ asset('scripts/klorofil-common.js') }}"></script>
 	<script src="{{ asset('js/app.js') }}"></script>
 
->>>>>>> 5171cd6b383ee9b1eb27dca73e6af1792f1ddefa
+
 </body>
 
 </html>
