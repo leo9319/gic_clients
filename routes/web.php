@@ -11,6 +11,8 @@
 |
 */
 
+
+
 Auth::routes();
 
 Route::get('/', function () {
@@ -76,4 +78,5 @@ Route::get('email/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@se
 Route::get('sms/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendSMS')->name('sms');
 
 Route::get('appointment/client/rm/{client_id}', 'AppointmentController@clientWithRm')->name('appointment.client.rm');
-Route::get('appointment/client/counsellor/{client_id}', 'AppointmentController@clientWithCounsellor')->name('appointment.client.counsellor');
+/*Route::get('appointment/client/counsellor/{client_id}', 'AppointmentController@clientWithCounsellor')->name('appointment.client.counsellor');
+Route::get('testclient','TestController@index');*/

@@ -43,6 +43,7 @@
 		</footer>
 	</div>
 	<!-- Javascript -->
+<<<<<<< HEAD
 	@yield('footer_scripts')
 	<script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
 	<script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.min.js') }}"></script>
@@ -51,6 +52,16 @@
 	<script src="{{ asset('assets/vendor/chartist/js/chartist.min.js') }}"></script>
 	<script src="{{ asset('assets/scripts/klorofil-common.js') }}"></script>
 	
+=======
+	<!-- <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script> -->
+	<script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+	<script src="{{ asset('vendor/jquery-slimscroll/jquery.slimscroll.min.js')}}"></script>
+	<script src="{{ asset('vendor/jquery.easy-pie-chart/jquery.easypiechart.min.js') }}"></script>
+	<script src="{{ asset('vendor/chartist/js/chartist.min.js') }}"></script>
+	<script src="{{ asset('scripts/klorofil-common.js') }}"></script>
+	<script src="{{ asset('js/app.js') }}"></script>
+
+>>>>>>> 5171cd6b383ee9b1eb27dca73e6af1792f1ddefa
 </body>
 
 </html>

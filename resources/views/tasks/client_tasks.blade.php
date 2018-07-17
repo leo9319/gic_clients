@@ -5,6 +5,9 @@
 @section('content')
 <div class="container-fluid">	
 	<div class="panel-body">
+	
+
+
 		<div class="profile-header">
 	       <div class="overlay"></div>
 	       <div class="profile-main">
@@ -113,5 +116,10 @@
             </div>
 		</div>
 	</div>
+
+
 </div>
+
+
 @endsection
+

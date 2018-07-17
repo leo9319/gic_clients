@@ -12,7 +12,12 @@ class AppointmentController extends Controller
     	$data['active_class'] = 'appointments';
     	$data['rms'] = User::userRole('rm');
 
-    	return view('appointment.client_rm', $data);
+    	
+
+      /*  $data['active_class'] = 'appointments';*/
+        $data['counsellors'] = User::userRole('counsellor');
+
+        return view('appointment.client_rm',$data);
     }
 
     public function clientWithCounsellor()
