@@ -41,7 +41,7 @@ Route::post('group-table/{program_id}', 'TaskController@taskTableGroupStore')->n
 Route::post('individual-tasks/{client_id}/{program_id}', 'TaskController@storeIndividualTasks')->name('task.add.individual');
 Route::get('approval/{client_task_id}/{approval}', 'TaskController@approval')->name('task.approval');
 
-Route::resource('client', 'ClientController')->middleware('role:admin,rm,accountant,operation,counsellor');
+Route::resource('client', 'ClientController')->middleware('role:admin,rm,accountant,operation,counsellor,backend');
 Route::get('mytasks/{program_id}/{client_id}', 'ClientController@mytasks')->name('client.mytasks');
 Route::get('myprograms/{client_id}', 'ClientController@myPrograms')->name('client.myprograms');
 Route::get('profile/{client_id}', 'ClientController@profile')->name('client.profile');
