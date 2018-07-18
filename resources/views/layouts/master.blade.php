@@ -52,7 +52,21 @@
 	<script src="{{ asset('assets/vendor/jquery.easy-pie-chart/jquery.easypiechart.min.js') }}"></script>
 	<script src="{{ asset('assets/vendor/chartist/js/chartist.min.js') }}"></script>
 	<script src="{{ asset('assets/scripts/klorofil-common.js') }}"></script>
+<<<<<<< HEAD
+	
+=======
+	<!-- <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script> -->
+	<script src="{{ asset('vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+	<script src="{{ asset('vendor/jquery-slimscroll/jquery.slimscroll.min.js')}}"></script>
+	<script src="{{ asset('vendor/jquery.easy-pie-chart/jquery.easypiechart.min.js') }}"></script>
+	<script src="{{ asset('vendor/chartist/js/chartist.min.js') }}"></script>
+	<script src="{{ asset('scripts/klorofil-common.js') }}"></script>
+	<script src="{{ asset('js/app.js') }}"></script>
+
+
+=======
 	<!-- <script src="{{ asset('js/app.js') }}"></script> -->
+>>>>>>> 7cd97921fe33bfbc2bbf8f693f3d7b37d24993f6
 </body>
 
 </html>

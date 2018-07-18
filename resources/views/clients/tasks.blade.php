@@ -14,7 +14,7 @@
       <div class="panel-body">
          <ul class="list-unstyled todo-list">
             @foreach($tasks as $task)
-               <li>
+               <li style="border-bottom: 1px solid blueviolet;border-top: 1px solid blueviolet;margin-top: 3px;border-radius: 10px;">
                   <div class="row">
                      <div class="col-md-4">
                         <label class="control-inline fancy-checkbox">
@@ -58,31 +58,41 @@
                         </p>
                      </div>
 
-                     {{ Form::open(['route'=> ['upload.files', $task->program_id, $task->client_id], 'files'=>true]) }}
-                     @if($task->type == 'File upload')          
-                     <div class="col-md-4" style="margin-top: 15px;">
-                        {{ Form::file('image', ['class'=>'form-control']) }}
-                        {{ Form::hidden('task_id', $task->id) }}
-                     </div>
+                  <div class="col-md-8" style="margin-top: 15px;" >
+                        <div class="col-md-6" style="margin-top: 15px;">
 
-                     @else
-                     <div class="col-md-4" style="margin-top: 30px;">
-                        <label class="control-inline fancy-checkbox">
-                              <span></span>
-                        </label>
-                     </div>
-                     
-                      @endif
+                    {{ Form::open(['route'=> ['upload.files', $task->program_id, $task->client_id], 'files'=>true]) }}
+                        @if($task->type == 'File upload')
 
+                           {{ Form::file('image', ['class'=>'form-control','style'=>'border: 1px solid blueviolet;']) }}
+                           {{ Form::hidden('task_id', $task->id) }}
+
+
+                        @else
+                        <div class="col-md-3" style="margin-top: 30px;">
+                           <label class="control-inline fancy-checkbox">
+                                 <span></span>
+                           </label>
+                        </div>
+
+                         @endif
+                     </div>
                      {{ Form::hidden('task_id', $task->id) }}
 
-                     @if($task->status != 'complete')
-                     <div class="col-md-4">
-                        {{ Form::submit('Submit', ['class'=>'btn btn-primary button4', 'style'=>'margin-top: 15px;']) }}
-                     </div>
-                     @endif
 
-                     {{ Form::close() }} 
+                     <div class="col-md-3">
+
+
+                        @if($task->status != 'complete')
+
+                           {{ Form::submit('Upload Task', ['class'=>'btn btn-danger button4', 'style'=>'margin-top: 15px;' ]) }}
+
+                        @endif
+                     </div>
+
+                     {{ Form::close() }}
+                  </div>
+
                   </div>
                </li>
                @endforeach
