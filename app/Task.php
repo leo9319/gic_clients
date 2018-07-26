@@ -6,15 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
-    protected $fillable = ['task_name', 'type_id', 'program_id'];
+    protected $fillable = [ 'step_id', 'task_name', 'assigned_to', 'duration', 'file_upload', 'form_name'];
 
-    public function types() 
-    {
-    	return $this->hasMany('App\TaskType', 'id', 'type_id');
-    }
-
-    public function programs()
-    {
-    	return $this->hasMany('App\Program', 'id', 'program_id');
-    }
 }

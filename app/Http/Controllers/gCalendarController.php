@@ -92,14 +92,12 @@ class gCalendarController extends Controller
      */
     public function store(Request $request)
     {
-        // echo $request->appointee;
         session_start();
         $appointee_id = $request->appointee;
         $appointee = User::find($appointee_id);
         $client = User::where('email', $request->client_email)->first();
         $startDateTime = $request->start_date. 'T' .$request->starttime . ':00+06:00';
         $endtime = $dt = Carbon::parse($request->start_date . ' ' .$request->starttime. ':00')->addMinutes(30);
-
         $endDateTime = $request->start_date. 'T' .$endtime->toTimeString(). '+06:00';
 
         if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {

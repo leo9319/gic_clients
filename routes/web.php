@@ -27,6 +27,7 @@ Route::get('thank-you', function () {
 })->name('thanks');
 
 Route::resource('file', 'FileController');
+Route::resource('step', 'StepController');
 Route::get('myfile', 'FileController@myFile')->name('file.myfile');
 
 Route::resource('task', 'TaskController')->middleware('role:admin,rm,counsellor');
@@ -72,13 +73,13 @@ Route::get('invoice', function () {
 });
 
 Route::resource('rms', 'RmController');
+Route::get('appointment/client/rm/{client_id}', 'AppointmentController@clientWithRm')->name('appointment.client.rm');
+Route::get('appointments', 'AppointmentController@index')->name('appointment.index');
+
+Route::resource('program', 'ProgramController');
+
 Route::resource('gcalendar', 'gCalendarController');
 Route::get('appointment/{client_id}', 'gCalendarController@setAppointment')->name('appointment.client');
 Route::get('oauth', ['as' => 'oauthCallback', 'uses' => 'gCalendarController@oauth']);
-// Route::get('getClientCounsellors', 'ClientController@getClientCounsellor');
 Route::get('email/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendEmail')->name('email');
 Route::get('sms/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendSMS')->name('sms');
-
-Route::get('appointment/client/rm/{client_id}', 'AppointmentController@clientWithRm')->name('appointment.client.rm');
-/*Route::get('appointment/client/counsellor/{client_id}', 'AppointmentController@clientWithCounsellor')->name('appointment.client.counsellor');
-Route::get('testclient','TestController@index');*/

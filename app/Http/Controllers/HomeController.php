@@ -11,10 +11,12 @@ use App\ClientProgram;
 use App\Task;
 use App\ClientTask;
 use App\Appointment;
+use App\Step;
 use DB;
 use Exception;
 use Mail;
 use Auth;
+use PDF;
 use Carbon\Carbon;
 
 class HomeController extends Controller
@@ -44,7 +46,7 @@ class HomeController extends Controller
         $data['number_of_clients'] = User::userRole('client')->get()->count();
         $data['number_of_rms'] = User::userRole('rm')->get()->count();
         $data['number_of_accountants'] = User::userRole('accountant')->get()->count();
-        $data['number_of_counsellor'] = User::userRole('counsellor')->get()->count();
+        $data['number_of_counsellor'] = User::userRole('counselor')->get()->count();
 
         if (Auth::user()->user_role == 'client') {
             $tasks = $data['tasks'] = ClientTask::where('client_id', $client_id)->get(); 
@@ -63,7 +65,7 @@ class HomeController extends Controller
             return view('dashboard.client', $data);
         }
 
-        elseif(Auth::user()->user_role == 'counsellor' || Auth::user()->user_role == 'rm') {
+        elseif(Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm') {
             $user_id = Auth::user()->id;
             $todays_date = Carbon::now();
 
@@ -72,7 +74,7 @@ class HomeController extends Controller
                                         'app_date' => $todays_date->format('y-m-d')
                                     ])->get();
 
-            if (Auth::user()->user_role == 'counsellor') {
+            if (Auth::user()->user_role == 'counselor') {
                 $data['files_opened_this_month'] = CounsellorClient::fileOpenedThisMonth($user_id);
                 $data['total_files_opened'] = CounsellorClient::totalFilesOpened($user_id);
             }
@@ -106,7 +108,7 @@ class HomeController extends Controller
 
     public function updateUserRole(Request $request, $id)
     {
-        $roles = array('N/A', 'admin', 'rm', 'accountant', 'backend', 'counsellor', 'client');
+        $roles = array('N/A', 'admin', 'rm', 'accountant', 'backend', 'counselor', 'client');
 
         $assigned_role = $roles[$request->user_role_id];
         
@@ -118,7 +120,7 @@ class HomeController extends Controller
     public function createUser()
     {
         $data['rms'] = User::where('user_role', 'rm')->get();
-        $data['counsellors'] = User::where('user_role', 'counsellor')->get();
+        $data['counselors'] = User::where('user_role', 'counselor')->get();
         $data['programs'] = Program::all();
 
         $last_entry = DB::table('users')->orderBy('id', 'desc')->limit(1)->first();
@@ -135,71 +137,79 @@ class HomeController extends Controller
 
     public function storeUser(Request $request)
     {
-            User::create([
-                'client_code' => $request->client_code,
-                'name' => $request->name,
-                'mobile' => $request->mobile,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
-                'user_role' => 'client',
-                'remember_token' => str_random(60)
-            ]);
+        User::create([
+            'client_code' => $request->client_code,
+            'name' => $request->name,
+            'mobile' => $request->mobile,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'user_role' => 'client',
+            'remember_token' => str_random(60)
+        ]);
 
-            $user = User::where('client_code', $request->client_code)->first();
+        $user = User::where('client_code', $request->client_code)->first();
 
-            RmClient::create([
-                'client_id' => $user->id,
-                'rm_id' => $request->rm_one,
-            ]);
+        RmClient::create([
+            'client_id' => $user->id,
+            'rm_id' => $request->rm_one,
+        ]);
 
-            CounsellorClient::create([
-                'client_id' => $user->id,
-                'counsellor_id' => $request->counsellor_one,
-            ]);
+        CounsellorClient::create([
+            'client_id' => $user->id,
+            'counsellor_id' => $request->counsellor_one,
+        ]);
 
-            if ($request->rm) {
-                foreach ($request->rm as $rm) {
-                    RmClient::create([
-                        'client_id' => $user->id,
-                        'rm_id' => $rm
-                    ]);
-                } 
+        if ($request->rm) {
+            foreach ($request->rm as $rm) {
+                RmClient::create([
+                    'client_id' => $user->id,
+                    'rm_id' => $rm
+                ]);
+            } 
+        }
+
+        if ($request->counselor) {
+            foreach ($request->counselor as $counselor) {
+                CounsellorClient::create([
+                    'client_id' => $user->id,
+                    'counsellor_id' => $counselor
+                ]);
+            } 
+        }
+
+        if ($request->programs) {
+            foreach($request->programs as $program) {
+                ClientProgram::create([
+                    'client_id' => $user->id,
+                    'program_id' => $program
+                ]);
             }
+        }
 
-            if ($request->counsellor) {
-                foreach ($request->counsellor as $counsellor) {
-                    CounsellorClient::create([
-                        'client_id' => $user->id,
-                        'counsellor_id' => $counsellor
-                    ]);
-                } 
-            }
+        // Need some modification in here:-
+        // 1. search the steps table for all the entries with the program_id of the respective program of the client.
 
-            if ($request->programs) {
-                foreach($request->programs as $program) {
-                    ClientProgram::create([
+
+        $request->programs;
+        if ($request->programs) {
+            foreach($request->programs as $program) {
+
+                $first_step = Step::getProgramFirstStep($program);
+                $program_tasks = Task::where([
+                    'step_id' => $first_step->id,
+                    'assigned_to' => 'client',
+                ])->get();
+
+
+                foreach ($program_tasks as $program_task) {
+                    ClientTask::create([
                         'client_id' => $user->id,
-                        'program_id' => $program
+                        'step_id' => $first_step->id,
+                        'task_id' => $program_task->id
                     ]);
                 }
             }
-
-            $request->programs;
-            if ($request->programs) {
-                foreach($request->programs as $program) {
-                    $program_tasks = Task::where('program_id', $program)->get();
-                    foreach ($program_tasks as $program_task) {
-                        // $program->id;
-                        echo $program_task->id;
-                        echo '<br>';
-                        ClientTask::insert([
-                            'client_id' => $user->id,
-                            'program_id' => $program,
-                            'task_id' => $program_task->id,
-                        ]);
-                    }
-                }
-            }
+        }
 
 
         $url = 'https://ticklepicklebd.com/leos/gicclients';
@@ -211,8 +221,9 @@ class HomeController extends Controller
             'password' => $request->password,
             'subject' => 'GIC File Opened'
         ];
-
+            
         Mail::send('mail.file_open', $data, function($message) use ($data) {
+            $pdf = PDF::loadView('invoice.index');
             $message->from('s.simab@gmail.com', 'GIC File Opened');
             $message->to($data['email']);
             $message->subject($data['subject']);
@@ -239,6 +250,8 @@ class HomeController extends Controller
         $response = str_replace('Success Count : 0 and Fail Count : 1', 'Failed!', $response);
 
         return redirect()->back()->with('message', 'Client Created!');
+
+        // echo Step::getProgramFirstStep(1);
     }
 
     public function customStaffRegister(Request $request)

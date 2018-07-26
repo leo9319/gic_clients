@@ -6,16 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ClientTask extends Model
 {
-	protected $fillable = [
-		'client_id',
-		'program_id',
-		'task_id',
-		'assignee_id',
-		'assigned_date',
-		'status',
-		'priority',
-		'uploaded_file_name'
-	];
+	protected $fillable = ['client_id', 'step_id', 'task_id', 'deadline', 'form_entry_id', 'uploaded_file_name', 'status', 'priority', 'approval'];
 
     public function tasks() 
     {

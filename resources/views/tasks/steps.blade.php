@@ -4,13 +4,13 @@
 <div class="container-fluid">
 	<div class="panel panel-headline">
 		<div class="panel-body">
-			<span class="h1">Task Groups:</span><button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#addProgramModal">Add Program</button>
+			<span class="h1">Steps:</span><button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#addProgramModal">Add Steps</button>
 		</div>
-		@foreach($programs as $program)
+		@foreach($steps as $step)
 		<div class="panel-footer">
 			<p>
-				<span>{{ $program->program_name }}</span>
-				<a href="{{ route('step.show', $program->id) }}"><button class="btn btn-primary pull-right button2">View Steps</button></a>
+				<span>{{ $step->step_name }}</span>
+				<a href="{{ route('task.show', $program->id) }}"><button class="btn btn-primary pull-right button2">View Tasks</button></a>
 			</p>
 		</div>
 		@endforeach
@@ -18,16 +18,16 @@
 			<div class="modal-dialog" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="exampleModalLabel">Add Program</h5>
+						<h5 class="modal-title" id="exampleModalLabel">Add Steps</h5>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 						</button>
 					</div>
 					<div class="modal-body">
-						{!! Form::open(['route'=>'program.store']) !!}
+						{!! Form::open() !!}
 							<div class="form-group">
-								{{ Form::label('Program Name:' , null, ['class' => 'control-label']) }}
-								{{ Form::text('program_name', null, ['class' => 'form-control']) }}
+								{{ Form::label('Step Name:' , null, ['class' => 'control-label']) }}
+								{{ Form::text('step_name', null, ['class' => 'form-control']) }}
 							</div>
 					</div>
 					<div class="modal-footer">

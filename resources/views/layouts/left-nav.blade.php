@@ -32,6 +32,14 @@
             </li>
             @endif
 
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'counsellor')
+            <li>
+               <a href="{{ route('appointment.index') }}" class="{{ $active_class == 'appointments' ? 'active' : '' }}">
+                  <i class="fa fa-calendar"></i>
+                  <span>Set Appointments</span></a>
+            </li>
+            @endif
+
             @if (Auth::user()->user_role == 'client')
             <li>
                <a href="{{ route('client.myprograms', ['client_id'=>Auth::user()->id]) }}" class="{{ $active_class == 'my-tasks' ? 'active' : '' }}"><i class="fa fa-tasks"></i> <span>My Tasks</span></a>

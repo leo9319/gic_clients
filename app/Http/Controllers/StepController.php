@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Program;
 use Illuminate\Http\Request;
+use App\Step;
+use App\Program;
 
-class ProgramController extends Controller
+class StepController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -35,7 +36,7 @@ class ProgramController extends Controller
      */
     public function store(Request $request)
     {
-        Program::create($request->all());
+        Step::create($request->all());
 
         return redirect()->back();
     }
@@ -43,33 +44,37 @@ class ProgramController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Program  $program
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Program $program)
+    public function show($id)
     {
-        //
+        $data['active_class'] = 'tasks';
+        $data['steps'] = Step::where('program_id', $id)->get();
+        $data['program'] = Program::find($id);
+
+        return view('steps.show', $data);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Program  $program
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Program $program)
+    public function edit($id)
     {
-        //
+        echo 'test';
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Program  $program
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Program $program)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -77,10 +82,10 @@ class ProgramController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Program  $program
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Program $program)
+    public function destroy($id)
     {
         //
     }

@@ -16,14 +16,14 @@ class CreateClientTasksTable extends Migration
         Schema::create('client_tasks', function (Blueprint $table) {
             $table->increments('id');
             $table->string('client_id');
-            $table->string('program_id');
+            $table->string('step_id');
             $table->string('task_id');
-            $table->string('assignee_id');
-            $table->date('assigned_date');
+            $table->string('deadline');
+            $table->date('form_entry_id');
+            $table->string('uploaded_file_name')->nullable();
             $table->string('status');
             $table->integer('priority');
             $table->boolean('approval');
-            $table->string('uploaded_file_name')->nullable();
             $table->timestamps();
         });
     }

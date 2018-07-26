@@ -9,6 +9,7 @@ use App\ClientTask;
 use App\RmClient;
 use App\Program;
 use App\TaskType;
+use App\Step;
 use DB;
 use Storage;
 use Mail;
@@ -41,10 +42,7 @@ class TaskController extends Controller
      */
     public function create()
     {
-        $data['active_class'] = 'tasks';
-        $data['tasks'] = Task::all();
-
-        return view('tasks.create', $data);
+        echo 'hello voxod';
     }
 
     /**
@@ -56,8 +54,8 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         Task::create($request->all());
-        
-        return redirect()->back()->with('message', 'Task Created');;
+
+        return redirect()->back();
     }
 
     /**
@@ -68,7 +66,12 @@ class TaskController extends Controller
      */
     public function show($id)
     {
-        //
+        // all the tasks from the respective step_id
+        $data['active_class'] = 'tasks';
+        $data['tasks'] = Task::where('step_id', $id)->get();
+        $data['step'] = Step::find($id);
+
+        return view('tasks.show', $data);
     }
 
     /**
@@ -236,6 +239,7 @@ class TaskController extends Controller
 
         return view('tasks.groups', $data);
     }
+    
 
     public function taskGroupStore(Request $request, $client_id, $program_id)
     {
