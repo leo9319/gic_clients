@@ -17,20 +17,23 @@ class AppointmentController extends Controller
         return view('appointment.index', $data);
     }
 
-    public function clientWithRm()
+    public function setRmAppointment()
     {
-    	$data['active_class'] = 'appointments';
-    	$data['rms'] = User::userRole('rm');
-        $data['counsellors'] = User::userRole('counsellor');
+        $data['active_class'] = 'appointments';
+        $data['clients'] = User::userRole('client')->get();
+        $data['rms'] = User::userRole('rm')->get();
+        $data['counselors'] = User::userRole('counselor')->get();
 
-        return view('appointment.client_rm', $data);
+        return view('appointment.rm_apointment', $data);
     }
 
-    public function clientWithCounsellor()
+    public function setCounselorAppointment()
     {
     	$data['active_class'] = 'appointments';
-    	$data['counsellors'] = User::userRole('counsellor');
+        $data['clients'] = User::userRole('client')->get();
+        $data['rms'] = User::userRole('rm')->get();
+        $data['counselors'] = User::userRole('counselor')->get();
 
-    	return view('appointment.client_counsellor', $data);
+    	return view('appointment.counselor_appointment', $data);
     }
 }

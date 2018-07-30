@@ -4,7 +4,7 @@
 <div class="container-fluid">
 	<div class="panel panel-headline">
 		<div class="panel-body">
-			<span class="h1">{{ $step->step_name }}</span><button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#addProgramModal">Add Tasks</button>
+			<span class="h1">{{ $step->step_name }}</span><button type="button" class="btn btn-success button2 pull-right" data-toggle="modal" data-target="#addProgramModal">Add Task</button>
 		</div>
 		@forelse($tasks as $task)
 		<div class="panel-footer">

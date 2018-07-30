@@ -10,6 +10,8 @@ use App\Program;
 use App\TaskType;
 use App\CounsellorClient;
 use App\RmClient;
+use App\Step;
+use App\Task;
 use DB;
 
 class ClientController extends Controller
@@ -100,73 +102,75 @@ class ClientController extends Controller
         //
     }
 
-    public function mytasks($program_id, $client_id)
+    public function mytasks($step_id, $client_id)
     {
         $data['active_class'] = 'my-tasks';
-        // $data['program_id'] = $program_id;
-
-        // $data['client_tasks'] = ClientTask::where([
-        //     'client_id' => $client_id,
-        //     'program_id' => $program_id
-        // ])->get();
-
-        // $data['group_tasks'] = DB::table('group_tasks')->where([
-        //     'program_id' => $program_id 
-        // ])->get();
-
-        // $data['status'] = DB::table('client_group_tasks')->where([
-        //     'client_id' => $client_id,
-        //     'program_id' => $program_id, 
-        //     'program_group_id' => $program_id,
-        // ])->first()->status;
-
-        // echo $data['tasks'] = ClientTask::where('client_id', $client_id)->get();
-
-        // SELECT CT.client_id, CT.program_id, T.task_name, TP.type
-        // FROM `client_tasks` AS CT 
-        // JOIN tasks AS T 
-        // on T.id = CT.task_id
-        // JOIN task_types AS TP
-        // on T.type_id = TP.id
-
-        $data['tasks'] = DB::table('client_tasks AS CT')
-                ->select('T.task_name', 'TP.type', 'CT.id', 'CT.assigned_date', 'CT.client_id', 'CT.program_id', 'CT.status', 'CT.approval', 'CT.assignee_id', 'CT.updated_at', 'U.name')
-                ->join('tasks AS T', 'T.id', 'CT.task_id')
-                ->join('task_types AS TP', 'T.type_id', 'TP.id')
-                ->join('users AS U', 'U.id', 'CT.assignee_id')
-                ->where('CT.client_id', $client_id)
-                ->where('CT.program_id', $program_id)
-                ->get();
+        $data['all_tasks'] = ClientTask::getClientTask($step_id, $client_id);
 
         return view('clients.tasks', $data);
     }
 
-    public function programs($client_id)
+    public function storeIndividualTask(Request $request, $step_id, $client_id)
     {
-        $data['active_class'] =  'clients';
-        $data['programs'] = ClientProgram::programs($client_id);
-        $data['client'] = User::where('id', $client_id)->first();
+        Task::create([
+            'task_name'=> $request->task_name,
+            'form_name'=> $request->form_name,
+            'file_upload'=> $request->file_upload
+        ]);
 
-        // $group_tasks = $data['group_tasks'] = DB::table('group_tasks')
-        //                         ->distinct()
-        //                         ->orderBy('program_id', 'asc')
-        //                         ->get(['program_id']);
+        $task = Task::where([
+            'task_name'=> $request->task_name,
+            'form_name'=> $request->form_name,
+            'file_upload'=> $request->file_upload,
+        ])->first();
 
-        $programs = [];
+        ClientTask::create([
+            'client_id' => $client_id,
+            'step_id' => $step_id,
+            'task_id' => $task->id,
+            'deadline' => $request->deadline,
+        ]);
 
-        // foreach ($group_tasks as $index => $value) {
-        //         $programs[$index] = $value->program_id;
-        // }      
+        return redirect()->back();
+    }
 
-        $data['listed_programs'] = DB::table('programs')->whereIn('id', $programs)->get();   
-        $data['listed_rms'] = User::where('user_role', 'rm')->get();   
+    public function mySteps($program_id, $client_id)
+    {
+        $data['active_class'] = 'my-tasks';
+        $data['assigned_steps'] = ClientProgram::assignedSteps($program_id, $client_id);
+        $data['client'] = User::find($client_id);
+        $data['steps'] = Step::getProgramAllStep($program_id);
 
-        // echo $roles = collect(DB::table('client_group_tasks')->get())->keyBy('program_id');
+        return view('clients.steps', $data);
 
-        // $data['program_group_id'] = DB::table('client_group_tasks')->where('client_id', $client_id)->get()->pluck('program_group_id', 'program_id');
-        // $data['assignee_id'] = DB::table('client_group_tasks')->where('client_id', $client_id)->get()->pluck('assignee_id', 'program_id');
- 
-        return view('clients.programs', $data);
+    }
+
+    public function storeSteps(Request $request, $program_id, $client_id)
+    {
+        $step_id = (integer)$request->step_id;
+        $client_programs = ClientProgram::assignedSteps($program_id, $client_id);
+        $step_array = json_decode($client_programs->steps);
+
+        if (!(in_array($step_id, $step_array))) {
+            array_push($step_array, $step_id);
+        }
+
+        ClientProgram::updateOrCreate(
+            ['client_id' => $client_id, 'program_id' => $program_id],
+            ['steps' => json_encode($step_array)]
+        );
+
+        $program_tasks = Task::getUserTasks($step_id, 'client');
+
+        foreach ($program_tasks as $program_task) {
+            ClientTask::updateOrCreate(
+                ['client_id' => $client_id, 'step_id' => $step_id, 'task_id' => $program_task->id],
+                ['client_id' => $client_id, 'step_id' => $step_id, 'task_id' => $program_task->id]
+            );
+        }
+
+        return redirect()->back();
+
     }
 
     public function myPrograms($client_id)
@@ -194,117 +198,14 @@ class ClientController extends Controller
 
         $data['client_programs'] = ClientProgram::where('client_id', $client_id)->get();
 
-        // $client_group_completed_task = DB::table('client_group_tasks')->where([
-        //     'client_id' => $client_id,
-        //     'status' => 'complete'
-        // ])->get();
-
-        // $client_group_pending_task = DB::table('client_group_tasks')->where([
-        //     'client_id' => $client_id,
-        //     'status' => 'pending'
-        // ])->get();
-
         $pending_group_tasks = [];
         $completed_group_tasks = [];
-
-        // foreach ($client_group_pending_task as $index => $value) {
-        //     $pending_group_tasks[$index] = $value->program_group_id;
-        // }
-
-        // foreach ($client_group_completed_task as $index => $value) {
-        //     $completed_group_tasks[$index] = $value->program_group_id;
-        // }
 
         $data['client_group_pending_tasks'] = DB::table('group_tasks')->whereIn('program_id', $pending_group_tasks)->get();
 
         $data['client_group_completed_tasks'] = DB::table('group_tasks')->whereIn('program_id', $completed_group_tasks)->get();
 
         return view('profile.index', $data);
-    }
-
-    public function clientTasks($client_id, $program_id)
-    {
-        $data['active_class'] = 'rms'; 
-        $data['client'] = User::find($client_id);
-        $data['program'] = Program::find($program_id);
-
-        // $data['all_tasks'] = DB::table('group_tasks')->where([
-        //     'program_id' => $program_id
-        // ])->get();
-
-        // $data['individual_tasks'] = ClientTask::where([
-        //     'client_id' => $client_id, 
-        //     'program_id' => $program_id, 
-        // ])->get();
-
-        // Need to get all the group tasks that the client has completed
-
-        // $group_task_id_completed = DB::table('client_group_tasks')->where([
-        //     'client_id' => $client_id,
-        //     'program_id' => $program_id,
-        //     'status' => 'complete'
-        // ])->first();
-
-        // $group_task_id_pending = DB::table('client_group_tasks')->where([
-        //     'client_id' => $client_id,
-        //     'program_id' => $program_id,
-        //     'status' => 'pending'
-        // ])->first();
-
-        // Get all the task with that program_id
-        // if ($group_task_id_completed) {
-        //     $data['complete_group'] = DB::table('group_tasks')->where('program_id', $group_task_id_completed->program_group_id)->get();
-        // }
-        // else {
-        //      $data['complete_group'] = DB::table('group_tasks')->where('program_id', 0)->get();
-        // }
-
-        // if ($group_task_id_pending) {
-        //     $data['pending_group'] = DB::table('group_tasks')->where('program_id', $group_task_id_pending->program_group_id)->get();
-        // }
-        // else {
-        //      $data['pending_group'] = DB::table('group_tasks')->where('program_id', 0)->get();
-        // }
-
-        // individual completed tasks:
-
-        // $data['individual_completed_tasks'] = ClientTask::where([
-        //     'client_id' => $client_id,
-        //     'program_id' => $program_id,
-        //     'status' => 'complete'
-        // ])->get();
-
-        // $data['individual_pending_tasks'] = ClientTask::where([
-        //     'client_id' => $client_id,
-        //     'program_id' => $program_id,
-        //     'status' => 'pending'
-        // ])->get();
-
-        // get all the rms:
-
-        $data['all_rms'] = User::where('user_role', 'rm')->get();
-
-        $data['all_tasks'] = ClientTask::where([
-            'client_id' => $client_id,
-            'program_id' => $program_id,
-        ])->get();
-
-        $data['pending_tasks'] = ClientTask::where([
-            'client_id' => $client_id,
-            'program_id' => $program_id,
-        ])
-        ->where('status', '!=', 'complete')
-        ->get();
-
-        $data['complete_tasks'] = ClientTask::where([
-            'client_id' => $client_id,
-            'program_id' => $program_id,
-            'status' => 'complete',
-        ])->get();
-
-        $data['task_types'] = TaskType::all();
-
-        return view('tasks.client_tasks', $data);
     }
 
     public function completeGroupStore(Request $request, $client_id, $program_id) 
@@ -391,5 +292,13 @@ class ClientController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function action($client_id)
+    {
+        $data['active_class'] = 'clients'; 
+        $data['client'] = User::find($client_id);
+
+        return view('clients.actions', $data);
     }
 }

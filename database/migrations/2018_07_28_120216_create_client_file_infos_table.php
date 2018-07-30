@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateClientProgramsTable extends Migration
+class CreateClientFileInfosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,14 @@ class CreateClientProgramsTable extends Migration
      */
     public function up()
     {
-        Schema::create('client_programs', function (Blueprint $table) {
+        Schema::create('client_file_infos', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('client_id');
-            $table->integer('program_id');
-            $table->integer('steps');
-            
+            $table->integer('creator_id');
+            $table->text('address');
+            $table->string('country_of_choice');
+            $table->string('amount_paid');
+            $table->timestamps();
         });
     }
 
@@ -29,6 +31,6 @@ class CreateClientProgramsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('client_programs');
+        Schema::dropIfExists('client_file_infos');
     }
 }

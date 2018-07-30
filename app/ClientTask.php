@@ -12,7 +12,12 @@ class ClientTask extends Model
     {
     	return $this->hasMany('App\Task', 'id', 'task_id');
     }
-    public function taskName(){
-        return $this->hasOne('App\Task','id','task_id');
+
+    public static function getClientTask($step_id, $client_id)
+    {
+    	return static::where([
+            'client_id' => $client_id,
+            'step_id' => $step_id,
+        ])->get();
     }
 }

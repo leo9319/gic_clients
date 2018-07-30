@@ -43,16 +43,18 @@ Route::post('individual-tasks/{client_id}/{program_id}', 'TaskController@storeIn
 Route::get('approval/{client_task_id}/{approval}', 'TaskController@approval')->name('task.approval');
 
 Route::resource('client', 'ClientController')->middleware('role:admin,rm,accountant,operation,counsellor,backend');
-Route::get('mytasks/{program_id}/{client_id}', 'ClientController@mytasks')->name('client.mytasks');
+Route::get('mytasks/{step_id}/{client_id}', 'ClientController@mytasks')->name('client.mytasks');
+Route::get('mysteps/{program_id}/{client_id}', 'ClientController@mySteps')->name('client.steps');
 Route::get('myprograms/{client_id}', 'ClientController@myPrograms')->name('client.myprograms');
 Route::get('profile/{client_id}', 'ClientController@profile')->name('client.profile');
-Route::get('view-tasks/{client_id}/{program_id}', 'ClientController@clientTasks')->name('client.tasks.all');
-Route::get('programs/{client_id}', 'ClientController@programs')->name('client.programs');
 Route::post('complete-group/{client_id}/{program_id}', 'ClientController@completeGroupStore')->name('client.group.complete.store');
 Route::get('client/counsellor/{client_id}', 'ClientController@assignCounsellor')->name('client.counsellor');
 Route::get('client/rm/{client_id}', 'ClientController@assignRm')->name('client.rm');
 Route::post('client/counsellor/{client_id}', 'ClientController@assignCounsellorStore')->name('client.counsellor.store');
 Route::post('client/rm/{client_id}', 'ClientController@assignRmStore')->name('client.rm.store');
+Route::get('client/action/{client_id}', 'ClientController@action')->name('client.action');
+Route::post('client/step/{program_id}/{client_id}', 'ClientController@storeSteps')->name('client.step.store');
+Route::post('client/individual/step/{step_id}/{client_id}', 'ClientController@storeIndividualTask')->name('client.task.individual.store');
 
 Route::get('home', 'HomeController@home')->name('home');
 Route::get('dashboard', 'HomeController@index')->name('dashboard');
@@ -68,15 +70,21 @@ Route::get('test', 'FileController@test')->name('test');
 Route::post('additional-info', 'FileController@storeAddition')->name('store.addition');
 Route::post('additional-test', 'FileController@storeTest')->name('store.test');
 
-Route::get('invoice', function () {
-    return view('invoice.index');
-});
+Route::get('invoice/opening/{client_id}', 'InvoiceController@opening')->name('invoice.opening');
 
 Route::resource('rms', 'RmController');
-Route::get('appointment/client/rm/{client_id}', 'AppointmentController@clientWithRm')->name('appointment.client.rm');
+Route::resource('counselors', 'CounselorController');
+
 Route::get('appointments', 'AppointmentController@index')->name('appointment.index');
+Route::get('appointments/rm', 'AppointmentController@setRmAppointment')->name('appointment.rm.appointment');
+Route::get('appointments/counselor', 'AppointmentController@setCounselorAppointment')->name('appointment.counselor.appointment');
 
 Route::resource('program', 'ProgramController');
+
+Route::get('target/rm', 'TargetController@rm')->name('target.rm');
+Route::get('target/counselor', 'TargetController@counselor')->name('target.counselor');
+Route::get('set/target/{user_id}', 'TargetController@setTarget')->name('set.target');
+Route::post('target/{user_id}', 'TargetController@storeTarget')->name('store.target');
 
 Route::resource('gcalendar', 'gCalendarController');
 Route::get('appointment/{client_id}', 'gCalendarController@setAppointment')->name('appointment.client');

@@ -22,6 +22,7 @@ class CreateClientTasksTable extends Migration
             $table->date('form_entry_id');
             $table->string('uploaded_file_name')->nullable();
             $table->string('status');
+            $table->integer('approved_by');
             $table->integer('priority');
             $table->boolean('approval');
             $table->timestamps();

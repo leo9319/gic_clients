@@ -56,22 +56,7 @@
                         </tr>
                      </thead>
                      <tbody>
-                        @foreach($tasks as $index => $task)
-                        @foreach($task->tasks as $task_detail)
-                        @foreach($task_detail->types as $task_type)
-                        @foreach($task_detail->programs as $program)
-                        <tr>
-                           <td>{{ $index + 1 }}</td>
-                           <td>{{ $task_detail->task_name }}</td>
-                           <td>{{ $task_type->type }}</td>
-                           <td>{{ $program->program_name }}</td>
-                           <td>{{ $task->assigned_date }}</td>
-                           <td><span class="label label-success">{{ $task->status }}</span></td>
-                        </tr>
-                        @endforeach
-                        @endforeach
-                        @endforeach
-                        @endforeach
+
                      </tbody>
                   </table>
                </div>
@@ -94,23 +79,8 @@
                </div>
                <div class="panel-body">
                   <ul class="list-unstyled todo-list">
-                     @forelse($tasks->where('assigned_date', '<', Carbon\Carbon::now()) as $task)
-                     @forelse($task->tasks as $task_detail)
-                     <li>
-                        <p>
-                           <span class="title text-danger">{{ $task_detail->task_name  }}</span>
-                           <span class="short-description"></span>
-                           <span class="date">Deadline: {{ Carbon\Carbon::parse($task->assigned_date)->format('d-M-Y (D)') }}</span>
-                        </p>
-                        <div class="controls">
-                           <a href="#"><i class="icon-software icon-software-pencil"></i></a> <a href="#"><i class="icon-arrows icon-arrows-circle-remove"></i></a>
-                        </div>
-                     </li>
-                     @empty
-                     @endforelse
-                     @empty
-                     <li>No tasks has exceeded the deadline yet!</li>
-                     @endforelse
+                     
+
                   </ul>
                </div>
             </div>

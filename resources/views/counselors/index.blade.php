@@ -1,13 +1,13 @@
 @extends('layouts.master')
 
-@section('title', 'RMs')
+@section('title', 'Counslors')
 
 @section('header_scripts')
 	<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 	<script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 	<script>
 		$(document).ready( function () {
-		    $('#rms').DataTable({
+		    $('#counselor').DataTable({
 		    	'columnDefs' : [
 		    		{
 		    			'searchable' : false,
@@ -23,25 +23,25 @@
 <div class="container-fluid">
 	<div class="panel">
 		<div class="panel-body">
-			<h3>:: List of RMs</h3>
+			<h3>:: List of Counselors</h3>
 		</div>
 		<div class="panel-footer">
-			<table id="rms" class="table table-striped">
+			<table id="counselor" class="table table-striped">
 				<thead>
 					<tr>
 						<th>SL.</th>
-						<th>Relationship Manager</th>
+						<th>Counselor</th>
 						<th>Email</th>
 						<th>Assigned Clients</th>
 					</tr>
 				</thead>
 				<tbody>
-					@foreach($rms as $index => $rm)
+					@foreach($counselors as $index => $counselor)
 					<tr>
 						<th>{{ $index + 1  }}</th>
-						<th>{{ $rm->name }}</th>
-						<th>{{ $rm->email }}</th>
-						<th><a href="{{ route('rms.show', $rm->id) }}"><button class="btn btn-primary button2">View Assigned Clients</button></a></th>
+						<th>{{ $counselor->name }}</th>
+						<th>{{ $counselor->email }}</th>
+						<th><a href="{{ route('counselors.show', $counselor->id) }}"><button class="btn btn-primary button2">View Assigned Clients</button></a></th>
 					</tr>
 					@endforeach
 				</tbody>

@@ -12,6 +12,7 @@ use App\Task;
 use App\ClientTask;
 use App\Appointment;
 use App\Step;
+use App\ClientFileInfo;
 use DB;
 use Exception;
 use Mail;
@@ -49,15 +50,10 @@ class HomeController extends Controller
         $data['number_of_counsellor'] = User::userRole('counselor')->get()->count();
 
         if (Auth::user()->user_role == 'client') {
-            $tasks = $data['tasks'] = ClientTask::where('client_id', $client_id)->get(); 
+
             $programs = $data['programs'] = ClientProgram::where('client_id', $client_id)->get(); 
             $completion_array = [];
-
-            foreach ($programs as $key => $program) {
-                foreach ($program->programInfo as $pi) {
-                    $completion_array[$pi->program_name] = $this->programProgress($client_id, $pi->id);
-                }
-            }
+            
 
             $data['appointments'] = Appointment::where('client_id', $client_id)->where('app_date', '>=', Carbon::now()->format('Y-m-d'))->get();
             $data['program_progresses'] = $completion_array;
@@ -149,6 +145,14 @@ class HomeController extends Controller
 
         $user = User::where('client_code', $request->client_code)->first();
 
+        $file_info['creator_id'] = Auth::user()->id;
+        $file_info['address'] = $request->address;
+        $file_info['country_of_choice'] = json_encode($request->country_of_choice);
+        $file_info['amount_paid'] = $request->amount_paid;
+        $file_info['client_id'] = $user->id;
+
+        ClientFileInfo::create($file_info);
+
         RmClient::create([
             'client_id' => $user->id,
             'rm_id' => $request->rm_one,
@@ -179,16 +183,14 @@ class HomeController extends Controller
 
         if ($request->programs) {
             foreach($request->programs as $program) {
+                $first_step = Step::getProgramFirstStep($program);
                 ClientProgram::create([
                     'client_id' => $user->id,
-                    'program_id' => $program
+                    'program_id' => $program,
+                    'steps' => json_encode(array($first_step->id)),
                 ]);
             }
         }
-
-        // Need some modification in here:-
-        // 1. search the steps table for all the entries with the program_id of the respective program of the client.
-
 
         $request->programs;
         if ($request->programs) {
@@ -212,18 +214,19 @@ class HomeController extends Controller
         }
 
 
-        $url = 'https://ticklepicklebd.com/leos/gicclients';
+        $url = $_SERVER['SERVER_NAME'] . '/leos/gicclients';
+        $invoice_url = $_SERVER['SERVER_NAME'] . '/invoice/opening/' . $user->id;
 
         $data = [
             'client_name' => $request->name,
             'url' => $url,
+            'invoice_url' => $invoice_url,
             'email' => $request->email,
             'password' => $request->password,
             'subject' => 'GIC File Opened'
         ];
             
         Mail::send('mail.file_open', $data, function($message) use ($data) {
-            $pdf = PDF::loadView('invoice.index');
             $message->from('s.simab@gmail.com', 'GIC File Opened');
             $message->to($data['email']);
             $message->subject($data['subject']);
@@ -250,8 +253,6 @@ class HomeController extends Controller
         $response = str_replace('Success Count : 0 and Fail Count : 1', 'Failed!', $response);
 
         return redirect()->back()->with('message', 'Client Created!');
-
-        // echo Step::getProgramFirstStep(1);
     }
 
     public function customStaffRegister(Request $request)
@@ -266,15 +267,4 @@ class HomeController extends Controller
         return redirect()->back();
     }
 
-    public function programProgress($client_id, $program_id)
-    {
-        $tasks = ClientTask::where([
-            'client_id' => $client_id,
-            'program_id' => $program_id,
-        ])->get();
-
-        $ratio = ($tasks->where('status', 'complete')->count() / $tasks->count()) * 100;
-
-        return $ratio;
-    }
 }

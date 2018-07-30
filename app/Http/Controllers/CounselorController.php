@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-use App\RmClient;
 use App\User;
+use App\CounsellorClient;
 
-class RmController extends Controller
+class CounselorController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,9 +16,9 @@ class RmController extends Controller
     public function index()
     {
         $data['active_class'] = 'assigend_clients';
-        $data['rms'] = User::where('user_role', 'rm')->get();
+        $data['counselors'] = User::userRole('counselor')->get();
 
-        return view('rms.index', $data);
+        return view('counselors.index', $data);
     }
 
     /**
@@ -52,9 +51,9 @@ class RmController extends Controller
     public function show($id)
     {
         $data['active_class'] = 'assigend_clients';
-        $data['clients'] = RmClient::where('rm_id', $id)->get();
+        $data['clients'] = CounsellorClient::where('counsellor_id', $id)->get();
 
-        return view('rms.show', $data);
+        return view('counselors.show', $data);
     }
 
     /**

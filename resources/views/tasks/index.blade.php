@@ -4,7 +4,7 @@
 <div class="container-fluid">
 	<div class="panel panel-headline">
 		<div class="panel-body">
-			<span class="h1">Task Groups:</span><button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#addProgramModal">Add Program</button>
+			<span class="h1">Task Groups:</span><a href="#" type="button" class="btn btn-success pull-right button2" data-toggle="modal" data-target="#addProgramModal">Add Program</a>
 		</div>
 		@foreach($programs as $program)
 		<div class="panel-footer">

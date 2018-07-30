@@ -24,9 +24,6 @@
                   <th>Name</th>
                   <th>Phone</th>
                   <th>Email</th>
-                  <!-- <th>Action</th> -->
-                  <th>Action</th>
-                  <th>Action</th>
                   <th>Action</th>
                </tr>
             </thead>
@@ -37,19 +34,8 @@
                   <td>{{ $client->name }}</td>
                   <td>{{ $client->mobile }}</td>
                   <td>{{ $client->email }}</td>
-                  <!-- <td>
-                     <a href="{{ route('client.programs', ['client_id'=> $client->id ]) }}" class="btn btn-info button4">
-                     View Programs
-                     </a>
-                  </td> -->
                   <td>
-                     <a href="{{ route('client.counsellor', $client->id) }}" class="btn btn-danger button4 view_data" id="{{ $client->id }}">Assign Counsellors</a>
-                  </td>
-                  <td>
-                     <a href="{{ route('client.rm', $client->id) }}" class="btn btn-primary button4 view_data" id="{{ $client->id }}">Assign RMs</a>
-                  </td>
-                  <td>
-                     <a href="{{ route('appointment.client', $client->id) }}" class="btn btn-outline-warning button4">Set Appointment</a>
+                     <a href="{{ route('client.action', $client->id) }}" class="btn btn-outline-warning button2">View Actions</a>
                   </td>
                </tr>
                @endforeach
@@ -93,9 +79,7 @@
                         </div>
                       </div> 
 
-                      <input type="submit" name="" class="btn btn-info btn-block button4" style="margin-top: 20px">
-                      
-                       
+                      <input type="submit" name="" class="btn btn-info btn-block button4" style="margin-top: 20px">  
                     </div>
 
                   </div>

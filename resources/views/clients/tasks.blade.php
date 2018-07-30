@@ -2,108 +2,143 @@
 
 @section('title', 'My Tasks')
 
+@section('header_scripts')
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+<script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script>
+   $(document).ready( function () {
+       $('#tasks').DataTable({
+         'columnDefs' : [
+            {
+               'searchable' : false,
+               'targets' : [4,5]
+            }
+         ]
+       });
+   } );
+</script>
+@stop
+
 @section('content')
 <div class="container-fluid">
    <div class="panel">
       <div class="panel-heading">
-         <h3 class="panel-title">Task Lists</h3>
-         <div class="right">
-            <button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
-         </div>
-      </div>
-      <div class="panel-body">
-         <ul class="list-unstyled todo-list">
-            @foreach($tasks as $task)
-               <li style="border-bottom: 1px solid blueviolet;border-top: 1px solid blueviolet;margin-top: 3px;border-radius: 10px;">
-                  <div class="row">
-                     <div class="col-md-4">
-                        <label class="control-inline fancy-checkbox">
-                        <i class="fa fa-adjust"></i>
-                        </label>
-                        <p>
-                           <span class="title">{{ $task->task_name }}</span>
-                           <br>
-                           <span>
-                              Status: 
-                              @if($task->status == 'complete')
-                              <span class="text-success">Complete</span>
-                              @elseif($task->status == 'pending')
-                              <span class="text-info">Pending</span>
-                              @else
-                              <span class="text-danger">Incomplete</span>
-                              @endif
-                           </span>
-                           <br>
-                           <span>
-                              @if($task->approval == 1)
-                              <span class="text-success">Approved By: {{ $task->name }}</span>
-                              @elseif($task->approval == -1)
-                              <span class="text-warning">Pending Approval</span>
-                              @else
-                              <span class="text-danger">Dissapproved By: {{ $task->name }}</span>
-                              @endif
-                           </span>
-                           <br>
-                           @if($task->assigned_date)
-                              <span class="text-info">Deadline: {{ Carbon\Carbon::parse($task->assigned_date)->format('d/m/Y') }}</span>
-                           @else
-                              <span></span>
-                           @endif
-                           <br>
-                           @if($task->status != 'incomplete')
-                           <span class="date">Date Submitted: {{ Carbon\Carbon::parse($task->updated_at)->format('d/m/Y') }}</span>
-                           @else
-                           <span class="date"></span>
-                           @endif
-                        </p>
-                     </div>
-
-                  <div class="col-md-8" style="margin-top: 15px;" >
-                        <div class="col-md-6" style="margin-top: 15px;">
-
-                    {{ Form::open(['route'=> ['upload.files', $task->program_id, $task->client_id], 'files'=>true]) }}
-                        @if($task->type == 'File upload')
-
-                           {{ Form::file('image', ['class'=>'form-control','style'=>'border: 1px solid blueviolet;']) }}
-                           {{ Form::hidden('task_id', $task->id) }}
-
-
-                        @else
-                        <div class="col-md-3" style="margin-top: 30px;">
-                           <label class="control-inline fancy-checkbox">
-                                 <span></span>
-                           </label>
-                        </div>
-
-                         @endif
-                     </div>
-                     {{ Form::hidden('task_id', $task->id) }}
-
-
-                     <div class="col-md-3">
-
-
-                        @if($task->status != 'complete')
-
-                           {{ Form::submit('Upload Task', ['class'=>'btn btn-danger button4', 'style'=>'margin-top: 15px;' ]) }}
-
-                        @endif
-                     </div>
-
-                     {{ Form::close() }}
-                  </div>
-
-                  </div>
-               </li>
-               @endforeach
-         </ul>
+         <table style="width:25%">
+           <tr>
+             <th>Total Tasks:</th>
+             <td>{{ $all_tasks->count() }}</td>
+           </tr>
+           <tr>
+             <th class="text-success">Total Completed:</th>
+             <td>{{ $all_tasks->where('status', 'complete')->count() }}</td>
+           </tr>
+           <tr>
+             <th class="text-danger">Incomplete Tasks:</th>
+             <td>{{ $all_tasks->where('status', '!=', 'complete')->count() }}</td>
+           </tr>
+         </table>
       </div>
    </div>
 
-   
+   <div class="panel">
+      <div class="panel-heading">
+         <h3 class="panel-title">Task Lists</h3>
+         <div class="right">
+            <a href="#" type="button" class="btn btn-success button2" data-toggle="modal" data-target="#addTask">Add Task</a>
+         </div>
+      </div>
+      <div class="panel-body">
+         <table id="tasks" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+               <tr>
+                  <th>SL.</th>
+                  <th>Task</th>
+                  <th>Deadline</th>
+                  <th>Status</th>
+                  <th>Approved By</th>
+                  <th>Uploaded File</th>
+               </tr>
+            </thead>
+            <tbody>
+               @foreach($all_tasks as $index => $task)
+                     @foreach($task->tasks as $task_info)
+                     <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $task_info->task_name }}</td>
+                        <td>{{ Carbon\Carbon::parse($task->deadline)->format('d-m-Y') }}</td>
+                        <td>{{ $task->status }}</td>
+                        @if($task->approved_by)
+                          <td>{{ App\User::find($task->approved_by)->name }}</td>
+                        @else
+                          <td></td>
+                        @endif
+                        <td>{{ $task->uploaded_file_name }}</td>
+                     </tr>
+                     @endforeach
+               @endforeach
+            </tbody>
+            <tfoot>
+               <tr>
+                  <th>SL.</th>
+                  <th>Task</th>
+                  <th>Deadline</th>
+                  <th>Status</th>
+                  <th>Approved By</th>
+                  <th>Uploaded File</th>
+               </tr>
+            </tfoot>
+         </table>
+      </div>
+   </div>
 </div>
 
+<!-- Modal -->
+<div id="addTask" class="modal fade" role="dialog">
+  <div class="modal-dialog">
 
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Add Task</h4>
+      </div>
+      <div class="modal-body">
+        {!! Form::open(['route'=>['client.task.individual.store', $all_tasks->first()->step_id, $all_tasks->first()->client_id]]) !!}
+          <div class="form-group">
+            {{ Form::label('Task Name:') }}
+            {{ Form::text('task_name', null, ['class'=>'form-control']) }}
+          </div>
 
+          <div class="form-group">
+            {{ Form::label('Task Types:' , null, ['class' => 'control-label']) }}
 
+            <table class="table table-striped">
+              <tbody>
+                <tr>
+                  <td>File Upload</td>
+                  <td>{{ Form::checkbox('file_upload', '1') }}</td>
+                </tr>
+                <tr>
+                  <td>With deadline</td>
+                  <td>
+                    {{ Form::date('deadline', null, ['class'=>'form-control']) }}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Form Fillup</td>
+                  <td>{{ Form::select('form_name', ['None Selected' => 'None Selected', 'S' => 'Need to change'], null, ['class'=>'form-control']) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        {{ Form::submit('Add', ['class'=>'btn btn-primary']) }}
+      </div>
+      {!! Form::close() !!}
+    </div>
+
+  </div>
+</div>
 @endsection

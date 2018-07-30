@@ -15,4 +15,6 @@
     <br>
     <br>
     Thank you.
+    <br><br>
+    <p>Download your invoice from this link: {{ $invoice_url }}</p>
 </p>

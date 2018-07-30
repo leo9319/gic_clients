@@ -7,7 +7,7 @@
             @if(session()->has('message'))
             <div class="alert alert-success alert-dismissible">
                 
-                    {{ session()->get('message') }}
+                {{ session()->get('message') }}
                 
             </div>
             @endif
@@ -62,6 +62,21 @@
                             </div>
                         </div>
 
+                        <div class="form-group{{ $errors->has('address') ? ' has-error' : '' }}">
+                            <label for="address" class="col-md-3 control-label">Address</label>
+
+                            <div class="col-md-6">
+                                <textarea id="address" class="form-control" name="address" value="{{ old('address') }}" required></textarea>
+
+
+                                @if ($errors->has('address'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('address') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
                         <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
                             <label for="password" class="col-md-3 control-label">Password</label>
 
@@ -98,6 +113,20 @@
                         </div>
 
                         <div class="form-group">
+                            <label for="programs" class="col-md-3 control-label">Country of Choice</label>
+
+                            <div class="col-md-6">
+                                <div class="col-md-6">
+                                    <input type="checkbox" name="country_of_choice[]" value="canada"> Canada
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="checkbox" name="country_of_choice[]" value="australia"> Australia
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        <div class="form-group">
                             <label for="rm" class="col-md-3 control-label">Relation Manager</label>
 
                             <div class="col-md-6">
@@ -121,7 +150,7 @@
                         <div id="rm-container"></div>
 
                         <div class="form-group">
-                            <label for="counselor" class="col-md-3 control-label">Counsellor</label>
+                            <label for="counselor" class="col-md-3 control-label">Counselor</label>
 
                             <div class="col-md-6">
                                 <select id="counselor" class="form-control" name="counsellor_one" required>
@@ -142,6 +171,20 @@
                         </div>
 
                         <div id="counselor-container"></div>
+
+                        <div class="form-group{{ $errors->has('amount_paid') ? ' has-error' : '' }}">
+                            <label for="name" class="col-md-3 control-label">Amount Paid</label>
+
+                            <div class="col-md-6">
+                                <input id="name" type="number" class="form-control" name="amount_paid" value="{{ old('amount_paid') }}" required autofocus>
+
+                                @if ($errors->has('amount_paid'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('amount_paid') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
 
                         <div class="form-group">
                             <div class="col-md-6 col-md-offset-3">

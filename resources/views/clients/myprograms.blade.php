@@ -32,8 +32,8 @@
 							<td>{{ $index + 1 }}</td>
 							<td>{{ $program_info->program_name }}</td>
 							<td>
-								<a href="{{ route('client.mytasks', ['program_id' => $program_info->id, 'client_id'=>Auth::user()->id]) }}">
-									<button class="btn btn-info button4">View Tasks</button>
+								<a href="{{ route('client.steps', ['program_id' => $program_info->id, 'client_id'=>$programs->first()->client_id]) }}">
+									<button class="btn btn-info button2">Steps</button>
 								</a>
 							</td>
 						</tr>
