@@ -36,7 +36,12 @@ class StepController extends Controller
      */
     public function store(Request $request)
     {
-        Step::create($request->all());
+        $order = Step::where('program_id', $request->program_id)->count();
+        Step::create([
+            'step_name' => $request->step_name,
+            'program_id' => $request->program_id,
+            'order' => ++$order,
+        ]);
 
         return redirect()->back();
     }

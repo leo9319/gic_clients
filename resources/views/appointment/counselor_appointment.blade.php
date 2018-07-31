@@ -9,6 +9,9 @@
 	<div class="panel">
 		<div class="panel-body">
 			<h2>Set appointment with Counselor</h2>
+			<div class="pull-right">
+				<a href="/oauth">Sign In</a>
+			</div>
 		</div>
 		<div class="panel-footer">
 			{{ Form::open(['route' => 'gcalendar.store']) }}

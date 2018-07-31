@@ -48,12 +48,12 @@
                <div class="modal-content">
                   <div class="modal-header">
                      <button type="button" class="close" data-dismiss="modal">&times;</button>
-                     <h4 class="modal-title">Assign Counsellors</h4>
+                     <h4 class="modal-title">Assign Counselors</h4>
                   </div>
                   <div class="modal-body">
-                     {!! Form::open(['route' => ['client.counsellor', $client->id]]) !!}
+                     {!! Form::open() !!}
                      	<div class="form-group">
-                     		{!! Form::label('counsellor', 'Counsellor:') !!}
+                     		{!! Form::label('counselor', 'Counselor:') !!}
                      	</div>
                      <ul id="list"></ul>
                   </div>
@@ -64,9 +64,10 @@
                       <div class="row">
                         <div class="col-xs-7">
                           <select id="counsellor_one" class="form-control" name="counsellor_one" required> 
-                            @foreach($counsellors as $counsellor)
-                              <option value="{{ $counsellor->id }}">{{ $counsellor->name }}</option>
-                            @endforeach
+                            @forelse($counselors as $counselor)
+                              <option value="{{ $counselor->id }}">{{ $counselor->name }}</option>
+                            @empty
+                            @endforelse
                         </select>
                         </div>
 
@@ -94,49 +95,4 @@
    </div>
 </div>
 {!! Form::close() !!} 
-@endsection
-
-@section('footer_scripts')
-<script>
- // $(document).ready(function(){  
-      // $('.view_data').click(function(){  
-      	   // var list = '';
-          //  var client_id = $(this).attr("id");  
-          //  var ul = document.getElementById("list");
-
-           // $.ajax({  
-           // 		type: 'get',
-           // 		url: '{!!URL::to('getClientCounsellors')!!}',
-           //      data: {'client_id': client_id},  
-           //      success:function(data) {  
-           //          if(data.length > 0) {
-           //          	for (var i = 0; i < data.length; i++) {
-           //          		list += '<li>' + data[i].name + '</li>';
-           //          	}
-
-           //          } else {
-           //            list += '<li>No Counsellors Assigned!</li>';
-           //          }
-
-           //          ul.innerHTML = list;
-           //          $('#client-counsellors').modal("show");
-           //      }  
-           // });     
-         // ul.innerHTML = '';
-      // });  
-  // });  
-
- // function addCounsellors() {
- //    var html = '<div class="form-group"><div class="col-xs-7"> {!! Form::text("product_type", "asdf", ["class"=>"form-control"]) !!}<select id="counsellor" class="form-control" name="counsellor[]"> @foreach($counsellors as $counsellor) <option value="{{ $counsellor->id }}">{{ $counsellor->name }}</option> @endforeach </select></div> <div class="col-xs-2"> <button type="button" onclick="addCounsellors()" class="btn btn-sm btn-success button4">+ Add More</button> </div> <div class="col-xs-2"> <button type="button" id="removeCounsellor" class="btn btn-sm btn-danger button4" style="margin-left: 10px">Remove</button> </div> </div>';
-
- //    $('#counsellor-container').append(html);
-
- //    $('#counsellor-container').on('click', '#removeCounsellor', function(e){
- //        $(this).parent('div').parent('div').remove();
- //        removeIndex.push(Number(this.name));
- //    });
- // }
-
-</script>
-
 @endsection

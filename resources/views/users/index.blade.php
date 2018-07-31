@@ -41,15 +41,15 @@
                   <td>{{ $user->user_role }}</td>
                   <td>
                      {{ Form::open(['route'=>['users.update.role', $user->id]]) }}
-                     {!! Form::select('user_role_id', [
-                     '1' => 'Admin', 
-                     '2' => 'Rm',
-                     '3' => 'Accountant',
-                     '4' => 'Backend',
-                     '5' => 'Counsellor',
-                     '6' => 'Client',
-                     ], null, ['class' => 'form-control']) 
-                     !!}
+                       {!! Form::select('user_role_id', [
+                       '1' => 'Admin', 
+                       '2' => 'Rm',
+                       '3' => 'Accountant',
+                       '4' => 'Backend',
+                       '5' => 'Counsellor',
+                       '6' => 'Client',
+                       ], null, ['class' => 'form-control']) 
+                       !!}
                   </td>
                   <td>{!! Form::submit('Submit', ['class'=>'btn btn-secondary']) !!}</td>
                   {{ Form::close() }}
@@ -92,8 +92,8 @@
         			<div class="form-group">
         				{!! Form::label('user_role', 'User Role: ') !!}
                         {!! Form::select('user_role', [
-                        	'RM' => 'RM',
-                        	'counsellor' => 'Counsellor',
+                        	'rm' => 'RM',
+                        	'counselor' => 'Counselor',
                         	'accountant' => 'Accountant',
                         	'backend' => 'Backend',
                         	'operation' => 'Operation',

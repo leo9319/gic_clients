@@ -23,7 +23,7 @@
 <div class="container-fluid">
 	<div class="panel">
 		<div class="panel-body">
-			<h3>:: List of Counselors</h3>
+			<h3>Counselor with assigned clients</h3>
 		</div>
 		<div class="panel-footer">
 			<table id="counselor" class="table table-striped">

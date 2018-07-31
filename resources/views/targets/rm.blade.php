@@ -1,12 +1,12 @@
 @extends('layouts.master')
 
-@section('title', 'My Tasks')
+@section('title', 'RM Targets')
 
 @section('content')
 <div class="container-fluid">
    <div class="panel">
       <div class="panel-heading">
-         <h3 class="panel-title">RM::Task Lists</h3>
+         <h3 class="panel-title">RM::Targets</h3>
          <div class="right">
             <button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
          </div>
@@ -21,8 +21,8 @@
                </tr>
             </thead>
             <tbody>
-               @foreach($rm_targets as $rm_target)
-               		@foreach($rm_target->userInfo->where('user_role', 'rm') as $rm)
+               @forelse($rm_targets as $rm_target)
+               		@forelse($rm_target->userInfo->where('user_role', 'rm') as $rm)
 		               <tr>
 		               	  <td>{{ $rm->name }}</td>
 		               	  <td>{{ $rm_target->target }}</td>
@@ -30,8 +30,13 @@
 		               	  	<a href="{{ route('set.target', $rm->id) }}" class="btn btn-primary btn-block button2">Set Target</a>
 		               	  </td>
 		               </tr>
-               		@endforeach
-               @endforeach
+                     @empty
+               		@endforelse
+                     @empty
+                     <tr>
+                        <td colspan="3">Currently there are no RMs</td>
+                     </tr>
+               @endforelse
             </tbody>
          </table>
       </div>

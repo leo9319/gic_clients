@@ -135,7 +135,8 @@ class gCalendarController extends Controller
 
             $results = $service->events->insert($calendarId, $event, $sendNotifications);
             if (!$results) {
-                return response()->json(['status' => 'error', 'message' => 'Something went wrong']);
+                // return response()->json(['status' => 'error', 'message' => 'Something went wrong']);
+                return redirect()->back();
             }
             // return response()->json(['status' => 'success', 'message' => 'Event Created']);
             Appointment::updateOrCreate(
@@ -161,8 +162,6 @@ class gCalendarController extends Controller
         } else {
             return redirect()->route('oauthCallback');
         }
-
-        // return redirect()->route('email', [$rm->id, $client->id]);
 
     }
 

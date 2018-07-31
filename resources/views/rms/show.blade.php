@@ -11,7 +11,7 @@
 		    	'columnDefs' : [
 		    		{
 		    			'searchable' : false,
-		    			'targets' : 3
+		    			'targets' : 4
 		    		}
 		    	]
 		    });

@@ -32,4 +32,9 @@ class User extends Authenticatable
         return static::where('user_role', $role);
     }
 
+    public static function gicStaffs() 
+    {
+        return static::where('user_role', '!=', 'client')->get();
+    }
+
 }

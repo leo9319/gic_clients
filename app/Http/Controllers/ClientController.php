@@ -30,8 +30,8 @@ class ClientController extends Controller
     public function index()
     {
         $data['active_class'] = 'clients';
-        $data['clients'] = User::where('user_role', 'client')->get();
-        $data['counsellors'] = User::where('user_role', 'counsellor')->get();
+        $data['clients'] = User::userRole('client')->get();
+        $data['counselors'] = User::userRole('counselor')->get();
 
         return view('clients.index', $data);
     }

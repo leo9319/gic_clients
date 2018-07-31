@@ -97,7 +97,7 @@ class HomeController extends Controller
     public function users()
     {
         $data['active_class'] = 'users';
-        $data['users'] = User::all();
+        $data['users'] = User::gicStaffs();
 
         return view('users.index', $data);
     }

@@ -60,7 +60,6 @@ Route::get('home', 'HomeController@home')->name('home');
 Route::get('dashboard', 'HomeController@index')->name('dashboard');
 Route::get('users', 'HomeController@users')->name('users')->middleware('role:admin');
 Route::post('users/{id}', 'HomeController@updateUserRole')->name('users.update.role')->middleware('role:admin');
-Route::post('users/{id}', 'HomeController@updateUserRole')->name('users.update.role')->middleware('role:admin');
 Route::get('user-create', 'HomeController@createUser')->name('user.create');
 Route::post('user-create', 'HomeController@storeUser')->name('user.store');
 Route::post('register-staff', 'HomeController@customStaffRegister')->name('staff.store');
