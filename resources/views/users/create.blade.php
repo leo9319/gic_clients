@@ -217,7 +217,7 @@
 
         function addCounsellor() {
 
-            var html = '<div class="form-group"> <label for="counselor" class="col-md-3 control-label">Counsellor</label> <div class="col-md-6"> <select id="counselor" class="form-control" name="counselor[]" required> @foreach($counselors as $counselor) <option value="{{ $counselor->id }}">{{ $counselor->name }}</option> @endforeach </select> @if ($errors->has("user_type")) <span class="help-block"> <strong>{{ $errors->first("user_type") }}</strong> </span> @endif </div> <div class="col-md-1"> <button type="button" onclick="addRm()" class="btn btn-sm btn-success">+ Add More</button> </div> <div class="col-md-1"> <button type="button" id="removeCounsellor" class="btn btn-sm btn-danger" style="margin-left: 10px">Remove</button> </div> </div>';
+            var html = '<div class="form-group"> <label for="counselor" class="col-md-3 control-label">Counselor</label> <div class="col-md-6"> <select id="counselor" class="form-control" name="counselor[]" required> @foreach($counselors as $counselor) <option value="{{ $counselor->id }}">{{ $counselor->name }}</option> @endforeach </select> @if ($errors->has("user_type")) <span class="help-block"> <strong>{{ $errors->first("user_type") }}</strong> </span> @endif </div> <div class="col-md-1"> <button type="button" onclick="addCounsellor()" class="btn btn-sm btn-success">+ Add More</button> </div> <div class="col-md-1"> <button type="button" id="removeCounsellor" class="btn btn-sm btn-danger" style="margin-left: 10px">Remove</button> </div> </div>';
 
             $('#counselor-container').append(html);
 

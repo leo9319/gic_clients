@@ -70,7 +70,9 @@ class gCalendarController extends Controller
             // return Redirect::to('https://calendar.google.com/calendar/r/month?sf=true');
             // return redirect()->url('https://calendar.google.com/calendar/r/month?sf=true');
 
-            return redirect()->route('client.index');
+            echo '<script type="text/javascript">'
+               , 'history.go(-2);'
+               , '</script>';
         }
     }
 
@@ -141,10 +143,13 @@ class gCalendarController extends Controller
             // return response()->json(['status' => 'success', 'message' => 'Event Created']);
             Appointment::updateOrCreate(
             [
+                'title' => $request->title,
                 'appointer_id' => $appointee->id,
                 'client_id' => $client->id,
+
             ],
             [
+                'title' => $request->title,
                 'appointer_id' => $appointee->id,
                 'client_id' => $client->id,
                 'app_date' => $request->start_date,
@@ -284,7 +289,7 @@ class gCalendarController extends Controller
         $data['active_class'] = 'clients';
         $data['user'] = User::find($client_id);
         $data['rms_counsellors'] = User::whereIn(
-            'user_role', ['rm', 'counsellor']
+            'user_role', ['rm', 'counselor']
         )->get();
 
         return view('appointment.set', $data);
@@ -306,7 +311,7 @@ class gCalendarController extends Controller
             'date' => $date,
             'time' => $time,
             'email' => $client->email,
-            'subject' => 'Appointment with RM'
+            'subject' => 'Appointment'
         ];
 
         Mail::send('mail.mail', $data, function($message) use ($data) {

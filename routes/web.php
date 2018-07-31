@@ -42,7 +42,7 @@ Route::post('group-table/{program_id}', 'TaskController@taskTableGroupStore')->n
 Route::post('individual-tasks/{client_id}/{program_id}', 'TaskController@storeIndividualTasks')->name('task.add.individual');
 Route::get('approval/{client_task_id}/{approval}', 'TaskController@approval')->name('task.approval');
 
-Route::resource('client', 'ClientController')->middleware('role:admin,rm,accountant,operation,counsellor,backend');
+Route::resource('client', 'ClientController')->middleware('role:admin,rm,accountant,operation,counselor,backend');
 Route::get('mytasks/{step_id}/{client_id}', 'ClientController@mytasks')->name('client.mytasks');
 Route::get('mysteps/{program_id}/{client_id}', 'ClientController@mySteps')->name('client.steps');
 Route::get('myprograms/{client_id}', 'ClientController@myPrograms')->name('client.myprograms');
@@ -90,3 +90,5 @@ Route::get('appointment/{client_id}', 'gCalendarController@setAppointment')->nam
 Route::get('oauth', ['as' => 'oauthCallback', 'uses' => 'gCalendarController@oauth']);
 Route::get('email/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendEmail')->name('email');
 Route::get('sms/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendSMS')->name('sms');
+
+Route::get('myclients/{user_id}', 'UserController@myclients')->name('user.clients');

@@ -17,6 +17,7 @@ class CreateTargetsTable extends Migration
             $table->increments('id');
             $table->integer('user_id');
             $table->integer('target');
+            $table->integer('achieved');
             $table->date('month_year');
             $table->timestamps();
         });

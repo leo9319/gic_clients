@@ -17,7 +17,7 @@ class TargetController extends Controller
     public function rm()
     {
         $data['active_class'] = 'set-targets';
-        $data['rm_targets'] = Target::currentMonthTarget();
+        $data['rms'] = User::userRole('rm')->get();
 
         return view('targets.rm', $data);
     }
@@ -25,7 +25,7 @@ class TargetController extends Controller
     public function counselor()
     {
         $data['active_class'] = 'set-targets';
-        $data['counselor_targets'] = Target::currentMonthTarget();
+        $data['counselors'] = User::userRole('counselor')->get();
 
         return view('targets.counselor', $data);
     }
@@ -34,6 +34,7 @@ class TargetController extends Controller
     {
         $data['active_class'] = 'set-targets';
         $data['records'] = Target::where('user_id', $user_id)->orderBy('month_year','DESC')->get();
+        $data['user'] = User::find($user_id);
 
         return view('targets.set_targets', $data);
     }

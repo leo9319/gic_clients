@@ -156,7 +156,7 @@
 	                                       </div>
 	                                    </div>
 	                                 </td>
-                                    <td><a href="{{ route('client.steps', [$pi->id, $client->id]) }}" class="btn btn-primary btn-sm button2">View Tasks</a></td>
+                                    <td><a href="{{ route('client.steps', [$pi->id, $client->id]) }}" class="btn btn-primary btn-sm button2">View Steps</a></td>
                                     <td><span class="label label-success">ACTIVE</span></td>
 	                              </tr>
 	                              @endforeach

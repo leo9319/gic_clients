@@ -24,7 +24,7 @@ class ClientController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin,accountant,rm,operation,counsellor,backend')->only('index');
+        $this->middleware('role:admin,accountant,rm,operation,counselor,backend')->only('index');
     }
     
     public function index()
@@ -239,9 +239,9 @@ class ClientController extends Controller
     public function assignCounsellor($client_id)
     {
         $data['active_class'] = 'clients';
-        $data['assigned_councellors'] = CounsellorClient::where('client_id', $client_id)->get();
+        $data['assigned_councelors'] = CounsellorClient::where('client_id', $client_id)->get();
         $data['client'] = User::find($client_id);
-        $data['counsellors'] = User::where('user_role', 'counsellor')->get();
+        $data['counselors'] = User::where('user_role', 'counselor')->get();
  
         return view('clients.assign_councellors', $data);
     }

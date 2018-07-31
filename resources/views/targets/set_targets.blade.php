@@ -8,7 +8,7 @@
 		<div class="panel-body">
 			<h3 class="text-center sub-header-padding">Set Target:</h3>
 			<br>
-			{{ Form::open(['route'=>['store.target', $records->first()->user_id]]) }}
+			{{ Form::open(['route'=>['store.target', $user->id]]) }}
 				<div class="row">
 					<div class="col-md-6">
 						<div class="input-group">
@@ -36,7 +36,7 @@
 
    <div class="panel">
       <div class="panel-body">
-         <h3 class="sub-header-padding">Target Histroy: {{ App\User::find($records->first()->user_id)->name }} </h3>
+         <h3 class="sub-header-padding">Target Histroy: {{ $user->name }} </h3>
          <br>
          <table class="table table-striped table-bordered">
             <thead>

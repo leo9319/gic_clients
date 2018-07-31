@@ -2,9 +2,17 @@
    <div class="sidebar-scroll">
       <nav>
          <ul class="nav">
-            <li><a href="{{ route('dashboard') }}" class="{{ $active_class == 'dashboard' ? 'active' : '' }}"><i class="lnr lnr-home"></i> <span>Dashboard</span></a></li>
+            <li>
+               <a href="{{ route('dashboard') }}" class="{{ $active_class == 'dashboard' ? 'active' : '' }}"><i class="lnr lnr-home"></i> <span>Dashboard</span></a>
+            </li>
 
-            
+            @if(Auth::user()->user_role == 'rm' | Auth::user()->user_role == 'counselor')
+               <li>
+               <a href="{{ route('user.clients', Auth::user()->id) }}" class="{{ $active_class == 'my-clients' ? 'active' : '' }}">
+                  <i class="fa fa-user-plus"></i>
+                  <span>My Clients</span></a>
+            </li>
+            @endif
 
             @if(Auth::user()->user_role == 'admin')
                <li>

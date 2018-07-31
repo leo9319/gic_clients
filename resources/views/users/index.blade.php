@@ -26,6 +26,7 @@
                <tr>
                   <th>SL.</th>
                   <th>Name</th>
+                  <th>Mobile</th>
                   <th>Email</th>
                   <th>User Role</th>
                   <th>Assign Role</th>
@@ -37,6 +38,7 @@
                <tr>
                   <td>{{ $index + 1 }}</td>
                   <td>{{ $user->name }}</td>
+                  <td>{{ $user->mobile }}</td>
                   <td>{{ $user->email }}</td>
                   <td>{{ $user->user_role }}</td>
                   <td>
@@ -60,6 +62,7 @@
                <tr>
                   <th>SL.</th>
                   <th>Name</th>
+                  <th>Mobile</th>
                   <th>Email</th>
                   <th>User Role</th>
                   <th>Assign Role</th>
@@ -81,12 +84,17 @@
             		{{ Form::open(['route'=>'staff.store']) }}
         			<div class="form-group">
         				{!! Form::label('name', 'Name: ') !!}
-                        {!! Form::text('name', null, ['class'=>'form-control']) !!}
+                {!! Form::text('name', null, ['class'=>'form-control']) !!}
         			</div>
 
         			<div class="form-group">
+                {!! Form::label('mobile', 'Mobile: ') !!}
+                {!! Form::number('mobile', null, ['class'=>'form-control']) !!}
+              </div>
+
+              <div class="form-group">
         				{!! Form::label('email', 'Email: ') !!}
-                        {!! Form::email('email', null, ['class'=>'form-control']) !!}
+                {!! Form::email('email', null, ['class'=>'form-control']) !!}
         			</div>
 
         			<div class="form-group">

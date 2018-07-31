@@ -2,6 +2,23 @@
 
 @section('title', 'RM Targets')
 
+@section('header_scripts')
+   <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+   <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+   <script>
+      $(document).ready( function () {
+          $('#rms').DataTable({
+            'columnDefs' : [
+               {
+                  'searchable' : false,
+                  'targets' : 2
+               }
+            ]
+          });
+      } );
+   </script>
+@stop
+
 @section('content')
 <div class="container-fluid">
    <div class="panel">
@@ -12,31 +29,22 @@
          </div>
       </div>
       <div class="panel-body">
-         <table id="tasks" class="table table-striped table-bordered" style="width:100%">
+         <table id="rms" class="table table-striped">
             <thead>
                <tr>
-                  <th>Name</th>
-                  <th>Current Target</th>
-                  <th class="text-center">Action</th>
+                  <th>SL.</th>
+                  <th>Relationship Manager</th>
+                  <th>Assigned Clients</th>
                </tr>
             </thead>
             <tbody>
-               @forelse($rm_targets as $rm_target)
-               		@forelse($rm_target->userInfo->where('user_role', 'rm') as $rm)
-		               <tr>
-		               	  <td>{{ $rm->name }}</td>
-		               	  <td>{{ $rm_target->target }}</td>
-		               	  <td>
-		               	  	<a href="{{ route('set.target', $rm->id) }}" class="btn btn-primary btn-block button2">Set Target</a>
-		               	  </td>
-		               </tr>
-                     @empty
-               		@endforelse
-                     @empty
-                     <tr>
-                        <td colspan="3">Currently there are no RMs</td>
-                     </tr>
-               @endforelse
+               @foreach($rms as $index => $rm)
+                  <tr>
+                     <th>{{ $index + 1 }}</th>
+                     <th>{{ $rm->name }}</th>
+                     <th><a href="{{ route('set.target', $rm->id) }}"><button class="btn btn-primary button2">Set/View Targets</button></a></th>
+                  </tr>
+               @endforeach
             </tbody>
          </table>
       </div>

@@ -13,6 +13,7 @@ use App\ClientTask;
 use App\Appointment;
 use App\Step;
 use App\ClientFileInfo;
+use App\Target;
 use DB;
 use Exception;
 use Mail;
@@ -153,15 +154,11 @@ class HomeController extends Controller
 
         ClientFileInfo::create($file_info);
 
-        RmClient::create([
-            'client_id' => $user->id,
-            'rm_id' => $request->rm_one,
-        ]);
+        RmClient::create(['client_id' => $user->id, 'rm_id' => $request->rm_one]);
+        Target::addOneToTarget($request->rm_one);
 
-        CounsellorClient::create([
-            'client_id' => $user->id,
-            'counsellor_id' => $request->counsellor_one,
-        ]);
+        CounsellorClient::create(['client_id' => $user->id, 'counsellor_id' => $request->counsellor_one]);
+        Target::addOneToTarget($request->counsellor_one);
 
         if ($request->rm) {
             foreach ($request->rm as $rm) {
@@ -169,6 +166,8 @@ class HomeController extends Controller
                     'client_id' => $user->id,
                     'rm_id' => $rm
                 ]);
+
+                Target::addOneToTarget($rm);
             } 
         }
 
@@ -178,6 +177,7 @@ class HomeController extends Controller
                     'client_id' => $user->id,
                     'counsellor_id' => $counselor
                 ]);
+                Target::addOneToTarget($counselor);
             } 
         }
 
@@ -212,7 +212,6 @@ class HomeController extends Controller
                 }
             }
         }
-
 
         $url = $_SERVER['SERVER_NAME'] . '/leos/gicclients';
         $invoice_url = $_SERVER['SERVER_NAME'] . '/invoice/opening/' . $user->id;
@@ -259,6 +258,7 @@ class HomeController extends Controller
     {
         DB::table('users')->insert([
             'name' => $request->name,
+            'mobile' => $request->mobile,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'user_role' => $request->user_role,
