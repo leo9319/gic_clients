@@ -17,6 +17,14 @@
 		<div class="panel-body">
 			<div class="row">
 				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px">
+					<a href="{{ route('sms.index', $client->id) }}" class="btn btn-warning btn-block button2">Send SMS</a>
+				</div>
+
+				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px">
+					<a href="{{ route('email.index', $client->id) }}" class="btn btn-danger btn-block button2">Send Email</a>
+				</div>
+
+				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px">
 					<a href="{{ route('client.counsellor', $client->id) }}" class="btn btn-primary btn-block button2">Assign Counselor</a>
 				</div>
 
@@ -29,7 +37,7 @@
 				</div>
 
 				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px; margin-bottom: 20px">
-					<a href="{{ route('client.myprograms', $client->id) }}" class="btn btn-warning btn-block button2">Assign Task</a>
+					<a href="{{ route('client.myprograms', $client->id) }}" class="btn btn-info btn-block button2">Assign Task</a>
 				</div>
 			</div>
 		</div>

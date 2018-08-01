@@ -10,6 +10,7 @@ use App\RmClient;
 use App\Program;
 use App\TaskType;
 use App\Step;
+use Auth;
 use DB;
 use Storage;
 use Mail;
@@ -179,7 +180,7 @@ class TaskController extends Controller
 
     public function storeFiles(Request $request, $program_id, $client_id)
     {
-        echo $request->task_id;
+        $request->task_id;
         if($request->status) {
             ClientTask::where([
                     'id'=> $request->task_id,
@@ -193,8 +194,6 @@ class TaskController extends Controller
                     'id'=> $request->task_id,
                 ])
             ->update(['status'=>'incomplete']);
-
-            // return redirect()->back();
         }
 
         if ($request->file('image')) {
@@ -243,14 +242,6 @@ class TaskController extends Controller
 
     public function taskGroupStore(Request $request, $client_id, $program_id)
     {
-        // DB::table('group_tasks')->insert([
-        //     'program_id' => $program_id,
-        //     'task_name' => $request->task_name,
-        //     'task_type' => $request->task_type
-        // ]);
-
-        // return redirect()->route('task.group', $program_id);
-
         $program_group_id = $request->program_group_id;
         $assignee_id = $request->rms;
 
@@ -272,16 +263,6 @@ class TaskController extends Controller
 
     public function taskTableGroupStore(Request $request, $program_id)
     {
-        // DB::table('group_tasks')->insert([
-        //     'program_id' => $program_id,
-        //     'task_name' => $request->task_name,
-        //     'task_type' => $request->task_type
-        // ]);
-
-        // return redirect()->route('task.group', $program_id);
-
-        // New Changes
-
         Task::create([
             'task_name' => $request->task_name,
             'type_id' => $request->type_id,
@@ -300,35 +281,10 @@ class TaskController extends Controller
             ->distinct()
             ->orderBy('program_id', 'asc')
             ->get(['program_id']);
-
-        // return view('tasks.assign_group', $data);
     }
 
     public function storeIndividualTasks(Request $request, $client_id, $program_id)
     {
-        // DB::table('tasks')->insert([
-        //     'task_name' => $request->task_name,
-        //     'task_type' => $request->task_type
-        // ]);
-
-        // // time to get its id:
-
-        // $task_from_table_id = DB::table('tasks')->where([
-        //     'task_name' => $request->task_name,
-        //     'task_type' => $request->task_type,
-        // ])->first()->id;
-
-        // DB::table('client_tasks')->insert([
-        //     'client_id' => $client_id,
-        //     'program_id' => $program_id,
-        //     'task_id' => $task_from_table_id,
-        //     'assignee_id' => $request->rm_id,
-        //     'assigned_date' => $request->deadline,
-        //     'status' => 'pending'
-        // ]);
-
-        // Add the task to the 
-
         Task::create([
             'task_name' => $request->task_name,
             'type_id' => $request->type_id,
@@ -355,12 +311,13 @@ class TaskController extends Controller
         ClientTask::where('id', $client_task_id)
             ->update([
                 'approval' => $approval,
-                'status' => ($approval == 1) ? 'complete' : 'incomplete'
+                'status' => ($approval == 1) ? 'complete' : 'incomplete',
+                'approved_by' => Auth::user()->id
             ]);
 
         $client_task = ClientTask::where('id', $client_task_id)->first();
         $client = User::find($client_task->client_id);
-        $assignee = User::find($client_task->assignee_id);
+        $assignee = Auth::user();
         $task = Task::find($client_task->task_id);
 
         ($approval == 1) ? $status = 'approved' : $status = 'dissapproved';
@@ -370,7 +327,7 @@ class TaskController extends Controller
             'status' => $status,
             'assignee' => $assignee,
             'task' => $task,
-            'email' => 'leo_9319@yahoo.com',
+            'email' => $client->email,
             'subject' => 'GIC Task Notification'
         ];
 

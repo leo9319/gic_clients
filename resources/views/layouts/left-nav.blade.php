@@ -100,7 +100,7 @@
                <a href="{{ route('client.myprograms', ['client_id'=>Auth::user()->id]) }}" class="{{ $active_class == 'my-tasks' ? 'active' : '' }}"><i class="fa fa-tasks"></i> <span>My Tasks</span></a>
             </li>
             <li>
-               <a href="{{ route('appointment.client.rm', ['client_id'=>Auth::user()->id]) }}" class="{{ $active_class == 'appointments' ? 'active' : '' }}"><i class="fa fa-tasks"></i> <span>Set Appointment</span></a>
+               <a href="#" class="{{ $active_class == 'appointments' ? 'active' : '' }}"><i class="fa fa-tasks"></i> <span>Set Appointment</span></a>
             </li>
           {{--  <li>
                <a href="#setAppointment" data-toggle="collapse" class="collapsed {{ $active_class == 'appointments' ? 'active' : '' }}"><i class="fa fa-tasks"></i> <span>Set Appointments</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>

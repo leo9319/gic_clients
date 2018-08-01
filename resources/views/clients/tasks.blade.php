@@ -11,7 +11,7 @@
          'columnDefs' : [
             {
                'searchable' : false,
-               'targets' : [4,5]
+               'targets' : 5
             }
          ]
        });
@@ -43,9 +43,11 @@
    <div class="panel">
       <div class="panel-heading">
          <h3 class="panel-title">Task Lists</h3>
+         @if(Auth::user()->user_role != 'client')
          <div class="right">
             <a href="#" type="button" class="btn btn-success button2" data-toggle="modal" data-target="#addTask">Add Task</a>
          </div>
+         @endif
       </div>
       <div class="panel-body">
          <table id="tasks" class="table table-striped table-bordered" style="width:100%">
@@ -55,8 +57,16 @@
                   <th>Task</th>
                   <th>Deadline</th>
                   <th>Status</th>
-                  <th>Approved By</th>
+                  <th>Approved / Disapproved By</th>
                   <th>Uploaded File</th>
+
+                  @if(Auth::user()->user_role == 'client')
+                    <th>Action</th>
+                    <th>Action</th>
+                  @endif
+
+                  <th>Add Comment</th>
+                  
                </tr>
             </thead>
             <tbody>
@@ -67,12 +77,48 @@
                         <td>{{ $task_info->task_name }}</td>
                         <td>{{ Carbon\Carbon::parse($task->deadline)->format('d-m-Y') }}</td>
                         <td>{{ $task->status }}</td>
+
                         @if($task->approved_by)
                           <td>{{ App\User::find($task->approved_by)->name }}</td>
-                        @else
-                          <td></td>
                         @endif
+
                         <td>{{ $task->uploaded_file_name }}</td>
+
+                        @if(Auth::user()->user_role == 'admin' | Auth::user()->user_role == 'rm' | Auth::user()->user_role == 'counselor')
+                        <td>
+                          <a href="{{ route('task.approval', [$task->id, 1]) }}" class="label label-success">Approve</a>
+                          <a href="{{ route('task.approval', [$task->id, 0]) }}" class="label label-danger">Disapprove</a>
+                        </td>
+                        
+                        @endif
+
+                        @if(Auth::user()->user_role == 'client')
+                          {!! Form::open() !!}
+
+                          @if($task_info->file_upload == 1)
+                          <td>
+                              {{ Form::file('status') }}
+                          </td>
+                          @elseif($task_info->form_name != 'None Selected')
+                            <td><a href="#">Go To Form</a></td>
+                          @else
+                            <td>
+                              {{ Form::checkbox('yes') }} Complete
+                              <br>
+                              {{ Form::checkbox('yes') }} Incomplete
+                            </td>
+                          @endif
+
+                          <td>
+                              {{ Form::submit('Submit', ['class'=>'btn btn-success btn-xs button2']) }}
+                            {!! Form::close() !!}
+                          </td>
+                        @endif
+
+                        <td>
+                          <a href="{{ route('comment.tasks', $task->id) }}" class="btn btn-info btn-xs button2">Comment</a>
+                        </td>
+
                      </tr>
                      @endforeach
                @endforeach
@@ -83,8 +129,15 @@
                   <th>Task</th>
                   <th>Deadline</th>
                   <th>Status</th>
-                  <th>Approved By</th>
+                  <th>Approved / Disapproved By</th>
                   <th>Uploaded File</th>
+
+                  @if(Auth::user()->user_role == 'client')
+                    <th>Action</th>
+                    <th>Action</th>
+                  @endif
+
+                  <th>Add Comment</th>
                </tr>
             </tfoot>
          </table>

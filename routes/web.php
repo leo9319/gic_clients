@@ -1,4 +1,4 @@
-<?php
+\<?php
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +18,10 @@ Auth::routes();
 Route::get('/', function () {
     return view('welcome');
 })->name('main');
+
+Route::get('/invoice', function () {
+    return view('invoice.test');
+});
 
 Route::get('form', 'FormController@index')->name('home.form');
 Route::post('form', 'FormController@store')->name('home.form.store');
@@ -92,3 +96,11 @@ Route::get('email/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@se
 Route::get('sms/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendSMS')->name('sms');
 
 Route::get('myclients/{user_id}', 'UserController@myclients')->name('user.clients');
+
+Route::get('comment/task/{client_task_id}', 'CommentController@task')->name('comment.tasks');
+Route::post('comment/task/{client_task_id}', 'CommentController@taskCommentStore')->name('comment.tasks.store');
+
+Route::get('sms/{client_id}', 'TextController@smsIndex')->name('sms.index');
+Route::post('sms/{client_id}', 'TextController@sendSms')->name('sms.send');
+Route::get('email/{client_id}', 'TextController@emailIndex')->name('email.index');
+Route::post('email/{client_id}', 'TextController@sendEmail')->name('email.send');
