@@ -24,9 +24,11 @@
    <div class="panel">
       <div class="panel-heading">
          <h3 class="panel-title">Task Lists</h3>
+         @if(Auth::user()->user_role != 'client')
          <div class="right">
             <a href="#" type="button" class="btn btn-success button2" data-toggle="modal" data-target="#addStep">Add Step</a>
          </div>
+         @endif
       </div>
       <div class="panel-body">
          <table class="table table-striped">

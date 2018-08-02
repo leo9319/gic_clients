@@ -60,6 +60,12 @@
                   <th>Approved / Disapproved By</th>
                   <th>Uploaded File</th>
 
+                  @if(Auth::user()->user_role == 'admin' | Auth::user()->user_role == 'rm' | Auth::user()->user_role == 'counselor')
+                  
+                  <th>Action</th>
+                  
+                  @endif
+
                   @if(Auth::user()->user_role == 'client')
                     <th>Action</th>
                     <th>Action</th>
@@ -82,7 +88,13 @@
                           <td>{{ App\User::find($task->approved_by)->name }}</td>
                         @endif
 
-                        <td>{{ $task->uploaded_file_name }}</td>
+                        @if($task->uploaded_file_name)
+                          <td><a href="{{ route('download', $task->uploaded_file_name) }}">View File</a></td>
+                        @else 
+                          <td></td>
+                        @endif
+
+                        
 
                         @if(Auth::user()->user_role == 'admin' | Auth::user()->user_role == 'rm' | Auth::user()->user_role == 'counselor')
                         <td>
@@ -93,19 +105,25 @@
                         @endif
 
                         @if(Auth::user()->user_role == 'client')
-                          {!! Form::open() !!}
+
+                          {!! Form::open(['route'=>'update.client.task', 'files' => true]) !!}
+
+                            {{ Form::hidden('task_id', $task->id) }}
+                            {{ Form::hidden('client_id', $task->client_id) }}
 
                           @if($task_info->file_upload == 1)
                           <td>
-                              {{ Form::file('status') }}
+                              {{ Form::file('uploaded_file_name') }}
                           </td>
+
                           @elseif($task_info->form_name != 'None Selected')
                             <td><a href="#">Go To Form</a></td>
+
                           @else
                             <td>
-                              {{ Form::checkbox('yes') }} Complete
+                              {{ Form::radio('status', 'complete') }} Complete
                               <br>
-                              {{ Form::checkbox('yes') }} Incomplete
+                              {{ Form::radio('status', 'incomplete') }} Incomplete
                             </td>
                           @endif
 
@@ -131,6 +149,12 @@
                   <th>Status</th>
                   <th>Approved / Disapproved By</th>
                   <th>Uploaded File</th>
+
+                  @if(Auth::user()->user_role == 'admin' | Auth::user()->user_role == 'rm' | Auth::user()->user_role == 'counselor')
+                  
+                  <th>Action</th>
+                  
+                  @endif
 
                   @if(Auth::user()->user_role == 'client')
                     <th>Action</th>

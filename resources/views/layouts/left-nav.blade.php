@@ -14,6 +14,14 @@
             </li>
             @endif
 
+            @if(Auth::user()->user_role == 'client')
+               <li>
+               <a href="{{ route('client.myprograms', Auth::user()->id) }}" class="{{ $active_class == 'client-tasks' ? 'active' : '' }}">
+                  <i class="fa fa-tasks"></i>
+                  <span>My Programs and Tasks</span></a>
+            </li>
+            @endif
+
             @if(Auth::user()->user_role == 'admin')
                <li>
                <a href="#subTargets" data-toggle="collapse" class="collapsed {{ $active_class == 'set-targets' ? 'active' : '' }}"><i class="fa fa-bullseye"></i> <span>Set Targets</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
@@ -67,11 +75,21 @@
             </li>
             @endif
 
-            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'counsellor')
             <li>
                <a href="#subAppointments" data-toggle="collapse" class="collapsed {{ $active_class == 'appointments' ? 'active' : '' }}"><i class="fa fa-calendar"></i> <span>Appointments</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
                <div id="subAppointments" class="collapse ">
                   <ul class="nav">
+
+                     @if(Auth::user()->user_role == 'client')
+
+                     <li>
+                        <a href="{{ route('client.appointment', Auth::user()->id) }}" class="">
+                           <i class="fa fa-calendar"></i>
+                           <span>My Appointments</span></a>
+                     </li>
+
+                     @endif
+
                      <li>
                         <a href="{{ route('appointment.rm.appointment') }}" class="">
                            <i class="fa fa-calendar"></i>
@@ -85,7 +103,6 @@
                   </ul>
                </div>
             </li>
-            @endif
 
             @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'counsellor')
             <li>
@@ -93,24 +110,6 @@
                   <i class="fa fa-tasks"></i> 
                   <span>Tasks</span></a>
             </li>
-            @endif
-
-            @if (Auth::user()->user_role == 'client')
-            <li>
-               <a href="{{ route('client.myprograms', ['client_id'=>Auth::user()->id]) }}" class="{{ $active_class == 'my-tasks' ? 'active' : '' }}"><i class="fa fa-tasks"></i> <span>My Tasks</span></a>
-            </li>
-            <li>
-               <a href="#" class="{{ $active_class == 'appointments' ? 'active' : '' }}"><i class="fa fa-tasks"></i> <span>Set Appointment</span></a>
-            </li>
-          {{--  <li>
-               <a href="#setAppointment" data-toggle="collapse" class="collapsed {{ $active_class == 'appointments' ? 'active' : '' }}"><i class="fa fa-tasks"></i> <span>Set Appointments</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
-               <div id="setAppointment" class="collapse ">
-                  <ul class="nav">
-                     <li><a href="{{ route('appointment.client.rm', ['client_id'=>Auth::user()->id]) }}" class="">With RMs</a></li>
-                     <li><a href="{{ route('appointment.client.counsellor', ['client_id'=>Auth::user()->id]) }}" class="">With Counsellors</a></li>
-                  </ul>
-               </div>
-            </li>--}}
             @endif
 
             @if (Auth::user()->user_role != 'client')

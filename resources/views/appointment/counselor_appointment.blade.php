@@ -1,27 +1,57 @@
 @extends('layouts.master')
+
 @section('title', 'Set Appointment')
+
 @section('header_scripts')
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
 @endsection
+
 @section('content')
+
 <div class="container-fluid">
+
 	<div class="panel">
+
 		<div class="panel-body">
+
 			<h2>Set appointment with Counselor</h2>
+
 			<div class="pull-right">
+
 				<a href="/oauth">Sign In</a>
+
 			</div>
+
 		</div>
 		<div class="panel-footer">
+
 			{{ Form::open(['route' => 'gcalendar.store']) }}
+
+			@if(Auth::user()->user_role != 'client')
+
 			<label>Choose Client:</label>
+
 			<select class="select2 form-control" name="client_email">
+
 				@foreach($clients as $client)
-				<option value="{{ $client->email }}">{{ $client->name }}</option>
+
+					<option value="{{ $client->email }}">{{ $client->name }}</option>
+
 				@endforeach
+
 			</select>
+
 			<br><br>
+
+			@else 
+
+			<input type="hidden" name="client_email" value="{{ Auth::user()->email }}">
+
+			@endif
+
 			<label>Choose Counselor:</label>
 			<select class="select2 form-control" name="appointee">
 				@foreach($counselors as $counselor)

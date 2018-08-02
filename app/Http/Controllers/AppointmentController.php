@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\Appointment;
 
 class AppointmentController extends Controller
 {
@@ -35,5 +36,13 @@ class AppointmentController extends Controller
         $data['counselors'] = User::userRole('counselor')->get();
 
     	return view('appointment.counselor_appointment', $data);
+    }
+
+    public function clientAppointment($client_id)
+    {
+        $data['active_class'] = 'appointments';
+        $data['appointments'] = Appointment::getClientsAppointments($client_id);
+        
+        return view('appointment.client_appointments', $data);
     }
 }

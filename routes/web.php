@@ -1,4 +1,4 @@
-\<?php
+<?php
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +45,7 @@ Route::post('group/{client_id}/{program_id}', 'TaskController@taskGroupStore')->
 Route::post('group-table/{program_id}', 'TaskController@taskTableGroupStore')->name('task.table.group.store');
 Route::post('individual-tasks/{client_id}/{program_id}', 'TaskController@storeIndividualTasks')->name('task.add.individual');
 Route::get('approval/{client_task_id}/{approval}', 'TaskController@approval')->name('task.approval');
+Route::post('update/client/task', 'TaskController@updateClientTask')->name('update.client.task');
 
 Route::resource('client', 'ClientController')->middleware('role:admin,rm,accountant,operation,counselor,backend');
 Route::get('mytasks/{step_id}/{client_id}', 'ClientController@mytasks')->name('client.mytasks');
@@ -81,6 +82,7 @@ Route::resource('counselors', 'CounselorController');
 Route::get('appointments', 'AppointmentController@index')->name('appointment.index');
 Route::get('appointments/rm', 'AppointmentController@setRmAppointment')->name('appointment.rm.appointment');
 Route::get('appointments/counselor', 'AppointmentController@setCounselorAppointment')->name('appointment.counselor.appointment');
+Route::get('client/appointments/{client_id}', 'AppointmentController@clientAppointment')->name('client.appointment');
 
 Route::resource('program', 'ProgramController');
 
@@ -98,9 +100,14 @@ Route::get('sms/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@send
 Route::get('myclients/{user_id}', 'UserController@myclients')->name('user.clients');
 
 Route::get('comment/task/{client_task_id}', 'CommentController@task')->name('comment.tasks');
+Route::get('comment/appointment/{client_appointment_id}', 'CommentController@appointment')->name('comment.appointments');
+
 Route::post('comment/task/{client_task_id}', 'CommentController@taskCommentStore')->name('comment.tasks.store');
+Route::post('comment/appointment/{client_appointment_id}', 'CommentController@appointmentCommentStore')->name('comment.appointment.store');
 
 Route::get('sms/{client_id}', 'TextController@smsIndex')->name('sms.index');
 Route::post('sms/{client_id}', 'TextController@sendSms')->name('sms.send');
 Route::get('email/{client_id}', 'TextController@emailIndex')->name('email.index');
 Route::post('email/{client_id}', 'TextController@sendEmail')->name('email.send');
+
+Route::get('download/{file_name}', 'TaskController@downloadFile')->name('download');

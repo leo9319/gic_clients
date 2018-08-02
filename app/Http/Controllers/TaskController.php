@@ -109,6 +109,27 @@ class TaskController extends Controller
         //
     }
 
+    public function updateClientTask(Request $request)
+    {
+        $task_id = $request->task_id;
+        $client_id = $request->status;
+        $status = $request->status;
+
+        ClientTask::updateStatus($task_id, $status);
+
+        if ($request->file('uploaded_file_name')) {
+            $file = $request->file('uploaded_file_name');
+            $ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+            $filename = 'file_' . $task_id . $client_id .'.'. $ext;
+            Storage::put('upload/images/' . $filename, file_get_contents($file->getRealPath()));
+
+            ClientTask::find($task_id)->update([
+                'uploaded_file_name' => $filename,
+                'status' => 'pending',
+            ]);
+        }
+    }
+
     public function assignClient($program_id, User $client)
     {
         $data['active_class'] = 'clients';
@@ -360,5 +381,10 @@ class TaskController extends Controller
         echo $response . '<br>';
 
         return redirect()->back();
+    }
+
+    public function downloadFile($file_name)
+    {
+        return Storage::download('upload/images/' . $file_name);
     }
 }

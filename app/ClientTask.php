@@ -20,4 +20,16 @@ class ClientTask extends Model
             'step_id' => $step_id,
         ])->get();
     }
+
+    public static function updateStatus($task_id, $status)
+    {
+        if ($status == 'complete') {
+            return ClientTask::find($task_id)->update(['status' => 'pending']);
+        }
+
+        else if ($status == 'incomplete')
+        {
+            return ClientTask::find($task_id)->update(['status' => 'incomplete']);
+        }
+    }
 }
