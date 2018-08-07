@@ -20,7 +20,15 @@ class Appointment extends Model
 
     public static function getClientsAppointments($client_id)
     {
-    	return static::where('client_id', $client_id)
+        return static::where('client_id', $client_id)
+            ->orderBy('app_date', 'desc')
+            ->orderBy('app_time', 'desc')
+            ->get();
+    }
+
+    public static function getUsersAppointments($appointer_id)
+    {
+    	return static::where('appointer_id', $appointer_id)
     		->orderBy('app_date', 'desc')
     		->orderBy('app_time', 'desc')
     		->get();

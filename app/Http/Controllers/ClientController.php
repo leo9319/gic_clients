@@ -178,8 +178,21 @@ class ClientController extends Controller
         $data['active_class'] = 'my-tasks';
         $data['client'] = User::where('id', $client_id)->first();
         $data['programs'] = ClientProgram::programs($client_id);
+        $data['all_programs'] = Program::all();
 
         return view('clients.myprograms', $data);
+    }
+
+    public function storeClientProgram(Request $request, $client_id)
+    {
+        $step = Step::getProgramFirstStep($request->program_id);
+
+        ClientProgram::updateOrCreate(
+            ['client_id' => $client_id, 'program_id' => $request->program_id],
+            ['steps' => json_encode(array($step->id))]
+        );
+
+        return redirect()->back();
     }
 
     public function profile($client_id)

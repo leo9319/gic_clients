@@ -76,11 +76,19 @@
 		</div>
 	</div>
 </div>
+
 @endsection
+
 @section('footer_scripts')
+
 <script type="text/javascript">
+	
 	$(document).ready(function() {
+		
 		$('.select2').select2();
+		
 	});
+	
 </script>
+
 @endsection

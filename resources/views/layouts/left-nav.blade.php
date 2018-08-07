@@ -80,7 +80,7 @@
                <div id="subAppointments" class="collapse ">
                   <ul class="nav">
 
-                     @if(Auth::user()->user_role == 'client')
+                     @if(Auth::user()->user_role == 'client' | Auth::user()->user_role == 'rm'| Auth::user()->user_role == 'counselor')
 
                      <li>
                         <a href="{{ route('client.appointment', Auth::user()->id) }}" class="">
@@ -103,6 +103,31 @@
                   </ul>
                </div>
             </li>
+
+            @if (Auth::user()->user_role == 'accountant')
+
+            <li>
+               <a href="#subPayments" data-toggle="collapse" class="collapsed {{ $active_class == 'payments' ? 'active' : '' }}"><i class="fa fa-credit-card"></i> <span>Payments</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+
+               <div id="subPayments" class="collapse ">
+                  <ul class="nav">
+
+                     <li>
+                        <a href="{{ route('payment.history') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Payment History</span></a>
+                     </li>
+
+                     <li>
+                        <a href="{{ route('payment.index') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Receive Payment</span></a>
+                     </li>
+                  </ul>
+               </div>
+            </li>
+
+            @endif
 
             @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'counsellor')
             <li>

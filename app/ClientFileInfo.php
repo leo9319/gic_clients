@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ClientFileInfo extends Model
 {
-    protected $fillable = ['client_id', 'creator_id', 'address', 'country_of_choice', 'amount_paid'];
+    protected $fillable = ['client_id', 'creator_id', 'address', 'country_of_choice'];
 
     public static function moreInfo($client_id)
     {

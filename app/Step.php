@@ -17,4 +17,9 @@ class Step extends Model
     {
     	return static::where('program_id', $program_id)->orderBy('order', 'asc')->get();
     }
+
+    public static function getStepInfo($program_id, $order) 
+    {
+    	return static::where(['program_id' => $program_id, 'order' => $order])->first();
+    }
 }

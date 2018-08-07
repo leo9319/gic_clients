@@ -170,7 +170,7 @@
                             </div>
                         </div>
 
-                        <div id="counselor-container"></div>
+                        <!-- <div id="counselor-container"></div>
 
                         <div class="form-group{{ $errors->has('amount_paid') ? ' has-error' : '' }}">
                             <label for="name" class="col-md-3 control-label">Amount Paid</label>
@@ -184,7 +184,7 @@
                                     </span>
                                 @endif
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="form-group">
                             <div class="col-md-6 col-md-offset-3">

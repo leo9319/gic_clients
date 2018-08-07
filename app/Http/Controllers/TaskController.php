@@ -128,6 +128,8 @@ class TaskController extends Controller
                 'status' => 'pending',
             ]);
         }
+
+        return redirect()->back();
     }
 
     public function assignClient($program_id, User $client)

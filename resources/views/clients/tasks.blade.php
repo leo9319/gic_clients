@@ -84,8 +84,18 @@
                         <td>{{ Carbon\Carbon::parse($task->deadline)->format('d-m-Y') }}</td>
                         <td>{{ $task->status }}</td>
 
-                        @if($task->approved_by)
-                          <td>{{ App\User::find($task->approved_by)->name }}</td>
+                        @if($task->approval == 1)
+
+                          <td>Approved by: {{ App\User::find($task->approved_by)->name }}</td>
+
+                        @elseif($task->approval == 0)
+
+                          <td>Disapproved by: {{ App\User::find($task->approved_by)->name }}</td>
+
+                        @else
+
+                          <td></td> 
+
                         @endif
 
                         @if($task->uploaded_file_name)
@@ -134,7 +144,7 @@
                         @endif
 
                         <td>
-                          <a href="{{ route('comment.tasks', $task->id) }}" class="btn btn-info btn-xs button2">Comment</a>
+                          <a href="{{ route('comment.tasks', $task->id) }}" class="label label-info">Comment</a>
                         </td>
 
                      </tr>

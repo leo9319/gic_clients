@@ -24,12 +24,20 @@ class ClientTask extends Model
     public static function updateStatus($task_id, $status)
     {
         if ($status == 'complete') {
-            return ClientTask::find($task_id)->update(['status' => 'pending']);
+            return ClientTask::find($task_id)->update([
+                'status' => 'pending',
+                'approval' => -1,
+                'approved_by' => '',
+            ]);
         }
 
         else if ($status == 'incomplete')
         {
-            return ClientTask::find($task_id)->update(['status' => 'incomplete']);
+            return ClientTask::find($task_id)->update([
+                'status' => 'incomplete',
+                'approval' => -1,
+                'approved_by' => '',
+            ]);
         }
     }
 }

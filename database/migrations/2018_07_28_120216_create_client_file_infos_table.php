@@ -19,7 +19,6 @@ class CreateClientFileInfosTable extends Migration
             $table->integer('creator_id');
             $table->text('address');
             $table->string('country_of_choice');
-            $table->string('amount_paid');
             $table->timestamps();
         });
     }

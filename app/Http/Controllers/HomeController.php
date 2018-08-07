@@ -14,6 +14,7 @@ use App\Appointment;
 use App\Step;
 use App\ClientFileInfo;
 use App\Target;
+use App\Payment;
 use DB;
 use Exception;
 use Mail;
@@ -63,29 +64,39 @@ class HomeController extends Controller
         }
 
         elseif(Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm') {
+
             $user_id = Auth::user()->id;
             $todays_date = Carbon::now();
-
             $data['appointments'] = Appointment::where([
                                         'appointer_id' => $user_id,
                                         'app_date' => $todays_date->format('y-m-d')
                                     ])->get();
 
+            // $data['target'] = Target::userCurrentMonthTarget($user_id);
+            $data['target'] = Target::getUserTarget($user_id);
+
             if (Auth::user()->user_role == 'counselor') {
+
                 $data['files_opened_this_month'] = CounsellorClient::fileOpenedThisMonth($user_id);
                 $data['total_files_opened'] = CounsellorClient::totalFilesOpened($user_id);
+
             }
             else {
+
                 $data['files_opened_this_month'] = RmClient::fileOpenedThisMonth($user_id);
-                $data['total_files_opened'] = RmClient::totalFilesOpened($user_id);
+                $data['total_files_opened'] = RmClient::totalFilesOpened($user_id); 
+
             }
 
             return view('dashboard.rm_counsellor', $data);
         }
         
         else {
-            $data['recent_clients'] = User::userRole('client')->orderBy('created_at', 'desc')->limit(5)->get();
+            $data['recent_clients'] = Payment::where('step_no', 1)->orderBy('created_at', 'desc')->limit(5)->get();
             $data['appointments'] = Appointment::limit(5)->where('app_date', '>', Carbon::now())->get();
+            $data['targets'] = Target::limit(5)->orderBy('month_year', 'asc')->get();
+            $data['payments'] = Payment::limit(5)->get();
+
             return view('dashboard.admin', $data);
         }
     }
@@ -149,16 +160,12 @@ class HomeController extends Controller
         $file_info['creator_id'] = Auth::user()->id;
         $file_info['address'] = $request->address;
         $file_info['country_of_choice'] = json_encode($request->country_of_choice);
-        $file_info['amount_paid'] = $request->amount_paid;
         $file_info['client_id'] = $user->id;
 
         ClientFileInfo::create($file_info);
 
         RmClient::create(['client_id' => $user->id, 'rm_id' => $request->rm_one]);
-        Target::addOneToTarget($request->rm_one);
-
         CounsellorClient::create(['client_id' => $user->id, 'counsellor_id' => $request->counsellor_one]);
-        Target::addOneToTarget($request->counsellor_one);
 
         if ($request->rm) {
             foreach ($request->rm as $rm) {
@@ -166,8 +173,6 @@ class HomeController extends Controller
                     'client_id' => $user->id,
                     'rm_id' => $rm
                 ]);
-
-                Target::addOneToTarget($rm);
             } 
         }
 
@@ -177,7 +182,6 @@ class HomeController extends Controller
                     'client_id' => $user->id,
                     'counsellor_id' => $counselor
                 ]);
-                Target::addOneToTarget($counselor);
             } 
         }
 

@@ -51,6 +51,13 @@ Route::resource('client', 'ClientController')->middleware('role:admin,rm,account
 Route::get('mytasks/{step_id}/{client_id}', 'ClientController@mytasks')->name('client.mytasks');
 Route::get('mysteps/{program_id}/{client_id}', 'ClientController@mySteps')->name('client.steps');
 Route::get('myprograms/{client_id}', 'ClientController@myPrograms')->name('client.myprograms');
+
+
+
+Route::post('myprograms/{client_id}', 'ClientController@storeClientProgram')->name('client.myprograms.store');
+
+
+
 Route::get('profile/{client_id}', 'ClientController@profile')->name('client.profile');
 Route::post('complete-group/{client_id}/{program_id}', 'ClientController@completeGroupStore')->name('client.group.complete.store');
 Route::get('client/counsellor/{client_id}', 'ClientController@assignCounsellor')->name('client.counsellor');
@@ -60,6 +67,7 @@ Route::post('client/rm/{client_id}', 'ClientController@assignRmStore')->name('cl
 Route::get('client/action/{client_id}', 'ClientController@action')->name('client.action');
 Route::post('client/step/{program_id}/{client_id}', 'ClientController@storeSteps')->name('client.step.store');
 Route::post('client/individual/step/{step_id}/{client_id}', 'ClientController@storeIndividualTask')->name('client.task.individual.store');
+
 
 Route::get('home', 'HomeController@home')->name('home');
 Route::get('dashboard', 'HomeController@index')->name('dashboard');
@@ -111,3 +119,10 @@ Route::get('email/{client_id}', 'TextController@emailIndex')->name('email.index'
 Route::post('email/{client_id}', 'TextController@sendEmail')->name('email.send');
 
 Route::get('download/{file_name}', 'TaskController@downloadFile')->name('download');
+
+Route::get('findClientProgram', 'ProgramController@clientProgram');
+Route::get('findProgramStep', 'ProgramController@programStep');
+Route::get('getIndividualClientProgram', 'ProgramController@individualClientProgram');
+
+Route::resource('payment', 'PaymentController');
+Route::get('history/payment', 'PaymentController@paymentHistory')->name('payment.history');
