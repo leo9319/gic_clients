@@ -64,9 +64,10 @@
 		
 		<div class="panel-footer">
 			
-			{!! Form::open() !!}
+			{!! Form::open(['route'=>['comment.spouse.tasks.store', 1]]) !!}
 			
 				{!! Form::textarea('comment', null, ['class'=>'form-control', 'rows' => 5]) !!}
+				{!! Form::hidden('spouse_task_id', $spouse_task->id) !!}
 				
 				{{ Form::submit('Add Comment', ['class'=>'btn btn-info button2 btn-block', 
 				'style'=>'margin-top:20px;']) }}

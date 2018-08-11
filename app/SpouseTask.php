@@ -1,0 +1,43 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class SpouseTask extends Model
+{
+	protected $fillable = ['client_id', 'step_id', 'task_id', 'deadline', 'form_entry_id', 'uploaded_file_name', 'status', 'priority', 'approval'];
+
+	public function tasks() 
+    {
+    	return $this->hasMany('App\Task', 'id', 'task_id');
+    }
+
+    public static function getSpouseTask($step_id, $client_id)
+    {
+    	return static::where([
+            'client_id' => $client_id,
+            'step_id' => $step_id,
+        ])->get();
+    }
+
+    public static function updateStatus($task_id, $status)
+    {
+        if ($status == 'complete') {
+            return SpouseTask::find($task_id)->update([
+                'status' => 'pending',
+                'approval' => -1,
+                'approved_by' => '',
+            ]);
+        }
+
+        else if ($status == 'incomplete')
+        {
+            return SpouseTask::find($task_id)->update([
+                'status' => 'incomplete',
+                'approval' => -1,
+                'approved_by' => '',
+            ]);
+        }
+    }
+}

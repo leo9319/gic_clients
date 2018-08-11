@@ -14,6 +14,7 @@ use App\Step;
 use App\ClientProgram;
 use App\Task;
 use App\ClientTask;
+use App\SpouseTask;
 use Carbon;
 use Auth;
 use PDF;
@@ -86,11 +87,19 @@ class PaymentController extends Controller
         );
 
         $program_tasks = Task::getUserTasks($step_id, 'client');
+        $spouse_program_tasks = Task::getUserTasks($step_id, 'spouse');
 
         foreach ($program_tasks as $program_task) {
             ClientTask::updateOrCreate(
                 ['client_id' => $client_id, 'step_id' => $step_id, 'task_id' => $program_task->id],
                 ['client_id' => $client_id, 'step_id' => $step_id, 'task_id' => $program_task->id]
+            );
+        }
+
+        foreach ($spouse_program_tasks as $spouse_program_task) {
+            SpouseTask::updateOrCreate(
+                ['client_id' => $client_id, 'step_id' => $step_id, 'task_id' => $spouse_program_task->id],
+                ['client_id' => $client_id, 'step_id' => $step_id, 'task_id' => $spouse_program_task->id]
             );
         }
 

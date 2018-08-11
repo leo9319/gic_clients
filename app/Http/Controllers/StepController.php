@@ -81,7 +81,9 @@ class StepController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        Step::find($request->step_id)->update(['step_name' => $request->step_name]);
+
+        return redirect()->back();
     }
 
     /**
@@ -93,5 +95,12 @@ class StepController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function delete($id)
+    {
+        Step::find($id)->delete();
+
+        return redirect()->back();
     }
 }

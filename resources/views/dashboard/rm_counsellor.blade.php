@@ -28,7 +28,7 @@
 
                   <p>
 
-                     <span class="number">{{ $target->sum('target') }}</span>
+                     <span class="number">{{ $target->sum('achieved') }}</span>
 
                      <span class="title">Total File Count</span>
 

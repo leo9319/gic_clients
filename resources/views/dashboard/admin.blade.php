@@ -58,7 +58,7 @@
 
                <div class="metric">
 
-                  <span class="icon"><i class="fa fa-eye"></i></span>
+                  <span class="icon"><i class="fa fa-book"></i></span>
 
                   <p>
 
@@ -75,7 +75,7 @@
 
                <div class="metric">
 
-                  <span class="icon"><i class="fa fa-bar-chart"></i></span>
+                  <span class="icon"><i class="fa fa-user"></i></span>
 
                   <p>
                      <span class="number">{{ $number_of_counsellor }}</span>
@@ -183,7 +183,7 @@
 
                   <div class="col-md-6 text-right">
 
-                     <a href="{{ route('payment.history') }}" class="btn btn-info btn-xs">View All</a>
+                     <a href="{{ route('payment.history') }}" class="btn btn-info btn-xs">All Payments</a>
 
                   </div>
 
@@ -231,18 +231,20 @@
                   <tbody>
 
                      @foreach($recent_clients as $index => $recent_client)
+                        @foreach($recent_client->userInfo as $client)
 
                      <tr>
 
-                        <td>{{ App\User::find($recent_client->client_id)->client_code }}</td>
-                        <td>{{ App\User::find($recent_client->client_id)->name }}</td>
-                        <td>{{ Carbon\Carbon::parse($recent_client->created_at)->format('d-M-Y') }}</td>
+                        <td>{{ $client->client_code }}</td>
+                        <td>{{ $client->name }}</td>
+                        <td>{{ Carbon\Carbon::parse($client->created_at)->format('d-M-Y') }}</td>
                         <td>
                            <a href="{{ route('client.profile', $recent_client->client_id) }}"><span class="label label-primary">VIEW PROFILE</span></a>
                         </td>
 
                      </tr>
 
+                        @endforeach
                      @endforeach
 
                   </tbody>
@@ -263,7 +265,7 @@
 
                   <div class="col-md-6 text-right">
 
-                     <a href="{{ route('client.index') }}" class="btn btn-info btn-xs">View All Clients</a>
+                     <a href="{{ route('client.index') }}" class="btn btn-info btn-xs">All Clients</a>
 
                   </div>
 
@@ -312,7 +314,12 @@
                               <li>
 
                                  <i class="fa fa-users"></i>
-                                 <p><a href="{{ route('client.profile', $client->id) }}">{{ $client->name }}</a> has an appointment with {{ $appointer->name }} on {{ Carbon\Carbon::parse($appointment->app_date)->format('d M') }} at {{ Carbon\Carbon::parse($appointment->app_time)->format('h:i a') }}</p>
+                                 <p>
+
+                                    <a href="{{ route('client.profile', $client->id) }}">{{ $client->name }}</a> 
+                                    has an appointment with 
+                                    <a href="{{ route('client.profile', $appointer->id) }}">{{ $appointer->name }}</a> 
+                                     on {{ Carbon\Carbon::parse($appointment->app_date)->format('d M') }} at {{ Carbon\Carbon::parse($appointment->app_time)->format('h:i a') }}</p>
 
                               </li>
 

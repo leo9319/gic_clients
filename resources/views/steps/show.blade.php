@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Clients')
+@section('title', 'Steps')
 
 @section('content')
 
@@ -22,6 +22,8 @@
 
 		@foreach($steps as $step)
 
+			 <?php $test =  $step->step_name ?>
+
 			<div class="panel-footer">
 
 				<p>
@@ -36,9 +38,9 @@
 
 						</a>
 
-						<button type="button" class="btn btn-secondary"><span class="fa fa-edit fa-lg"></span></button>
+						<button type="button" class="btn btn-secondary" id="{{ $step->id }}" name="{{ $step->step_name }}" onclick="editStep(this)"><span class="fa fa-edit fa-lg"></span></button>
 
-						<button type="button" class="btn btn-danger"><span class="fa fa-trash fa-lg"></span></button>
+						{{ link_to_route('step.delete', 'Delete', ['step_id' => $step->id], ['class' => 'btn btn-danger']) }}
 
 					</span>
 				</p>
@@ -117,18 +119,17 @@
 
 					<div class="modal-body">
 
-						{!! Form::open(['route'=>['step.edit', 18]]) !!}
+						{!! Form::open(['route'=>['step.update', 18], 'method' => 'PUT']) !!}
 
 							<div class="form-group">
 
 								{{ Form::label('Edit Step:' , null, ['class' => 'control-label']) }}
 
-								{{ Form::text('step_name', null, ['class' => 'form-control']) }}
+								{{ Form::text('step_name', null, ['class' => 'form-control', 'id' => 'step-name']) }}
 
-								{{ Form::hidden('program_id', $program->id, ['class' => 'form-control']) }}
+								{{ Form::hidden('step_id', null, ['class' => 'form-control', 'id' => 'step-id']) }}
 
 							</div>
-
 
 					</div>
 
@@ -136,7 +137,7 @@
 
 						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 
-						{{ Form::submit('Add', ['class'=>'btn btn-primary']) }}
+						{{ Form::submit('Update', ['class'=>'btn btn-primary']) }}
 
 					</div>
 
@@ -151,5 +152,22 @@
 	</div>
 
 </div>
+
+@section('footer_scripts')
+
+<script type="text/javascript">
+	
+	function editStep(elem) {
+
+		document.getElementById('step-name').value = elem.name;
+		document.getElementById('step-id').value = elem.id;
+
+		$("#editStep").modal();
+
+	}
+
+</script>
+
+@endsection
 
 @endsection

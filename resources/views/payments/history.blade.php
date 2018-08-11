@@ -69,30 +69,34 @@
 
             	@foreach($payments as $payment)
 
-            	<tr>
-                
-            		<td>
+                @foreach($payment->userInfo as $client)
+
+              	<tr>
                   
-            			<a href="{{ route('client.profile', $payment->client_id) }}">
+              		<td>
                     
-            				{{ App\User::find($payment->client_id)->client_code }}
+              			<a href="{{ route('client.profile', $payment->client_id) }}">
+                      
+              				{{ $client->client_code }}
+                      
+              			</a>
                     
-            			</a>
+              		</td>
                   
-            		</td>
-                
-            		<td>{{ App\User::find($payment->client_id)->name }}</td>
-                
-            		<td>{{ App\Program::find($payment->program_id)->program_name }}</td>
-                
-            		<td>{{ $payment->step_no }}</td>
-                
-            		<td>{{ number_format($payment->total_amount) }}</td>
-                
-            		<td>{{ number_format($payment->amount_paid) }}</td>
-                
-            	</tr>
+              		<td>{{ $client->name }}</td>
+                  
+              		<td>{{ $payment->program_id }}</td>
+                  
+              		<td>{{ $payment->step_no }}</td>
+                  
+              		<td>{{ number_format($payment->total_amount) }}</td>
+                  
+              		<td>{{ number_format($payment->amount_paid) }}</td>
+                  
+              	</tr>
               
+
+                @endforeach
 
             	@endforeach
 

@@ -53,12 +53,37 @@ class HomeController extends Controller
 
         if (Auth::user()->user_role == 'client') {
 
-            $programs = $data['programs'] = ClientProgram::where('client_id', $client_id)->get(); 
+            $data['appointments'] = Appointment::where('client_id', $client_id)->where('app_date', '>=', Carbon::now()->format('Y-m-d'))->get();
+
+            $programs = ClientProgram::where('client_id', $client_id); 
+            $data['programs'] = $programs->get();
+            $data['program_count'] = $programs->count();
+            $data['rm_client_count'] = RmClient::where('client_id', $client_id)->count();
+            $data['counselor_client_count'] = CounsellorClient::where('client_id', $client_id)->count();
             $completion_array = [];
             
+            $client_program_steps = ClientProgram::where('client_id', $client_id)->pluck('steps', 'program_id')->toArray(); 
 
-            $data['appointments'] = Appointment::where('client_id', $client_id)->where('app_date', '>=', Carbon::now()->format('Y-m-d'))->get();
+            foreach ($client_program_steps as $program => $steps) {
+
+                foreach (json_decode($steps) as $step) {
+                    $all_task_count = 0;
+                    $complete_task_count = 0;
+
+                    $all_tasks =  ClientTask::where('step_id', $step);
+
+                    $all_task_count +=  $all_tasks->count();
+                    $complete_task_count += $all_tasks->where('status', 'complete')->count();
+                }
+
+                $completion_array[$program] = ($complete_task_count / $all_task_count) * 100;
+            }
+
             $data['program_progresses'] = $completion_array;
+            $client_all_tasks = ClientTask::where('client_id', $client_id);
+            $data['client_tasks'] = $client_all_tasks->where('status', '!=', 'incomplete')->limit(5)->get();
+            $data['client_incomplete_tasks'] = ClientTask::where('client_id', $client_id)->where('status', '=', 'incomplete')->limit(5)->get();
+            $data['task_count'] = $client_all_tasks->count();
 
             return view('dashboard.client', $data);
         }
@@ -167,6 +192,17 @@ class HomeController extends Controller
         RmClient::create(['client_id' => $user->id, 'rm_id' => $request->rm_one]);
         CounsellorClient::create(['client_id' => $user->id, 'counsellor_id' => $request->counsellor_one]);
 
+        if ($request->numbers) {
+            foreach($request->numbers as $number) {
+
+                DB::table('additional_client_numbers')->insert([
+                    'client_id' => $user->id,
+                    'mobile' => $number
+                ]);
+
+            }
+        }
+
         if ($request->rm) {
             foreach ($request->rm as $rm) {
                 RmClient::create([
@@ -256,6 +292,10 @@ class HomeController extends Controller
         $response = str_replace('Success Count : 0 and Fail Count : 1', 'Failed!', $response);
 
         return redirect()->back()->with('message', 'Client Created!');
+
+
+
+
     }
 
     public function customStaffRegister(Request $request)

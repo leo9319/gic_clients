@@ -41,12 +41,18 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="mobile" class="col-md-3 control-label">Mobile</label>
+                            <label for="mobile" class="col-md-3 control-label">Mobile (Primary)</label>
 
                             <div class="col-md-6">
                                 <input id="mobile" type="number" class="form-control" name="mobile" value="" required autofocus>
                             </div>
+
+                            <div class="col-md-1">
+                                <button type="button" onclick="addNumber()" class="btn btn-sm btn-success">+ Add More</button>
+                            </div>
                         </div>
+
+                        <div id="number-container"></div>
 
                         <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                             <label for="email" class="col-md-3 control-label">Email</label>
@@ -222,6 +228,18 @@
             $('#counselor-container').append(html);
 
             $('#counselor-container').on('click', '#removeCounsellor', function(e){
+                $(this).parent('div').parent('div').remove();
+                removeIndex.push(Number(this.name));
+            });
+        }
+
+        function addNumber() {
+            
+            var html = '<div class="form-group"> <label for="number" class="col-md-3 control-label">Mobile</label> <div class="col-md-6"> <input id="number" class="form-control" name="numbers[]" > </div> <div class="col-md-1"> <button type="button" onclick="addNumber()" class="btn btn-sm btn-success">+ Add More</button> </div> <div class="col-md-1"> <button type="button" id="removeNumber" class="btn btn-sm btn-danger" style="margin-left: 10px">Remove</button> </div> </div>';
+
+            $('#number-container').append(html);
+
+            $('#number-container').on('click', '#removeNumber', function(e){
                 $(this).parent('div').parent('div').remove();
                 removeIndex.push(Number(this.name));
             });

@@ -32,6 +32,7 @@ Route::get('thank-you', function () {
 
 Route::resource('file', 'FileController');
 Route::resource('step', 'StepController');
+Route::get('step/delete/{step_id}', 'StepController@delete')->name('step.delete');
 Route::get('myfile', 'FileController@myFile')->name('file.myfile');
 
 Route::resource('task', 'TaskController')->middleware('role:admin,rm,counsellor');
@@ -45,12 +46,17 @@ Route::post('group/{client_id}/{program_id}', 'TaskController@taskGroupStore')->
 Route::post('group-table/{program_id}', 'TaskController@taskTableGroupStore')->name('task.table.group.store');
 Route::post('individual-tasks/{client_id}/{program_id}', 'TaskController@storeIndividualTasks')->name('task.add.individual');
 Route::get('approval/{client_task_id}/{approval}', 'TaskController@approval')->name('task.approval');
+Route::get('approval/spouse/{spouse_task_id}/{approval}', 'TaskController@spouseApproval')->name('task.spouse.approval');
 Route::post('update/client/task', 'TaskController@updateClientTask')->name('update.client.task');
+Route::post('update/spouse/task', 'TaskController@updateSpouseTask')->name('update.spouse.task');
 
 Route::resource('client', 'ClientController')->middleware('role:admin,rm,accountant,operation,counselor,backend');
 Route::get('mytasks/{step_id}/{client_id}', 'ClientController@mytasks')->name('client.mytasks');
+Route::get('spousetasks/{step_id}/{client_id}', 'ClientController@spousetasks')->name('spouse.mytasks');
 Route::get('mysteps/{program_id}/{client_id}', 'ClientController@mySteps')->name('client.steps');
+Route::get('spousesteps/{program_id}/{client_id}', 'ClientController@spouseSteps')->name('spouse.steps');
 Route::get('myprograms/{client_id}', 'ClientController@myPrograms')->name('client.myprograms');
+Route::get('spouseprograms/{client_id}', 'ClientController@spousePrograms')->name('spouse.myprograms');
 
 
 
@@ -67,6 +73,7 @@ Route::post('client/rm/{client_id}', 'ClientController@assignRmStore')->name('cl
 Route::get('client/action/{client_id}', 'ClientController@action')->name('client.action');
 Route::post('client/step/{program_id}/{client_id}', 'ClientController@storeSteps')->name('client.step.store');
 Route::post('client/individual/step/{step_id}/{client_id}', 'ClientController@storeIndividualTask')->name('client.task.individual.store');
+Route::post('spouse/individual/step/{step_id}/{client_id}', 'ClientController@storeSpouseIndividualTask')->name('spouse.task.individual.store');
 
 
 Route::get('home', 'HomeController@home')->name('home');
@@ -108,9 +115,11 @@ Route::get('sms/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@send
 Route::get('myclients/{user_id}', 'UserController@myclients')->name('user.clients');
 
 Route::get('comment/task/{client_task_id}', 'CommentController@task')->name('comment.tasks');
+Route::get('comment/spouse/task/{spouse_task_id}', 'CommentController@spouseTask')->name('comment.spouse.tasks');
 Route::get('comment/appointment/{client_appointment_id}', 'CommentController@appointment')->name('comment.appointments');
 
 Route::post('comment/task/{client_task_id}', 'CommentController@taskCommentStore')->name('comment.tasks.store');
+Route::post('comment/spouse/task/{spouse_task_id}', 'CommentController@spouseTaskCommentStore')->name('comment.spouse.tasks.store');
 Route::post('comment/appointment/{client_appointment_id}', 'CommentController@appointmentCommentStore')->name('comment.appointment.store');
 
 Route::get('sms/{client_id}', 'TextController@smsIndex')->name('sms.index');

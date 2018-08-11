@@ -12,6 +12,7 @@ use App\CounsellorClient;
 use App\RmClient;
 use App\Step;
 use App\Task;
+use App\SpouseTask;
 use DB;
 
 class ClientController extends Controller
@@ -110,6 +111,14 @@ class ClientController extends Controller
         return view('clients.tasks', $data);
     }
 
+    public function spousetasks($step_id, $client_id)
+    {
+        $data['active_class'] = 'my-tasks';
+        $data['all_tasks'] = SpouseTask::getSpouseTask($step_id, $client_id);
+
+        return view('clients.spouse_tasks', $data);
+    }
+
     public function storeIndividualTask(Request $request, $step_id, $client_id)
     {
         Task::create([
@@ -134,6 +143,30 @@ class ClientController extends Controller
         return redirect()->back();
     }
 
+    public function storeSpouseIndividualTask(Request $request, $step_id, $client_id)
+    {
+        Task::create([
+            'task_name'=> $request->task_name,
+            'form_name'=> $request->form_name,
+            'file_upload'=> $request->file_upload
+        ]);
+
+        $task = Task::where([
+            'task_name'=> $request->task_name,
+            'form_name'=> $request->form_name,
+            'file_upload'=> $request->file_upload,
+        ])->first();
+
+        SpouseTask::create([
+            'client_id' => $client_id,
+            'step_id' => $step_id,
+            'task_id' => $task->id,
+            'deadline' => $request->deadline,
+        ]);
+
+        return redirect()->back();
+    }
+
     public function mySteps($program_id, $client_id)
     {
         $data['active_class'] = 'my-tasks';
@@ -142,6 +175,17 @@ class ClientController extends Controller
         $data['steps'] = Step::getProgramAllStep($program_id);
 
         return view('clients.steps', $data);
+
+    }
+
+    public function spouseSteps($program_id, $client_id)
+    {
+        $data['active_class'] = 'my-tasks';
+        $data['assigned_steps'] = ClientProgram::assignedSteps($program_id, $client_id);
+        $data['client'] = User::find($client_id);
+        $data['steps'] = Step::getProgramAllStep($program_id);
+
+        return view('clients.spouse_steps', $data);
 
     }
 
@@ -181,6 +225,17 @@ class ClientController extends Controller
         $data['all_programs'] = Program::all();
 
         return view('clients.myprograms', $data);
+    }
+
+    public function spousePrograms($client_id)
+    {
+        $data['active_class'] = 'spouse';
+        $data['programs'] = ClientProgram::programs($client_id);
+        $data['client'] = User::where('id', $client_id)->first();
+        $data['all_programs'] = Program::all();
+
+        return view('clients.spouse_programs', $data);
+
     }
 
     public function storeClientProgram(Request $request, $client_id)

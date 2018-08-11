@@ -10,6 +10,7 @@ use App\RmClient;
 use App\Program;
 use App\TaskType;
 use App\Step;
+use App\SpouseTask;
 use Auth;
 use DB;
 use Storage;
@@ -125,6 +126,29 @@ class TaskController extends Controller
 
             ClientTask::find($task_id)->update([
                 'uploaded_file_name' => $filename,
+                'status' => 'pending',
+            ]);
+        }
+
+        return redirect()->back();
+    }
+
+    public function updateSpouseTask(Request $request)
+    {
+        $task_id = $request->task_id;
+        $client_id = $request->status;
+        $status = $request->status;
+
+        SpouseTask::updateStatus($task_id, $status);
+
+        if ($request->file('uploaded_file_name')) {
+            $file = $request->file('uploaded_file_name');
+            $ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+            $filename = 'file_' . $task_id . $client_id .'.'. $ext;
+            Storage::put('upload/images/' . 's'. $filename, file_get_contents($file->getRealPath()));
+
+            SpouseTask::find($task_id)->update([
+                'uploaded_file_name' => 's' . $filename,
                 'status' => 'pending',
             ]);
         }
@@ -363,6 +387,61 @@ class TaskController extends Controller
         $phone = $client->mobile;
         $username = 'admin';
         $password = 'Generic!1234';
+        $message ="Dear $client->name,\nThe task: $task->task_name has been $status by $assignee->name.For more information give is a call at 01778-000400.\nThank you.";
+
+        $message = urlencode($message);
+
+        $url = "http://gicl.powersms.net.bd/httpapi/sendsms?userId=form_sms&password=gicsms123&smsText=$message&commaSeperatedReceiverNumbers=$phone";
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true );
+        curl_setopt($ch, CURLOPT_ENCODING, "gzip,deflate");     
+        $response = curl_exec($ch);
+        curl_close($ch);
+        echo $phone . ': ';
+        $response = str_replace('Success Count : 1 and Fail Count : 0', 'Sent Successfully!', $response);
+        $response = str_replace('Success Count : 0 and Fail Count : 1', 'Failed!', $response);
+        echo $response . '<br>';
+
+        return redirect()->back();
+    }
+
+    public function spouseApproval($spouse_task_id, $approval)
+    {
+        SpouseTask::where('id', $spouse_task_id)
+            ->update([
+                'approval' => $approval,
+                'status' => ($approval == 1) ? 'complete' : 'incomplete',
+                'approved_by' => Auth::user()->id
+            ]);
+
+        $spouse_task = SpouseTask::where('id', $spouse_task_id)->first();
+        $client = User::find($spouse_task->client_id);
+        $assignee = Auth::user();
+        $task = Task::find($spouse_task->task_id);
+
+        ($approval == 1) ? $status = 'approved' : $status = 'dissapproved';
+
+        $data = [
+            'client' => $client,
+            'status' => $status,
+            'assignee' => $assignee,
+            'task' => $task,
+            'email' => $client->email,
+            'subject' => 'GIC Task Notification'
+        ];
+
+        Mail::send('mail.approval', $data, function($message) use ($data) {
+            $message->from('s.simab@gmail.com', 'GIC Task Notification');
+            $message->to($data['email']);
+            $message->subject($data['subject']);
+        });
+
+        $phone = $client->mobile;
+
         $message ="Dear $client->name,\nThe task: $task->task_name has been $status by $assignee->name.For more information give is a call at 01778-000400.\nThank you.";
 
         $message = urlencode($message);

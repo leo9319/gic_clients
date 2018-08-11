@@ -36,8 +36,12 @@
 					<a href="{{ route('appointment.client', $client->id) }}" class="btn btn-danger btn-block button2">Set Appointment</a>
 				</div>
 
+				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px">
+					<a href="{{ route('client.myprograms', $client->id) }}" class="btn btn-info btn-block button2">Client Programs and Tasks</a>
+				</div>
+
 				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px; margin-bottom: 20px">
-					<a href="{{ route('client.myprograms', $client->id) }}" class="btn btn-info btn-block button2">Assign Task</a>
+					<a href="{{ route('spouse.myprograms', $client->id) }}" class="btn btn-danger btn-block button2">Spouse Programs and Tasks</a>
 				</div>
 			</div>
 		</div>

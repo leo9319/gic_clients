@@ -21,6 +21,14 @@ class Comment extends Model
         ])->get();
     }
 
+    public static function getAllSpouseTaskComment($task_id)
+    {
+        return static::where([
+            'activity_id' => $task_id,
+            'activity_type' => 'spouse task',
+        ])->get();
+    }
+
     public static function getAllAppointmentComment($appointment_id)
     {
     	return static::where([

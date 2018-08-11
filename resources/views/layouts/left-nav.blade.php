@@ -16,10 +16,48 @@
 
             @if(Auth::user()->user_role == 'client')
                <li>
-               <a href="{{ route('client.myprograms', Auth::user()->id) }}" class="{{ $active_class == 'client-tasks' ? 'active' : '' }}">
+
+               <a href="#subTasks" data-toggle="collapse" class="collapsed {{ $active_class == 'client-tasks' ? 'active' : '' }}">
+
                   <i class="fa fa-tasks"></i>
-                  <span>My Programs and Tasks</span></a>
-            </li>
+
+                  <span>Tasks</span> 
+
+                  <i class="icon-submenu lnr lnr-chevron-left"></i>
+
+               </a>
+
+
+               <div id="subTasks" class="collapse ">
+
+               <ul class="nav">
+
+                  <li>
+
+                  <a href="{{ route('client.myprograms', Auth::user()->id) }}" class="{{ $active_class == 'client-tasks' ? 'active' : '' }}">
+
+                  <i class="fa fa-tasks"></i>
+
+                  <span>My Tasks</span></a>
+
+                  </li>
+
+                  <li>
+
+                  <a href="{{ route('spouse.myprograms', Auth::user()->id) }}" class="{{ $active_class == 'client-tasks' ? 'active' : '' }}">
+
+                  <i class="fa fa-tasks"></i>
+
+                  <span>Spouse Tasks</span></a>
+
+                  </li>
+
+               </ul>
+
+               </div>
+
+               </li>
+               
             @endif
 
             @if(Auth::user()->user_role == 'admin')
@@ -104,7 +142,7 @@
                </div>
             </li>
 
-            @if (Auth::user()->user_role == 'accountant')
+            @if (Auth::user()->user_role == 'admin' | Auth::user()->user_role == 'accountant')
 
             <li>
                <a href="#subPayments" data-toggle="collapse" class="collapsed {{ $active_class == 'payments' ? 'active' : '' }}"><i class="fa fa-credit-card"></i> <span>Payments</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
