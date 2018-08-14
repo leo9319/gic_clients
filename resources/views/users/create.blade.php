@@ -40,6 +40,20 @@
                             </div>
                         </div>
 
+                        <div class="form-group{{ $errors->has('spouse-name') ? ' has-error' : '' }}">
+                            <label for="spouse_name" class="col-md-3 control-label">Spouse Name</label>
+
+                            <div class="col-md-6">
+                                <input id="naspouse_nameme" type="text" class="form-control" name="spouse_name" value="{{ old('spouse_name') }}" required autofocus>
+
+                                @if ($errors->has('spouse-name'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('spouse-name') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label for="mobile" class="col-md-3 control-label">Mobile (Primary)</label>
 

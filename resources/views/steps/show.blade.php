@@ -43,7 +43,9 @@
 						{{ link_to_route('step.delete', 'Delete', ['step_id' => $step->id], ['class' => 'btn btn-danger']) }}
 
 					</span>
+					
 				</p>
+
 			</div>
 
 		@endforeach

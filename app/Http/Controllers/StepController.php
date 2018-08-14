@@ -84,6 +84,7 @@ class StepController extends Controller
         Step::find($request->step_id)->update(['step_name' => $request->step_name]);
 
         return redirect()->back();
+
     }
 
     /**

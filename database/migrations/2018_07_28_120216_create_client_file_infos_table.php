@@ -17,6 +17,7 @@ class CreateClientFileInfosTable extends Migration
             $table->increments('id');
             $table->integer('client_id');
             $table->integer('creator_id');
+            $table->string('spouse_name')->nullable();
             $table->text('address');
             $table->string('country_of_choice');
             $table->timestamps();

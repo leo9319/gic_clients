@@ -63,6 +63,13 @@ class ProgramController extends Controller
         //
     }
 
+    public function editProgram(Request $request)
+    {
+        Program::find($request->program_id)->update(['program_name' => $request->program_name]);
+
+        return redirect()->back();
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -84,6 +91,13 @@ class ProgramController extends Controller
     public function destroy(Program $program)
     {
         //
+    }
+
+    public function deleteProgram($program_id)
+    {
+        Program::find($program_id)->delete();
+
+        return redirect()->back();
     }
 
     public function clientProgram()

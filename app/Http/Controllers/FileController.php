@@ -26,15 +26,10 @@ class FileController extends Controller
      */
     public function index()
     {
-        $client_id = Auth::user()->id;
         $data['active_class'] = 'file';
-
-        $data['completed_tasks'] = ClientTask::where([
-                                    'client_id' => Auth::user()->id,
-                                    'status' => 'complete'
-                                ])->get();
-
-        $programs = $data['client_programs'] = ClientProgram::where('client_id', $client_id)->get();
+        $client_id = Auth::user()->id;
+        $data['completed_tasks'] = ClientTask::getTasks($client_id, 'complete');
+        $programs = $data['client_programs'] = ClientProgram::programs($client_id);
         $completion_array = [];
 
         foreach ($programs as $key => $program) {

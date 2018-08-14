@@ -87,6 +87,26 @@ class TaskController extends Controller
         //
     }
 
+    public function editTask(Request $request)
+    {
+        Task::find($request->task_id)->update([
+            'task_name' => $request->task_name,
+            'assigned_to' => $request->assigned_to,
+            'file_upload' => $request->file_upload,
+            'duration' => $request->duration,
+            'form_name' => $request->form_name,
+        ]);
+        
+        return redirect()->back();
+    }
+
+    public function deleteTask($task_id)
+    {
+        Task::find($task_id)->delete();
+
+        return redirect()->back();
+    }
+
     /**
      * Update the specified resource in storage.
      *

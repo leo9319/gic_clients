@@ -12,4 +12,9 @@ class Payment extends Model
     {
     	return $this->hasMany('App\User', 'id', 'client_id');
     }
+
+    public function programInfo()
+    {
+    	return $this->hasMany('App\Program', 'id', 'program_id');
+    }
 }

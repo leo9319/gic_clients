@@ -13,6 +13,7 @@ use App\RmClient;
 use App\Step;
 use App\Task;
 use App\SpouseTask;
+use App\ClientFileInfo;
 use DB;
 
 class ClientController extends Controller
@@ -233,6 +234,7 @@ class ClientController extends Controller
         $data['programs'] = ClientProgram::programs($client_id);
         $data['client'] = User::where('id', $client_id)->first();
         $data['all_programs'] = Program::all();
+        $data['spouse_name'] = ClientFileInfo::where('client_id', $client_id)->first()->spouse_name;
 
         return view('clients.spouse_programs', $data);
 
@@ -254,24 +256,9 @@ class ClientController extends Controller
     {
         $data['active_class'] = 'rms';
         $data['client'] = User::find($client_id);
-        $data['client_complete_tasks'] = ClientTask::where([
-                                'client_id' => $client_id,
-                                'status' => 'complete'
-                            ])->get();
-
-        $data['client_pending_tasks'] = ClientTask::where([
-                                'client_id' => $client_id,
-                                'status' => 'pending'
-                            ])->get();
-
         $data['client_programs'] = ClientProgram::where('client_id', $client_id)->get();
 
-        $pending_group_tasks = [];
-        $completed_group_tasks = [];
-
-        $data['client_group_pending_tasks'] = DB::table('group_tasks')->whereIn('program_id', $pending_group_tasks)->get();
-
-        $data['client_group_completed_tasks'] = DB::table('group_tasks')->whereIn('program_id', $completed_group_tasks)->get();
+        $data['program_progresses'] = $this->clientProgramProgress($client_id);
 
         return view('profile.index', $data);
     }
@@ -368,5 +355,29 @@ class ClientController extends Controller
         $data['client'] = User::find($client_id);
 
         return view('clients.actions', $data);
+    }
+
+    public function clientProgramProgress($client_id)
+    {
+        $completion_array = [];
+
+        $client_program_steps = ClientProgram::where('client_id', $client_id)->pluck('steps', 'program_id')->toArray(); 
+
+        foreach ($client_program_steps as $program => $steps) {
+
+            foreach (json_decode($steps) as $step) {
+                $all_task_count = 0;
+                $complete_task_count = 0;
+
+                $all_tasks =  ClientTask::where('step_id', $step);
+
+                $all_task_count +=  $all_tasks->count();
+                $complete_task_count += $all_tasks->where('status', 'complete')->count();
+            }
+
+            $completion_array[$program] = ($complete_task_count / $all_task_count) * 100;
+        }
+
+        return $completion_array;
     }
 }

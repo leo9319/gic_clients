@@ -17,7 +17,7 @@
 <div class="container-fluid">
    <div class="panel">
       <div class="panel-body">
-         <table id="clients" class="table table-striped" style="width:100%">
+         <table id="clients" class="table table-striped table-bordered" style="width:100%">
             <thead>
                <tr>
                   <th>Client ID.</th>
@@ -40,6 +40,15 @@
                </tr>
                @endforeach
             </tbody>
+            <tfoot>
+              <tr>
+                  <th>Client ID.</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Action</th>
+               </tr>
+            </tfoot>
          </table>
 
          <div id="client-counsellors" class="modal fade" role="dialog">

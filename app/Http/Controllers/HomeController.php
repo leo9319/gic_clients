@@ -96,8 +96,7 @@ class HomeController extends Controller
                                         'appointer_id' => $user_id,
                                         'app_date' => $todays_date->format('y-m-d')
                                     ])->get();
-
-            // $data['target'] = Target::userCurrentMonthTarget($user_id);
+            
             $data['target'] = Target::getUserTarget($user_id);
 
             if (Auth::user()->user_role == 'counselor') {
@@ -183,6 +182,7 @@ class HomeController extends Controller
         $user = User::where('client_code', $request->client_code)->first();
 
         $file_info['creator_id'] = Auth::user()->id;
+        $file_info['spouse_name'] = $request->spouse_name;
         $file_info['address'] = $request->address;
         $file_info['country_of_choice'] = json_encode($request->country_of_choice);
         $file_info['client_id'] = $user->id;

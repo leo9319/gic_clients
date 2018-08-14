@@ -16,7 +16,7 @@
 
 					<img src="{{ asset('img/blank-dp.png') }}" class="img-circle" alt="Avatar" height="100">
 
-					<h3 class="name">Vabir Naam</h3>
+					<h3 class="name">{{ $spouse_name }}</h3>
 
 				</div>
 

@@ -23,7 +23,7 @@
 
                      		<span class="input-group-addon"><i class="fa fa-globe"></i></span>
 
-                     		{!! Form::text('target', null, ['class'=>'form-control', 'placeholder'=>'Target']) !!}
+                     		{!! Form::text('target', null, ['class'=>'form-control', 'placeholder'=>'Target', 'required']) !!}
 
                   		</div>
 
@@ -35,7 +35,7 @@
 
                      		<span class="input-group-addon"><i class="fa fa-globe"></i></span>
 
-                     		<input type="month" class="form-control" name="month_year">
+                     		<input type="month" class="form-control" name="month_year" required="">
 
                   		</div>
 

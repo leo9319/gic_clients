@@ -337,7 +337,7 @@
 
       </div>
 
-      <!-- Webiste Visits -->
+      <!-- Number of Clients -->
 
       <div class="col-md-6">
 
@@ -345,7 +345,7 @@
 
             <div class="panel-heading">
 
-               <h3 class="panel-title">Website Visits</h3>
+               <h3 class="panel-title">Clients Per Program</h3>
 
                <div class="right">
 
@@ -471,55 +471,61 @@
 
    </div>
       
-   </div>
-
 </div>
 
 @section('footer_scripts')
 <script>
 
+   var program = [];
+   var count = [];
+
    $(function() {
-      var data, options, label_array, series_array;
 
-   $.ajax({
+      var data, options, series_array;
 
-      type: 'get',
+      $.ajax({
 
-      url: '{!!URL::to('findClientProgram')!!}',
+         type: 'get',
+         url: '{!!URL::to('findClientProgram')!!}',
+         success:function(data) {
 
-      success:function(data) {
+            for (var i = 0; i < data.length; i++) {
+               program[i] = data[i].program_name;
+               count[i] = data[i].total;
+               
+            }
 
-         for(var i = 0; i < data.length; i++) {
+            new Chartist.Line('#visits-trends-chart', data, options);
 
-           label_array[i] = data[i].program_name;
+            data = {
+               labels: program,
+               series: [
+                  count
+               ]
+            };
 
-         }
+            options = {
+               height: 400,
+               axisX: {
+                  showGrid: false
+               },
+            };
 
-         console.log(label_array[0]);
+            new Chartist.Bar('#visits-chart', data, options);
 
-      },
+         },
 
-    });
+         error: function(data) {             
+            
+         },
+
+   });
 
    
 
-   new Chartist.Line('#visits-trends-chart', data, options);
+      
 
-      data = {
-         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-         series: [
-            [6384, 6342, 5437, 2764, 3958, 5068, 7654]
-         ]
-      };
-
-      options = {
-         height: 300,
-         axisX: {
-            showGrid: false
-         },
-      };
-
-      new Chartist.Bar('#visits-chart', data, options);
+      
 
    });
 
