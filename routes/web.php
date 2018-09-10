@@ -188,6 +188,6 @@ Route::get('thank-you', function () {
 
 Route::resource('gcalendar', 'gCalendarController');
 Route::get('appointment/{client_id}', 'gCalendarController@setAppointment')->name('appointment.client');
-Route::get('oauth', ['as' => 'oauthCallback', 'uses' => 'gCalendarController@oauth']);
+Route::get('oauth', 'gCalendarController@oauth')->name('oauthCallback');
 Route::get('email/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendEmail')->name('email');
 Route::get('sms/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendSMS')->name('sms');

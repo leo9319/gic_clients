@@ -64,15 +64,8 @@ class gCalendarController extends Controller
         } else {
             $this->client->authenticate($_GET['code']);
             $_SESSION['access_token'] = $this->client->getAccessToken();
-            // return redirect()->route('oauthCallback');
-            // return redirect()->route('gcalendar.index');
-            // return redirect('https://calendar.google.com/calendar/r/eventedit');
-            // return Redirect::to('https://calendar.google.com/calendar/r/month?sf=true');
-            // return redirect()->url('https://calendar.google.com/calendar/r/month?sf=true');
 
-            echo '<script type="text/javascript">'
-               , 'history.go(-2);'
-               , '</script>';
+            return redirect('dashboard');
         }
     }
 

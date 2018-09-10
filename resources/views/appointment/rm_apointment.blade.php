@@ -21,7 +21,7 @@
 
 			<div class="pull-right">
 
-				<a href="/oauth">Sign In</a>
+				<a href="{{ route('oauthCallback') }}">Sign In</a>
 
 			</div>
 

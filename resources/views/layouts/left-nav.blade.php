@@ -60,6 +60,14 @@
                
             @endif
 
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'counsellor')
+            <li>
+               <a href="{{ route('task.index') }}" class="{{ $active_class == 'tasks' ? 'active' : '' }}">
+                  <i class="fa fa-tasks"></i> 
+                  <span>Programs and Tasks</span></a>
+            </li>
+            @endif
+
             @if(Auth::user()->user_role == 'admin')
                <li>
                <a href="#subTargets" data-toggle="collapse" class="collapsed {{ $active_class == 'set-targets' ? 'active' : '' }}"><i class="fa fa-bullseye"></i> <span>Set Targets</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
@@ -167,13 +175,7 @@
 
             @endif
 
-            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'counsellor')
-            <li>
-               <a href="{{ route('task.index') }}" class="{{ $active_class == 'tasks' ? 'active' : '' }}">
-                  <i class="fa fa-tasks"></i> 
-                  <span>Tasks</span></a>
-            </li>
-            @endif
+            
 
             @if (Auth::user()->user_role != 'client')
             <li>
