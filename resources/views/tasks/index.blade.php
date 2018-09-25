@@ -2,6 +2,8 @@
 
 @section('title', 'Tasks')
 
+@section('url', '/dashboard')
+
 @section('content')
 
 <div class="container-fluid">

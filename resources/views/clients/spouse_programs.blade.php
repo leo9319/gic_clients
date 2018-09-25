@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/dashboard')
+
 @section('title', 'Programs')
 
 @section('content')
@@ -16,7 +18,7 @@
 
 					<img src="{{ asset('img/blank-dp.png') }}" class="img-circle" alt="Avatar" height="100">
 
-					<h3 class="name">{{ $spouse_name }}</h3>
+					<a href="{{ url('client/action/' . $client->id) }}"><h3 class="name">{{ $spouse_name }}</h3></a>
 
 				</div>
 
@@ -72,7 +74,7 @@
 							<td>{{ $program_info->program_name }}</td>
 
 							<td>
-								<a href="{{ route('spouse.mytasks', ['program_id' => $program_info->id, 'client_id'=>$programs->first()->client_id]) }}">
+								<a href="{{ route('spouse.steps', ['program_id' => $program_info->id, 'client_id'=>$client->id]) }}">
 									<button class="btn btn-info btn-block button2">Steps</button>
 								</a>
 							</td>

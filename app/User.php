@@ -37,4 +37,9 @@ class User extends Authenticatable
         return static::where('user_role', '!=', 'client')->get();
     }
 
+    public function hasSpouse()
+    {
+        return $this->hasOne('App\ClientFileInfo', 'client_id')->where('spouse_name', '!=', '');
+    }
+
 }

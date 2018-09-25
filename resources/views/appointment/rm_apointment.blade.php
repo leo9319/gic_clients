@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/dashboard')
+
 @section('title', 'Set Appointment')
 
 @section('header_scripts')

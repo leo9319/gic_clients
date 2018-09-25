@@ -4,11 +4,37 @@
 
 @section('content')
 
+@section('header_scripts')
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="{{ asset('css/timeline.css') }}">
+<style type="text/css">
+  body{
+    background-color: white;
+  }
+</style>
+
+</style>
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script>
+   $(document).ready(function() {
+      $('#example').DataTable({
+         "bPaginate": false,
+          "bLengthChange": false,
+          "bFilter": true,
+          "bInfo": false,
+          "searching": false,
+          "bAutoWidth": false,
+          "order": [[ 0, "desc" ]] });
+   });
+</script>
+@stop
+
 <div class="container-fluid">
 
-   <div class="panel panel-profile" style="height: 500px">
+   <div class="panel panel-profile" style="height: 800px">
 
-      <div class="clearfix">
+      <div class="clearfix" style="background-color: white;">
 
          <div class="profile-left">
 
@@ -82,19 +108,19 @@
 
                   <div class="table-responsive">
 
-                     <table class="table project-table">
+                     <table class="table project-table" style="border-collapse:collapse">
 
                         <thead>
 
                            <tr>
 
-                              <th>Program Name</th>
+                              <th>Program</th>
 
-                              <th>Progress</th>
+                              <th>Progress</th>  
 
-                              <th>View Tasks</th>
-
-                              <th>Status</th>                            
+                              <th>Steps</th>    
+                                                     
+                              <th>Status</th>                           
 
                            </tr>
 
@@ -116,7 +142,7 @@
 
 	                                       <div class="progress-bar" role="progressbar" aria-valuenow="{{ number_format($program_progresses[$pi->id]) }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ number_format($program_progresses[$pi->id]) }}%;">
 
-	                                          <span>{{ number_format($program_progresses[$pi->id]) }}</span>
+	                                          <span>{{ number_format($program_progresses[$pi->id]) }}%</span>
 
 	                                       </div>
 
@@ -151,6 +177,42 @@
                </div>
 
             </div>
+
+            
+            <h4 class="heading">Timeline</h4>
+
+            <div class="container-fluid">
+            <div class="row example-centered">
+
+                <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2">
+
+                    <ul class="timeline timeline-centered">
+
+                      @foreach($timelines as $key => $value)
+
+                        <li class="timeline-item">
+                            <div class="timeline-info">
+                                <span>
+                                  {{ Carbon\Carbon::parse($key)->format('dS F, Y') }}<br>
+                                  
+                                  {{ Carbon\Carbon::parse($key)->format('g:i a') }}
+                                </span>
+
+                            </div>
+
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                {!! $value !!}
+                            </div>
+                        </li>
+
+                        @endforeach
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+            
 
          </div>
 

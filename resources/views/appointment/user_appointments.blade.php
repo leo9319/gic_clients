@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/dashboard')
+
 @section('title', 'My Appointments')
 
 @section('content')

@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/target/counselor')
+
 @section('title', 'Tasks')
 
 @section('content')

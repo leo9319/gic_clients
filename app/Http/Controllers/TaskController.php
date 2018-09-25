@@ -11,6 +11,7 @@ use App\Program;
 use App\TaskType;
 use App\Step;
 use App\SpouseTask;
+use App\CounselorRmTask;
 use Auth;
 use DB;
 use Storage;
@@ -488,4 +489,113 @@ class TaskController extends Controller
     {
         return Storage::download('upload/images/' . $file_name);
     }
+
+    public function userTasks($user_id)
+    {
+        $data['active_class'] = 'user-tasks';
+        $data['all_tasks'] = CounselorRmTask::where('user_id', $user_id)->get();
+        $data['user_id'] = $user_id;
+        $data['clients'] = User::userRole('client')->get();
+        $data['programs'] = Program::all();
+
+        return view('tasks.user_task', $data);
+    }
+
+    public function updateTaskStatus($task_id, $status)
+    {
+        CounselorRmTask::updateStatus($task_id, $status);
+
+        return redirect()->back();
+    }
+
+    public function uploadFile(Request $request)
+    {
+        if ($request->file('uploaded_file_name')) {
+
+            $file = $request->file('uploaded_file_name');
+            $ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+            $filename = 'file_' . str_random(5) . '.' . $ext;
+
+            Storage::put('upload/images/' . $filename, file_get_contents(($request->file('uploaded_file_name')->getRealPath())));
+
+            CounselorRmTask::where('id', $request->task_id)->update(['status' => 'pending', 'uploaded_file_name' => $filename]);
+
+        } 
+
+        return redirect()->back();
+        
+    }
+
+    public function addUserTask(Request $request)
+    {
+        Task::create([
+            'priority' => 1,
+            'task_name' => $request->task_name,
+            'form_name' => $request->form_name,
+            'file_upload' => $request->file_upload,
+        ]);
+
+        $task_id = Task::where([
+            'task_name' =>$request->task_name,
+            'form_name' =>$request->form_name,
+        ])->first()->id;
+
+        CounselorRmTask::insert([
+            'client_id' => $request->client_id,
+            'user_id' => $request->user_id,
+            'step_id' => $request->step_id,
+            'task_id' => $task_id,
+            'deadline' => $request->deadline
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function getStep(Request $request) 
+    {
+        $data = DB::table('steps')->where('program_id', $request->program_id)->get();
+
+        return response()->json($data);
+    }
+
+    public function userTask($client_id, $user_id)
+    {
+        $data['active_class'] = 'client-tasks';
+        $data['user'] = User::find($user_id);
+
+        $data['all_tasks'] = CounselorRmTask::where([
+            'client_id' => $client_id,
+            'user_id' => $user_id
+        ])->get();
+
+        return view('clients.user_tasks', $data);
+
+    }
+
+    public function taskApprove($task_id, $approval)
+    {
+
+        if(!$approval) {
+
+            CounselorRmTask::where('id', $task_id)->update([
+                'approval' => 0,
+                'status' => 'incomplete',
+                'approved_by' => Auth::user()->id,
+            ]);
+
+        } else {
+
+            CounselorRmTask::where('id', $task_id)->update([
+                'approval' => 1,
+                'status' => 'complete',
+                'approved_by' => Auth::user()->id,
+            ]);
+
+        }
+
+        return redirect()->back();
+
+        
+    }
+
 }

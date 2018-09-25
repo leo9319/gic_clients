@@ -257,16 +257,6 @@ class FileController extends Controller
         //
     }
 
-    public function test()
-    {
-        // $data['user_info'] = File::find(1);
-        $data['active_class'] = 'file';
-        // $data['array'] = $this->stringToIntegerArray($data['user_info']->programs);
-
-        return view('a', $data);
-
-    }
-
     public function myFile()
     {
         $data['active_class'] = 'file';

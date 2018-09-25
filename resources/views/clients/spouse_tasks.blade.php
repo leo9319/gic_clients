@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/spousesteps/' . $step->program_id . '/' . $client->id)
+
 @section('title', 'Spouse Tasks')
 
 @section('header_scripts')
@@ -279,7 +281,7 @@
 
       <div class="modal-body">
 
-        {!! Form::open(['route'=>['spouse.task.individual.store', $all_tasks->first()->step_id, $all_tasks->first()->client_id]]) !!}
+        {!! Form::open(['route'=>['spouse.task.individual.store',1, 1]]) !!}
 
           <div class="form-group">
             

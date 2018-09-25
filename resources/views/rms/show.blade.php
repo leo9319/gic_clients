@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/rms')
+
 @section('title', 'RMs')
 
 @section('header_scripts')

@@ -6,12 +6,28 @@
                <a href="{{ route('dashboard') }}" class="{{ $active_class == 'dashboard' ? 'active' : '' }}"><i class="lnr lnr-home"></i> <span>Dashboard</span></a>
             </li>
 
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'counsellor')
+            <li>
+               <a href="{{ route('task.index') }}" class="{{ $active_class == 'tasks' ? 'active' : '' }}">
+                  <i class="fa fa-tasks"></i> 
+                  <span>Programs and Tasks</span></a>
+            </li>
+            @endif
+
             @if(Auth::user()->user_role == 'rm' | Auth::user()->user_role == 'counselor')
                <li>
-               <a href="{{ route('user.clients', Auth::user()->id) }}" class="{{ $active_class == 'my-clients' ? 'active' : '' }}">
-                  <i class="fa fa-user-plus"></i>
-                  <span>My Clients</span></a>
-            </li>
+                  <a href="{{ route('user.clients', Auth::user()->id) }}" class="{{ $active_class == 'my-clients' ? 'active' : '' }}">
+                     <i class="fa fa-user-plus"></i>
+                     <span>My Clients</span>
+                  </a>
+               </li>
+
+               <li>
+                  <a href="{{ route('task.user.tasks', Auth::user()->id) }}" class="{{ $active_class == 'user-tasks' ? 'active' : '' }}">
+                     <i class="fa fa-check"></i>
+                     <span>My Tasks</span>
+                  </a>
+               </li>
             @endif
 
             @if(Auth::user()->user_role == 'client')
@@ -44,11 +60,31 @@
 
                   <li>
 
-                  <a href="{{ route('spouse.myprograms', Auth::user()->id) }}" class="{{ $active_class == 'client-tasks' ? 'active' : '' }}">
+                     <a href="{{ route('spouse.myprograms', Auth::user()->id) }}" class="{{ $active_class == 'client-tasks' ? 'active' : '' }}">
 
-                  <i class="fa fa-tasks"></i>
+                     <i class="fa fa-tasks"></i>
 
-                  <span>Spouse Tasks</span></a>
+                     <span>Spouse Tasks</span></a>
+
+                  </li>
+
+                  <li>
+
+                     <a href="{{ route('client.assigned.counselor', Auth::user()->id) }}" class="{{ $active_class == 'client-tasks' ? 'active' : '' }}">
+
+                     <i class="fa fa-tasks"></i>
+
+                     <span>Counselor Tasks</span></a>
+
+                  </li>
+
+                  <li>
+
+                     <a href="{{ route('client.assigned.rm', Auth::user()->id) }}" class="{{ $active_class == 'client-tasks' ? 'active' : '' }}">
+
+                     <i class="fa fa-tasks"></i>
+
+                     <span>RM Tasks</span></a>
 
                   </li>
 
@@ -58,14 +94,6 @@
 
                </li>
                
-            @endif
-
-            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'counsellor')
-            <li>
-               <a href="{{ route('task.index') }}" class="{{ $active_class == 'tasks' ? 'active' : '' }}">
-                  <i class="fa fa-tasks"></i> 
-                  <span>Programs and Tasks</span></a>
-            </li>
             @endif
 
             @if(Auth::user()->user_role == 'admin')
@@ -177,7 +205,7 @@
 
             
 
-            @if (Auth::user()->user_role != 'client')
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'backend')
             <li>
                <a href="{{ route('client.index') }}" class="{{ $active_class == 'clients' ? 'active' : '' }}">
                   <i class="fa fa-users"></i> 

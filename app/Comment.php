@@ -36,4 +36,16 @@ class Comment extends Model
     		'activity_type' => 'appointment',
     	])->get();
     }
+
+    public static function getAllCommentsOfCommenter($commenter_id)
+    {
+        return static::where('commenter_id', $commenter_id)->get();
+    }
+
+    public function getTaskName($activity_id)
+    {
+        $task_id = ClientTask::find($activity_id)->task_id;
+
+        return Task::find($task_id)->task_name;
+    }
 }

@@ -33,7 +33,13 @@
 			<div class="main-content">
 				<div class="container-fluid">
 					<!-- OVERVIEW -->
-					@yield('content')
+
+					<a href="@yield('url')"><i class="fa fa-arrow-circle-left fa-lg"></i> Back</a>
+					<br><br>
+
+						
+				</div>
+				@yield('content')
 				</div>
 			</div>
 		</div>

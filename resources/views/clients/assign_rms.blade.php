@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/client/action/' . $client->id)
+
 @section('title', 'Assign Rms')
 
 @section('header_scripts')

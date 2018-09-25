@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/spouseprograms/' . $client->id)
+
 @section('title', 'My Tasks')
 
 @section('header_scripts')
@@ -31,6 +33,9 @@
          @endif
       </div>
       <div class="panel-body">
+
+        @if($assigned_steps->steps)
+
          <table class="table table-striped">
           <thead>
             <tr>
@@ -57,6 +62,12 @@
             @endforelse
           </tbody>
         </table>
+
+        @else
+
+        <p>NO TASKS ASSIGNED!!!</p>
+
+        @endif
       </div>
    </div>
 </div>
@@ -69,7 +80,7 @@
         <h4 class="modal-title">Add Step</h4>
       </div>
       <div class="modal-body">
-        {!! Form::open(['route'=>['client.step.store', $steps->first()->program_id, $client->id]]) !!}
+        {!! Form::open(['route'=>['client.step.store', $program->id, $client->id]]) !!}
           {{ Form::label('Step Name:') }}
           {{ Form::select('step_id', $steps->pluck('step_name', 'id'), null, ['class'=>'form-control']) }}
         

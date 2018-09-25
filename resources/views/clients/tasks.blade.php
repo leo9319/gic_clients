@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/mysteps/'. $step->program_id . '/' . $client->id)
+
 @section('title', 'My Tasks')
 
 @section('header_scripts')
@@ -57,7 +59,7 @@
                   <th>Task</th>
                   <th>Deadline</th>
                   <th>Status</th>
-                  <th>Approved / Disapproved By</th>
+                  {{-- <th>Approved / Disapproved By</th> --}}
                   <th>Uploaded File</th>
 
                   @if(Auth::user()->user_role == 'admin' | Auth::user()->user_role == 'rm' | Auth::user()->user_role == 'counselor')
@@ -84,7 +86,7 @@
                         <td>{{ Carbon\Carbon::parse($task->deadline)->format('d-m-Y') }}</td>
                         <td>{{ $task->status }}</td>
 
-                        @if($task->approval == 1)
+                        {{-- @if($task->approval == 1)
 
                           <td>Approved by: {{ App\User::find($task->approved_by)->name }}</td>
 
@@ -96,7 +98,7 @@
 
                           <td></td> 
 
-                        @endif
+                        @endif --}}
 
                         @if($task->uploaded_file_name)
                           <td><a href="{{ route('download', $task->uploaded_file_name) }}">View File</a></td>
@@ -107,10 +109,23 @@
                         
 
                         @if(Auth::user()->user_role == 'admin' | Auth::user()->user_role == 'rm' | Auth::user()->user_role == 'counselor')
+
+                        @if($task->approval == -1)
+
                         <td>
                           <a href="{{ route('task.approval', [$task->id, 1]) }}" class="label label-success">Approve</a>
                           <a href="{{ route('task.approval', [$task->id, 0]) }}" class="label label-danger">Disapprove</a>
                         </td>
+
+                        @elseif($task->approval == 1)
+
+                          <td>Approved by: {{ App\User::find($task->approved_by)->name }}</td>
+
+                        @elseif($task->approval == 0)
+
+                          <td>Disapproved by: {{ App\User::find($task->approved_by)->name }}</td>
+
+                        @endif
                         
                         @endif
 
@@ -157,7 +172,7 @@
                   <th>Task</th>
                   <th>Deadline</th>
                   <th>Status</th>
-                  <th>Approved / Disapproved By</th>
+                  {{-- <th>Approved / Disapproved By</th> --}}
                   <th>Uploaded File</th>
 
                   @if(Auth::user()->user_role == 'admin' | Auth::user()->user_role == 'rm' | Auth::user()->user_role == 'counselor')
@@ -190,7 +205,7 @@
         <h4 class="modal-title">Add Task</h4>
       </div>
       <div class="modal-body">
-        {!! Form::open(['route'=>['client.task.individual.store', $all_tasks->first()->step_id, $all_tasks->first()->client_id]]) !!}
+        {!! Form::open(['route'=>['client.task.individual.store', $step->id, $client->id]]) !!}
           <div class="form-group">
             {{ Form::label('Task Name:') }}
             {{ Form::text('task_name', null, ['class'=>'form-control']) }}

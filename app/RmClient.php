@@ -39,4 +39,19 @@ class RmClient extends Model
     {
         return static::where('rm_id', $rm_id)->get();
     }
+
+    public static function assignRmToClient($all_rms, $client_id) 
+    {
+        foreach ($all_rms as $rm) {
+            static::create([
+                'client_id' => $client_id,
+                'rm_id' => $rm
+            ]);
+        }
+    }
+
+    public static function assignedRm($client_id)
+    {
+        return static::where('client_id', $client_id)->get();
+    }
 }

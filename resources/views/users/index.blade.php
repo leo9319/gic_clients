@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/dashboard')
+
 @section('title', 'Staffs')
 
 @section('header_scripts')
@@ -20,7 +22,7 @@ $(document).ready( function () {
 
         'searchable' : false,
 
-        'targets' : [4,5]
+        'targets' : [5,6,7]
 
       }
 
@@ -110,7 +112,7 @@ $(document).ready( function () {
 
               <button type="button" class="btn btn-secondary" id="{{ $user->id }}" onclick="editUser(this)"><span class="fa fa-edit fa-xs"></span></button>
 
-              <button type="button" class="btn btn-danger"><span class="fa fa-trash fa-xs"></span></button>
+              <a href="{{ route('delete.user',  $user->id) }}" type="button" class="btn btn-danger"><span class="fa fa-trash fa-xs"></span></a>
 
             </td>
 
@@ -263,26 +265,28 @@ $(document).ready( function () {
 
         <div class="container-fluid">
 
-            {{ Form::open(['route'=>'staff.store']) }}
+            {{ Form::open(['route'=>'staff.update']) }}
 
             <div class="form-group">
 
               {!! Form::label('name', 'Name: ') !!}
-              {!! Form::text('name', null, ['class'=>'form-control']) !!}
+              {!! Form::text('name', null, ['id'=>'name-edit', 'class'=>'form-control']) !!}
 
             </div>
+
+              {!! Form::hidden('user_id', null, ['id'=>'user-id-edit']) !!}
 
             <div class="form-group">
 
               {!! Form::label('mobile', 'Mobile: ') !!}
-              {!! Form::number('mobile', null, ['class'=>'form-control']) !!}
+              {!! Form::number('mobile', null, ['id'=>'mobile-edit', 'class'=>'form-control']) !!}
 
             </div>
 
             <div class="form-group">
 
               {!! Form::label('email', 'Email: ') !!}
-              {!! Form::email('email', null, ['class'=>'form-control']) !!}
+              {!! Form::email('email', null, ['id'=>'email-edit', 'class'=>'form-control']) !!}
 
             </div>
 
@@ -290,13 +294,14 @@ $(document).ready( function () {
 
               {!! Form::label('user_role', 'User Role: ') !!}
               {!! Form::select('user_role', [
+              'admin' => 'Admin',
               'rm' => 'RM',
               'counselor' => 'Counselor',
               'accountant' => 'Accountant',
               'backend' => 'Backend',
               'operation' => 'Operation',
               'backend' => 'Backend',
-              ], null, ['class'=>'form-control']) !!}
+              ], null, ['id'=>'user-role-edit', 'class'=>'form-control']) !!}
 
             </div>
 
@@ -333,7 +338,29 @@ $(document).ready( function () {
   
   function editUser(elem) {
 
+    var user_id = elem.id;
+
+    var name;
+    var mobile;
+    var email;
     
+
+    $.ajax({
+
+      type: 'get',
+      url: '{!! URL::to('getUserInformation') !!}',
+      data: {'user_id': user_id},
+
+      success:function(data) {
+
+        document.getElementById('name-edit').value = data.name;
+        document.getElementById('mobile-edit').value = data.mobile;
+        document.getElementById('email-edit').value = data.email;
+        document.getElementById('user-id-edit').value = user_id;
+
+      }
+
+    });
 
     $("#editUserModal").modal();
 

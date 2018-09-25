@@ -15,6 +15,7 @@ use App\Step;
 use App\ClientFileInfo;
 use App\Target;
 use App\Payment;
+use App\CounselorRmTask;
 use DB;
 use Exception;
 use Mail;
@@ -155,13 +156,16 @@ class HomeController extends Controller
         $data['counselors'] = User::where('user_role', 'counselor')->get();
         $data['programs'] = Program::all();
 
-        $last_entry = DB::table('users')->orderBy('id', 'desc')->limit(1)->first();
+        $last_entry = User::userRole('client')->where('client_code', 'like', 'CSM-%')->orderBy('client_code', 'desc')->first();
+        
 
         if($last_entry != NULL) {
-            $data['client_code'] = 'CMS' . sprintf('%06d', ($last_entry->id + 1));
+
+            $last_code = preg_replace("/[^0-9\.]/", '', $last_entry->client_code);
+            $data['client_code'] = 'CSM-' . ($last_code + 1);
         }
         else {
-            $data['client_code'] = 'CMS000001'; 
+            $data['client_code'] = 'CSM-000001'; 
         }
 
         return view('users.create', $data);
@@ -181,17 +185,6 @@ class HomeController extends Controller
 
         $user = User::where('client_code', $request->client_code)->first();
 
-        $file_info['creator_id'] = Auth::user()->id;
-        $file_info['spouse_name'] = $request->spouse_name;
-        $file_info['address'] = $request->address;
-        $file_info['country_of_choice'] = json_encode($request->country_of_choice);
-        $file_info['client_id'] = $user->id;
-
-        ClientFileInfo::create($file_info);
-
-        RmClient::create(['client_id' => $user->id, 'rm_id' => $request->rm_one]);
-        CounsellorClient::create(['client_id' => $user->id, 'counsellor_id' => $request->counsellor_one]);
-
         if ($request->numbers) {
             foreach($request->numbers as $number) {
 
@@ -203,23 +196,19 @@ class HomeController extends Controller
             }
         }
 
-        if ($request->rm) {
-            foreach ($request->rm as $rm) {
-                RmClient::create([
-                    'client_id' => $user->id,
-                    'rm_id' => $rm
-                ]);
-            } 
-        }
+        $file_info['creator_id'] = Auth::user()->id;
+        $file_info['spouse_name'] = $request->spouse_name;
+        $file_info['address'] = $request->address;
+        $file_info['country_of_choice'] = json_encode($request->country_of_choice);
+        $file_info['client_id'] = $user->id;
 
-        if ($request->counselor) {
-            foreach ($request->counselor as $counselor) {
-                CounsellorClient::create([
-                    'client_id' => $user->id,
-                    'counsellor_id' => $counselor
-                ]);
-            } 
-        }
+        ClientFileInfo::create($file_info);
+
+        $all_rms = $this->addUserToArray($request->rm, $request->rm_one);
+        $all_counselors = $this->addUserToArray($request->counselor, $request->counsellor_one);
+
+        RmClient::assignRmToClient($all_rms, $user->id);
+        CounsellorClient::assignCounselorToClient($all_counselors, $user->id);
 
         if ($request->programs) {
             foreach($request->programs as $program) {
@@ -232,23 +221,65 @@ class HomeController extends Controller
             }
         }
 
-        $request->programs;
+
         if ($request->programs) {
             foreach($request->programs as $program) {
 
                 $first_step = Step::getProgramFirstStep($program);
+
+                // Getting all the task for the client
                 $program_tasks = Task::where([
                     'step_id' => $first_step->id,
                     'assigned_to' => 'client',
                 ])->get();
 
-
+                // Assigning task to client_tasks table
                 foreach ($program_tasks as $program_task) {
                     ClientTask::create([
                         'client_id' => $user->id,
                         'step_id' => $first_step->id,
-                        'task_id' => $program_task->id
+                        'task_id' => $program_task->id,
+                        'deadline' => Carbon::now()->addDays($program_task->duration),
                     ]);
+                }
+
+                // Get all the task for the rm
+                $program_tasks_for_rm = Task::where([
+                    'step_id' => $first_step->id,
+                    'assigned_to' => 'rm',
+                ])->get();
+
+                // Assigning task to counselor_tasks table
+
+                foreach ($all_rms as $rm) {
+                    foreach ($program_tasks_for_rm as $program_task_for_rm) {
+                        CounselorRmTask::create([
+                            'client_id' => $user->id,
+                            'user_id' => $rm,
+                            'step_id' => $first_step->id,
+                            'task_id' => $program_task_for_rm->id,
+                            'deadline' => Carbon::now()->addDays($program_task_for_rm->duration),
+                            'priority' => $program_task_for_rm->priority,
+                        ]);
+                    }
+                } 
+
+                $program_tasks_for_counselors = Task::where([
+                    'step_id' => $first_step->id,
+                    'assigned_to' => 'counselor',
+                ])->get();
+
+                foreach ($all_counselors as $counselor) {
+                    foreach ($program_tasks_for_counselors as $program_task_for_counselor) {
+                        CounselorRmTask::create([
+                            'client_id' => $user->id,
+                            'user_id' => $counselor,
+                            'step_id' => $first_step->id,
+                            'task_id' => $program_task_for_counselor->id,
+                            'deadline' => Carbon::now()->addDays($program_task_for_counselor->duration),
+                            'priority' => $program_task_for_counselor->priority,
+                        ]);
+                    }
                 }
             }
         }
@@ -291,22 +322,59 @@ class HomeController extends Controller
         $response = str_replace('Success Count : 1 and Fail Count : 0', 'Sent Successfully!', $response);
         $response = str_replace('Success Count : 0 and Fail Count : 1', 'Failed!', $response);
 
-        return redirect()->back()->with('message', 'Client Created!');
-
-
+        return redirect()->route('dashboard');
 
 
     }
 
-    public function customStaffRegister(Request $request)
+    public function customStaffRegisterUpdate(Request $request)
     {
-        DB::table('users')->insert([
+        User::find($request->user_id)->update([
             'name' => $request->name,
             'mobile' => $request->mobile,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'user_role' => $request->user_role,
         ]);
+
+        return redirect()->back();
+    }
+
+    public function customStaffRegisterStore(Request $request)
+    {
+        User::insert([
+            'name' => $request->name,
+            'mobile' => $request->mobile,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'user_role' => $request->user_role,
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function addUserToArray($user_array = '', $user) 
+    {
+        if($user_array) {
+            array_push($user_array, $user);
+            $total_users = $user_array;
+        } else {
+            $total_users = (array)$user;
+        }
+
+        return $total_users;
+    }
+
+    public function getUserInformation(Request $request)
+    {
+        $data = User::find($request->user_id);
+
+        return response()->json($data);
+    }
+
+    public function deletUser($user_id)
+    {
+        User::find($user_id)->delete();
 
         return redirect()->back();
     }

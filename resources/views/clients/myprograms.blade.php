@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/dashboard')
+
 @section('title', 'Programs')
 
 @section('content')
@@ -16,7 +18,7 @@
 
 					<img src="{{ asset('img/blank-dp.png') }}" class="img-circle" alt="Avatar" height="100">
 
-					<h3 class="name">{{ $client->name }}</h3>
+					<a href="{{ url('client/action/' . $client->id) }}"><h3 class="name">{{ $client->name }}</h3></a>
 
 				</div>
 

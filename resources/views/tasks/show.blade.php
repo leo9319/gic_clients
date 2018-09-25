@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/step/' . $step->program_id)
+
 @section('title', 'Tasks')
 
 @section('content')
@@ -141,7 +143,7 @@
 
 										<td>
 
-											{{ Form::text('duration', null, ['placeholder' => 'Number of days', 'class' => 'form-control']) }}
+											{{ Form::number('duration', null, ['placeholder' => 'Number of days', 'class' => 'form-control']) }}
 
 										</td>
 

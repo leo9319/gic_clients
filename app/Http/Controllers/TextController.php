@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\EmailSms;
+use Auth;
 use Mail;
 
 class TextController extends Controller
@@ -23,6 +25,13 @@ class TextController extends Controller
     	$sms_data['message'] = $request->sms;
 
     	$this->smsSender($sms_data);
+        EmailSms::create([
+            'type' => 'sms',
+            'subject' => $request->subject,
+            'text_body' => $request->sms,
+            'from' => Auth::user()->id,
+            'to' => $client->id
+        ]);
 
     	return redirect()->back();
     }

@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/myprograms/' . $client->id)
+
 @section('title', 'My Tasks')
 
 @section('header_scripts')
@@ -23,7 +25,7 @@
 <div class="container-fluid">
    <div class="panel">
       <div class="panel-heading">
-         <h3 class="panel-title">Task Lists</h3>
+         <h3 class="panel-title">Step Lists</h3>
          @if(Auth::user()->user_role != 'client')
          <div class="right">
             <a href="#" type="button" class="btn btn-success button2" data-toggle="modal" data-target="#addStep">Add Step</a>
@@ -31,6 +33,7 @@
          @endif
       </div>
       <div class="panel-body">
+        @if($assigned_steps->steps)
          <table class="table table-striped">
           <thead>
             <tr>
@@ -40,6 +43,7 @@
             </tr>
           </thead>
           <tbody>
+
             @forelse(json_decode($assigned_steps->steps, true) as $index => $step)
             <tr>
               <td>{{ $index + 1 }}</td>
@@ -55,6 +59,12 @@
                <td>No assigned steps</td>
             </tr>
             @endforelse
+
+            @else 
+
+            <p>NO STEPS ASSIGNED!!!</p>
+
+            @endif
           </tbody>
         </table>
       </div>
@@ -69,7 +79,7 @@
         <h4 class="modal-title">Add Step</h4>
       </div>
       <div class="modal-body">
-        {!! Form::open(['route'=>['client.step.store', $steps->first()->program_id, $client->id]]) !!}
+        {!! Form::open(['route'=>['client.step.store', $program->id, $client->id]]) !!}
           {{ Form::label('Step Name:') }}
           {{ Form::select('step_id', $steps->pluck('step_name', 'id'), null, ['class'=>'form-control']) }}
         

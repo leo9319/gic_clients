@@ -35,7 +35,7 @@ Route::resources([
 
 
 
-Route::get('test', 'FileController@test')->name('test');
+Route::get('test', 'TestController@index')->name('test');
 Route::get('myfile', 'FileController@myFile')->name('file.myfile');
 
 Route::post('additional-info', 'FileController@storeAddition')->name('store.addition');
@@ -54,6 +54,10 @@ Route::get('group/{program_id}', 'TaskController@taskGroup')->name('task.group')
 
 Route::get('approval/{client_task_id}/{approval}', 'TaskController@approval')->name('task.approval');
 Route::get('approval/spouse/{spouse_task_id}/{approval}', 'TaskController@spouseApproval')->name('task.spouse.approval');
+
+Route::get('task/user-tasks/{user_id}', 'TaskController@userTasks')->name('task.user.tasks');
+Route::get('task/update/status/{task_id}/{status}', 'TaskController@updateTaskStatus')->name('task.update.status');
+
 Route::post('task/edit', 'TaskController@editTask')->name('edit.task');
 Route::post('upload/{program_id}/{client_id}', 'TaskController@storeFiles')->name('upload.files');
 Route::post('group/{client_id}/{program_id}', 'TaskController@taskGroupStore')->name('task.group.store');
@@ -61,6 +65,15 @@ Route::post('group-table/{program_id}', 'TaskController@taskTableGroupStore')->n
 Route::post('update/client/task', 'TaskController@updateClientTask')->name('update.client.task');
 Route::post('update/spouse/task', 'TaskController@updateSpouseTask')->name('update.spouse.task');
 Route::post('individual-tasks/{client_id}/{program_id}', 'TaskController@storeIndividualTasks')->name('task.add.individual');
+Route::post('task/upload/file', 'TaskController@uploadFile')->name('task.upload.file');
+
+Route::get('getStep', 'TaskController@getStep');
+Route::post('task/user/create', 'TaskController@addUserTask')->name('task.user.create');
+
+Route::get('task/client/user-task/{client_id}/{user_id}', 'TaskController@userTask')->name('task.client.user');
+
+Route::get('task/approve/{task_id}/{approval}', 'TaskController@taskApprove')->name('task.approve');
+
 
 
 
@@ -76,6 +89,8 @@ Route::get('spouseprograms/{client_id}', 'ClientController@spousePrograms')->nam
 Route::get('profile/{client_id}', 'ClientController@profile')->name('client.profile');
 Route::get('client/counsellor/{client_id}', 'ClientController@assignCounsellor')->name('client.counsellor');
 Route::get('client/rm/{client_id}', 'ClientController@assignRm')->name('client.rm');
+Route::get('client/assigned/counselor/{client_id}', 'ClientController@assingedCounselor')->name('client.assigned.counselor');
+Route::get('client/assigned/rm/{client_id}', 'ClientController@assingedRm')->name('client.assigned.rm');
 
 Route::post('myprograms/{client_id}', 'ClientController@storeClientProgram')->name('client.myprograms.store');
 Route::post('complete-group/{client_id}/{program_id}', 'ClientController@completeGroupStore')->name('client.group.complete.store');
@@ -90,14 +105,22 @@ Route::post('spouse/individual/step/{step_id}/{client_id}', 'ClientController@st
 
 
 
+
+
 Route::get('home', 'HomeController@home')->name('home');
 Route::get('dashboard', 'HomeController@index')->name('dashboard');
 Route::get('users', 'HomeController@users')->name('users')->middleware('role:admin');
+
 Route::get('user-create', 'HomeController@createUser')->name('user.create');
+Route::post('user-create', 'HomeController@storeUser')->name('user.store');
 
 Route::post('users/{id}', 'HomeController@updateUserRole')->name('users.update.role')->middleware('role:admin');
-Route::post('user-create', 'HomeController@storeUser')->name('user.store');
-Route::post('register-staff', 'HomeController@customStaffRegister')->name('staff.store');
+Route::post('update-staff', 'HomeController@customStaffRegisterUpdate')->name('staff.update');
+Route::post('register-staff', 'HomeController@customStaffRegisterStore')->name('staff.store');
+Route::get('getUserInformation', 'HomeController@getUserInformation');
+Route::get('user/delete/{user_id}', 'HomeController@deletUser')->name('delete.user');
+
+
 
 
 
@@ -107,6 +130,8 @@ Route::get('appointments', 'AppointmentController@index')->name('appointment.ind
 Route::get('appointments/rm', 'AppointmentController@setRmAppointment')->name('appointment.rm.appointment');
 Route::get('appointments/counselor', 'AppointmentController@setCounselorAppointment')->name('appointment.counselor.appointment');
 Route::get('client/appointments/{client_id}', 'AppointmentController@clientAppointment')->name('client.appointment');
+
+
 
 
 
@@ -121,22 +146,34 @@ Route::post('program/edit', 'ProgramController@editProgram')->name('edit.program
 
 
 
+
+
 Route::get('target/rm', 'TargetController@rm')->name('target.rm');
 Route::get('target/counselor', 'TargetController@counselor')->name('target.counselor');
 Route::get('set/target/{user_id}', 'TargetController@setTarget')->name('set.target');
-
 Route::post('target/{user_id}', 'TargetController@storeTarget')->name('store.target');
 
 
 
 
-Route::get('comment/task/{client_task_id}', 'CommentController@task')->name('comment.tasks');
-Route::get('comment/spouse/task/{spouse_task_id}', 'CommentController@spouseTask')->name('comment.spouse.tasks');
-Route::get('comment/appointment/{client_appointment_id}', 'CommentController@appointment')->name('comment.appointments');
 
+
+
+
+Route::get('comment/task/{client_task_id}', 'CommentController@task')->name('comment.tasks');
 Route::post('comment/task/{client_task_id}', 'CommentController@taskCommentStore')->name('comment.tasks.store');
+
+Route::get('comment/user/task/{user_task_id}', 'CommentController@userTask')->name('comment.user.tasks');
+Route::post('comment/user/task/{user_task_id}', 'CommentController@userTaskCommentStore')->name('comment.user.tasks.store');
+
+Route::get('comment/spouse/task/{spouse_task_id}', 'CommentController@spouseTask')->name('comment.spouse.tasks');
 Route::post('comment/spouse/task/{spouse_task_id}', 'CommentController@spouseTaskCommentStore')->name('comment.spouse.tasks.store');
+
+Route::get('comment/appointment/{client_appointment_id}', 'CommentController@appointment')->name('comment.appointments');
 Route::post('comment/appointment/{client_appointment_id}', 'CommentController@appointmentCommentStore')->name('comment.appointment.store');
+
+
+
 
 
 

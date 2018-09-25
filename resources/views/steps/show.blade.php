@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/task')
+
 @section('title', 'Steps')
 
 @section('content')

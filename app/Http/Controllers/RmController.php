@@ -90,4 +90,16 @@ class RmController extends Controller
     {
         //
     }
+
+    public function myPrograms($rm_id)
+    {
+        $data['active_class'] = 'rm-tasks';
+        // $data['rm'] = User::where('id', $rm_id)->first();
+        $data['rm'] = User::find($rm_id);
+        $data['programs'] = ClientProgram::programs($client_id);
+        $data['all_programs'] = Program::all();
+
+        return view('clients.myprograms', $data);
+    }
+
 }

@@ -44,7 +44,7 @@
                             <label for="spouse_name" class="col-md-3 control-label">Spouse Name</label>
 
                             <div class="col-md-6">
-                                <input id="naspouse_nameme" type="text" class="form-control" name="spouse_name" value="{{ old('spouse_name') }}" required autofocus>
+                                <input id="naspouse_nameme" type="text" class="form-control" name="spouse_name" value="{{ old('spouse_name') }}" autofocus>
 
                                 @if ($errors->has('spouse-name'))
                                     <span class="help-block">
@@ -123,11 +123,13 @@
                             <label for="programs" class="col-md-3 control-label">Choose Programs</label>
 
                             <div class="col-md-6">
-                                @foreach($programs as $program)
-                                    <div class="col-md-6">
-                                        <input type="checkbox" name="programs[]" value="{{ $program->id }}"> {{ $program->program_name }}
-                                    </div>
-                                @endforeach
+                                <div class="checkbox-group required">
+                                    @foreach($programs as $program)
+                                        <div class="col-md-6">
+                                            <input type="checkbox" name="programs[]" value="{{ $program->id }}"> {{ $program->program_name }}
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
                             
                         </div>
@@ -137,7 +139,7 @@
 
                             <div class="col-md-6">
                                 <div class="col-md-6">
-                                    <input type="checkbox" name="country_of_choice[]" value="canada"> Canada
+                                    <input type="checkbox" name="country_of_choice[]" value="canada" checked> Canada
                                 </div>
                                 <div class="col-md-6">
                                     <input type="checkbox" name="country_of_choice[]" value="australia"> Australia
@@ -223,6 +225,9 @@
 
 @section('footer_scripts')
     <script>
+
+        $('div.checkbox-group.required :checkbox:checked').length > 0
+
         function addRm() {
 
             var html = '<div class="form-group"> <label for="rm" class="col-md-3 control-label">Relation Manager</label> <div class="col-md-6"> <select id="rm" class="form-control" name="rm[]" required> @foreach($rms as $rm) <option value="{{ $rm->id }}">{{ $rm->name }}</option> @endforeach </select> @if ($errors->has("user_type")) <span class="help-block"> <strong>{{ $errors->first("user_type") }}</strong> </span> @endif </div> <div class="col-md-1"> <button type="button" onclick="addRm()" class="btn btn-sm btn-success">+ Add More</button> </div> <div class="col-md-1"> <button type="button" id="remove" class="btn btn-sm btn-danger" style="margin-left: 10px">Remove</button> </div> </div>';

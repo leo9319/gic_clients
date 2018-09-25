@@ -126,7 +126,7 @@ class ProgramController extends Controller
         $data = DB::table('client_programs AS CP')
                 ->join('programs AS P', 'P.id', '=', 'CP.program_id')
                 ->select('CP.program_id', 'P.program_name')
-                ->where('client_id', 68)
+                ->where('client_id', $request->client_id)
                 ->get();
 
         return response()->json($data);

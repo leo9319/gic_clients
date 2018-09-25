@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/mytasks/' .  $client_task->step_id . '/' . $client_task->client_id)
+
 @section('title', 'Task Comments')
 
 @section('content')

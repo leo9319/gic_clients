@@ -14,6 +14,11 @@ use App\Step;
 use App\Task;
 use App\SpouseTask;
 use App\ClientFileInfo;
+use App\CounselorRmTask;
+use App\Appointment;
+use App\Comment;
+use App\EmailSms;
+use Carbon\Carbon;
 use DB;
 
 class ClientController extends Controller
@@ -108,6 +113,8 @@ class ClientController extends Controller
     {
         $data['active_class'] = 'my-tasks';
         $data['all_tasks'] = ClientTask::getClientTask($step_id, $client_id);
+        $data['step'] = Step::find($step_id);
+        $data['client'] = User::find($client_id);
 
         return view('clients.tasks', $data);
     }
@@ -116,6 +123,8 @@ class ClientController extends Controller
     {
         $data['active_class'] = 'my-tasks';
         $data['all_tasks'] = SpouseTask::getSpouseTask($step_id, $client_id);
+        $data['step'] = Step::find($step_id);
+        $data['client'] = User::find($client_id);
 
         return view('clients.spouse_tasks', $data);
     }
@@ -174,6 +183,7 @@ class ClientController extends Controller
         $data['assigned_steps'] = ClientProgram::assignedSteps($program_id, $client_id);
         $data['client'] = User::find($client_id);
         $data['steps'] = Step::getProgramAllStep($program_id);
+        $data['program'] = Program::find($program_id);
 
         return view('clients.steps', $data);
 
@@ -185,6 +195,7 @@ class ClientController extends Controller
         $data['assigned_steps'] = ClientProgram::assignedSteps($program_id, $client_id);
         $data['client'] = User::find($client_id);
         $data['steps'] = Step::getProgramAllStep($program_id);
+        $data['program'] = Program::find($program_id);
 
         return view('clients.spouse_steps', $data);
 
@@ -192,9 +203,15 @@ class ClientController extends Controller
 
     public function storeSteps(Request $request, $program_id, $client_id)
     {
+        $step_array = [];
         $step_id = (integer)$request->step_id;
         $client_programs = ClientProgram::assignedSteps($program_id, $client_id);
-        $step_array = json_decode($client_programs->steps);
+
+        if ($client_programs->count() > 0) {
+            if(!empty($client_programs->steps)) {
+                $step_array = json_decode($client_programs->steps);
+            }
+        } 
 
         if (!(in_array($step_id, $step_array))) {
             array_push($step_array, $step_id);
@@ -210,8 +227,67 @@ class ClientController extends Controller
         foreach ($program_tasks as $program_task) {
             ClientTask::updateOrCreate(
                 ['client_id' => $client_id, 'step_id' => $step_id, 'task_id' => $program_task->id],
-                ['client_id' => $client_id, 'step_id' => $step_id, 'task_id' => $program_task->id]
+                [
+                    'client_id' => $client_id,
+                    'step_id' => $step_id,
+                    'task_id' => $program_task->id,
+                    'deadline' => Carbon::now()->addDays($program_task->duration),
+                ]
             );
+        }
+
+        
+        $all_rms = RmClient::getAssignedRms($client_id);
+        $all_counselors = CounsellorClient::assignedCounselor($client_id);
+
+        $program_tasks_for_rm = Task::where([
+            'step_id' => $step_id,
+            'assigned_to' => 'rm',
+        ])->get();
+
+        foreach ($all_rms as $rm) {
+            foreach ($program_tasks_for_rm as $program_task_for_rm) {
+                CounselorRmTask::updateOrCreate(
+                    [
+                        'client_id' => $client_id,
+                        'user_id' => $rm->rm_id,
+                        'step_id' => $step_id,
+                        'task_id' => $program_task_for_rm->id,
+                    ],
+                    [
+                        'client_id' => $client_id,
+                        'user_id' => $rm->rm_id,
+                        'step_id' => $step_id,
+                        'task_id' => $program_task_for_rm->id,
+                        'deadline' => Carbon::now()->addDays($program_task_for_rm->duration),
+                        'priority' => $program_task_for_rm->priority,
+                ]   );
+            }
+        } 
+
+        $program_tasks_for_counselors = Task::where([
+            'step_id' => $step_id,
+            'assigned_to' => 'counselor',
+        ])->get();
+
+        foreach ($all_counselors as $counselor) {
+            foreach ($program_tasks_for_counselors as $program_task_for_counselor) {
+                CounselorRmTask::updateOrCreate(
+                    [
+                        'client_id' => $client_id,
+                        'user_id' => $counselor->counsellor_id,
+                        'step_id' => $step_id,
+                        'task_id' => $program_task_for_counselor->id,
+                    ],
+                    [
+                        'client_id' => $client_id,
+                        'user_id' => $counselor->counsellor_id,
+                        'step_id' => $step_id,
+                        'task_id' => $program_task_for_counselor->id,
+                        'deadline' => Carbon::now()->addDays($program_task_for_counselor->duration),
+                        'priority' => $program_task_for_counselor->priority,
+                    ]);
+            }
         }
 
         return redirect()->back();
@@ -232,9 +308,19 @@ class ClientController extends Controller
     {
         $data['active_class'] = 'spouse';
         $data['programs'] = ClientProgram::programs($client_id);
-        $data['client'] = User::where('id', $client_id)->first();
+        $data['client'] = User::find($client_id);
         $data['all_programs'] = Program::all();
-        $data['spouse_name'] = ClientFileInfo::where('client_id', $client_id)->first()->spouse_name;
+
+        $spouse = ClientFileInfo::where('client_id', $client_id)->first();
+
+        if($spouse) {
+
+            $data['spouse_name'] = $spouse->spouse_name;
+
+        } else {
+            $data['spouse_name'] = 'Unknown';
+        }
+        
 
         return view('clients.spouse_programs', $data);
 
@@ -242,11 +328,19 @@ class ClientController extends Controller
 
     public function storeClientProgram(Request $request, $client_id)
     {
-        $step = Step::getProgramFirstStep($request->program_id);
+        // Auto assign first step:
+
+        // $step = Step::getProgramFirstStep($request->program_id);
+
+        // ClientProgram::updateOrCreate(
+        //     ['client_id' => $client_id, 'program_id' => $request->program_id],
+        //     ['steps' => json_encode(array($step->id))]
+        // );
+
+        // Just assigning the program
 
         ClientProgram::updateOrCreate(
-            ['client_id' => $client_id, 'program_id' => $request->program_id],
-            ['steps' => json_encode(array($step->id))]
+            ['client_id' => $client_id, 'program_id' => $request->program_id]
         );
 
         return redirect()->back();
@@ -259,6 +353,51 @@ class ClientController extends Controller
         $data['client_programs'] = ClientProgram::where('client_id', $client_id)->get();
 
         $data['program_progresses'] = $this->clientProgramProgress($client_id);
+
+        // Time to get the appointments:
+
+        $timeline = array();
+
+        $index = 0;
+
+        $appointments = Appointment::getClientsAppointments($client_id);
+
+        foreach ($appointments as $appointment) {
+            $timeline[(string)$appointment->updated_at] = "Has an appointment on " . Carbon::parse($appointment->app_date)->format('dS F, Y') . " at " . Carbon::parse($appointment->app_time)->format('g:i a') . " with " .  User::find($appointment->appointer_id)->name;
+
+        }
+
+        $pending_tasks = ClientTask::getTasks($client_id, 'pending');
+
+        foreach ($pending_tasks as $pending_task) {
+            $timeline[(string)$pending_task->updated_at] = "Has the task: <b>" . Task::find($pending_task->task_id)->task_name . "</b> waiting for approval.";
+
+        }
+
+        $completed_tasks = ClientTask::getTasks($client_id, 'complete');
+
+        foreach ($completed_tasks as $completed_task) {
+            $timeline[(string)$completed_task->updated_at] = "Has <span class='text-success'>completed</span> the task: <b>" . Task::find($completed_task->task_id)->task_name . "</b> approved by " . User::find($completed_task->approved_by)->name ;
+
+        }
+
+        $comments = Comment::getAllCommentsOfCommenter($client_id);
+
+        foreach ($comments as $comment) {
+            $timeline[(string)$comment->updated_at] = "Has commented <q> <i>" . $comment->comment . "</i></q> on " . $comment->activity_type . "<q> " . $comment->getTaskName($comment->activity_id)  . "</q>" ;
+
+        }
+
+        $texts = EmailSms::where('to', $client_id)->get();
+
+        foreach ($texts as $text) {
+            $timeline[(string)$text->updated_at] = "Was sent " . $text->type . " <q>" . $text->text_body . "</q> by " . User::find($text->from)->name ;
+
+        }
+
+        krsort($timeline);
+
+        $data['timelines'] = $timeline;
 
         return view('profile.index', $data);
     }
@@ -380,4 +519,24 @@ class ClientController extends Controller
 
         return $completion_array;
     }
+
+    public function assingedCounselor($client_id)
+    {
+        $data['active_class'] = 'client-tasks';
+        $data['client'] = User::find($client_id);
+        $data['counselors'] = CounsellorClient::assignedCounselor($client_id);
+
+        return view('clients.assigned_counselor', $data);
+    }
+
+    public function assingedRm($client_id)
+    {
+        $data['active_class'] = 'client-tasks';
+        $data['client'] = User::find($client_id);
+        $data['rms'] = RmClient::assignedRm($client_id);
+
+        return view('clients.assigned_rm', $data);
+    }
+
+    
 }

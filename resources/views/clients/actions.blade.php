@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/dashboard')
+
 @section('title', 'Assign Rms')
 
 @section('header_scripts')
@@ -12,12 +14,12 @@
 	}
 
 	.btn-orange {
-		background-color: FF7D28;
+		background-color: #FF7D28;
 		color: black;
 	}
 
 	.btn-yellow {
-		background-color: FFD828;
+		background-color: #FFD828;
 		color: black;
 	}
 </style>
@@ -58,9 +60,13 @@
 					<a href="{{ route('client.myprograms', $client->id) }}" class="btn btn-orange btn-block button2">Client Programs and Tasks</a>
 				</div>
 
+				@if($client->hasSpouse)
+
 				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px; margin-bottom: 20px">
 					<a href="{{ route('spouse.myprograms', $client->id) }}" class="btn btn-danger btn-block button2">Spouse Programs and Tasks</a>
 				</div>
+
+				@endif
 			</div>
 		</div>
 	</div>

@@ -18,6 +18,13 @@ class CreatePaymentsTable extends Migration
             $table->integer('client_id');
             $table->integer('program_id');
             $table->integer('step_no');
+            $table->string('card_type')->nullable();
+            $table->string('name_on_card')->nullable();
+            $table->string('card_number')->nullable();
+            $table->string('expiry_date')->nullable();
+            $table->string('bank_name')->nullable();
+            $table->string('cheque_number')->nullable();
+            $table->string('phone_number')->nullable();
             $table->integer('opening_fee');
             $table->integer('embassy_student_fee');
             $table->integer('service_solicitor_fee');

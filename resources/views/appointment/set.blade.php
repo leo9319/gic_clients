@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/client/action/' . $user->id)
+
 @section('title', 'Set Appointment')
 
 @section('header_scripts')
