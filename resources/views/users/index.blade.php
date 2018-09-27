@@ -2,7 +2,7 @@
 
 @section('url', '/dashboard')
 
-@section('title', 'Staffs')
+@section('title', 'All Staffs')
 
 @section('header_scripts')
 
@@ -40,7 +40,7 @@ $(document).ready( function () {
 
 <div class="container-fluid">
 
-  <button type="button" class="btn btn-info button3 btn-block" data-toggle="modal" data-target="#addUser" style="margin-bottom: 20px;">Add User</button>
+  <button type="button" class="btn btn-info button2 btn-block" data-toggle="modal" data-target="#addUser" style="margin-bottom: 20px;">Add User</button>
 
   <div class="panel panel-headline">
 
@@ -265,7 +265,7 @@ $(document).ready( function () {
 
         <div class="container-fluid">
 
-            {{ Form::open(['route'=>'staff.update']) }}
+            {{ Form::open(['route'=>'staff.update', 'autocomplete' => 'off']) }}
 
             <div class="form-group">
 
@@ -294,13 +294,13 @@ $(document).ready( function () {
 
               {!! Form::label('user_role', 'User Role: ') !!}
               {!! Form::select('user_role', [
-              'admin' => 'Admin',
-              'rm' => 'RM',
-              'counselor' => 'Counselor',
-              'accountant' => 'Accountant',
-              'backend' => 'Backend',
-              'operation' => 'Operation',
-              'backend' => 'Backend',
+                'admin' => 'Admin',
+                'rm' => 'RM',
+                'counselor' => 'Counselor',
+                'accountant' => 'Accountant',
+                'backend' => 'Backend',
+                'operation' => 'Operation',
+                'backend' => 'Backend',
               ], null, ['id'=>'user-role-edit', 'class'=>'form-control']) !!}
 
             </div>
@@ -308,7 +308,7 @@ $(document).ready( function () {
             <div class="form-group">
 
               {!! Form::label('password', 'Set password: ') !!}
-              {!! Form::password('password', null, ['class'=>'form-control']) !!}
+              <input id="password" type="password" class="form-control" name="password" required>
 
             </div>
 
@@ -343,6 +343,8 @@ $(document).ready( function () {
     var name;
     var mobile;
     var email;
+    var user_role;
+    var password;
     
 
     $.ajax({
@@ -356,6 +358,8 @@ $(document).ready( function () {
         document.getElementById('name-edit').value = data.name;
         document.getElementById('mobile-edit').value = data.mobile;
         document.getElementById('email-edit').value = data.email;
+        document.getElementById('user-role-edit').value = data.user_role;
+
         document.getElementById('user-id-edit').value = user_id;
 
       }

@@ -75,6 +75,11 @@ class TextController extends Controller
 
         });
 
+        // Store the email subject and the text body to the database
+        $from = Auth::user()->id;
+        EmailSms::setEmailRecord($data['subject'], $data['text'], $from, $client->id);
+
+
         return redirect()->back();
     }
 }

@@ -77,7 +77,13 @@ class HomeController extends Controller
                     $complete_task_count += $all_tasks->where('status', 'complete')->count();
                 }
 
-                $completion_array[$program] = ($complete_task_count / $all_task_count) * 100;
+                if($all_task_count != 0) {
+                    $completion_array[$program] = ($complete_task_count / $all_task_count) * 100;
+                } else {
+                    $completion_array[$program] = 0;
+                }
+
+                
             }
 
             $data['program_progresses'] = $completion_array;

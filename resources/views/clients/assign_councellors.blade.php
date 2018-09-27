@@ -6,6 +6,11 @@
 
 @section('header_scripts')
 
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+@endsection
+
 @section('content')
 
 <div class="container-fluid">
@@ -46,8 +51,8 @@
 			{{ Form::open(['route'=>['client.counsellor.store', $client->id]]) }}
 				<div class="form-group">
 					<div class="row">
-						<div class="col-md-9">
-							<select id="counsellor" class="form-control" name="counsellor_one" required>
+						<div class="col-md-12">
+							<select id="counsellor" class="select2 form-control" name="counsellor_one" required>
 							@foreach($counselors as $counselor)
 								<option value="{{ $counselor->id }}">{{ $counselor->name }}</option>
 							@endforeach
@@ -60,15 +65,15 @@
 							@endif
 						</div>
 
-						<div class="col-md-1">
+						{{-- <div class="col-md-1">
 							<button type="button" onclick="addCounsellor()" class="btn btn-sm btn-success button4">+ Add More</button>
-						</div>
+						</div> --}}
 					</div>
 				</div>
 				<div id="counsellor-container"></div>
 				<div class="row">
 					<div class="container-fluid">
-						<input type="submit" name="" value="Submit" class="btn btn-block btn-primary button4" style="margin-top: 20px">
+						<input type="submit" name="" value="Add" class="btn btn-block btn-primary button2" style="margin-top: 20px">
 					</div>
 				</div>
 			{{ Form::close() }}
@@ -80,6 +85,10 @@
 
 @section('footer_scripts')
 <script>
+	$(document).ready(function() {
+		$('.select2').select2();
+	});
+
     function addCounsellor() {
 
         var html = '<div class="row" style="margin-top:20px"><div class="form-group"><div class="col-md-9"> <select id="counsellor" class="form-control" name="counsellor[]" required> @foreach($counselors as $counsellor) <option value="{{ $counsellor->id }}">{{ $counsellor->name }}</option> @endforeach </select> @if ($errors->has("user_type")) <span class="help-block"> <strong>{{ $errors->first("user_type") }}</strong> </span> @endif </div> <div class="col-md-1"> <button type="button" onclick="addCounsellor()" class="btn btn-sm btn-success button4">+ Add More</button> </div> <div class="col-md-1"> <button type="button" id="removeCounsellor" class="btn btn-sm btn-danger button4" style="margin-left: 10px">Remove</button> </div> </div></div>';

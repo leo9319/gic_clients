@@ -28,6 +28,14 @@
                      <span>My Tasks</span>
                   </a>
                </li>
+               <li>
+                  <a href="{{ route('client.appointment', Auth::user()->id) }}" class="{{ $active_class == 'my-appointments' ? 'active' : '' }}">
+                     <i class="fa fa-calendar"></i>
+                     <span>My Appointments</span>
+                  </a>
+               </li>
+
+
             @endif
 
             @if(Auth::user()->user_role == 'client')
@@ -149,19 +157,24 @@
             </li>
             @endif
 
+            @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'backend'|| Auth::user()->user_role == 'client')
+
             <li>
+
                <a href="#subAppointments" data-toggle="collapse" class="collapsed {{ $active_class == 'appointments' ? 'active' : '' }}"><i class="fa fa-calendar"></i> <span>Appointments</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
                <div id="subAppointments" class="collapse ">
                   <ul class="nav">
 
-                     @if(Auth::user()->user_role == 'client' | Auth::user()->user_role == 'rm'| Auth::user()->user_role == 'counselor')
+                     @if(Auth::user()->user_role != 'admin')
+                     @if(Auth::user()->user_role != 'backend')
 
                      <li>
                         <a href="{{ route('client.appointment', Auth::user()->id) }}" class="">
                            <i class="fa fa-calendar"></i>
                            <span>My Appointments</span></a>
-                     </li>
+                     </li>     
 
+                     @endif
                      @endif
 
                      <li>
@@ -177,6 +190,8 @@
                   </ul>
                </div>
             </li>
+
+            @endif
 
             @if (Auth::user()->user_role == 'admin' | Auth::user()->user_role == 'accountant')
 

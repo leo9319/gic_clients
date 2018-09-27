@@ -2,7 +2,7 @@
 
 @section('url', '/dashboard')
 
-@section('title', 'Clients')
+@section('title', 'All Clients')
 
 @section('header_scripts')
 

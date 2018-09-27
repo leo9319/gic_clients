@@ -44,13 +44,18 @@
 					<a href="{{ route('email.index', $client->id) }}" class="btn btn-default btn-block button2">Send Email</a>
 				</div>
 
+				@if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'backend')
+
 				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px">
 					<a href="{{ route('client.counsellor', $client->id) }}" class="btn btn-primary btn-block button2">Assign Counselor</a>
 				</div>
 
+
 				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px">
 					<a href="{{ route('client.rm', $client->id) }}" class="btn btn-success btn-block button2">Assign RM</a>
 				</div>
+
+				@endif
 
 				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px">
 					<a href="{{ route('appointment.client', $client->id) }}" class="btn btn-yellow btn-block button2">Set Appointment</a>

@@ -31,21 +31,23 @@
 	
 	<div class="panel">
 
+		<div class="panel-heading">
+
+         <h3 class="panel-title">Program Lists</h3>
+
+         @if(Auth::user()->user_role != 'client')
+
+           <div class="right">
+
+              <a href="#" class="btn btn-success button2" data-toggle="modal" data-target="#addProgram">Add Program</a>
+
+           </div>
+
+         @endif
+
+      </div>
+
 		<div class="panel-body">
-
-			@if(Auth::user()->user_role != 'client')
-
-			<div class="pull-right">
-				
-				<a href="#" class="btn btn-success button2" data-toggle="modal" data-target="#addProgram">Add Program</a>
-
-			</div>
-
-			@endif
-			
-		</div>
-
-		<div class="panel-footer">
 
 			<table class="table table-striped">
 

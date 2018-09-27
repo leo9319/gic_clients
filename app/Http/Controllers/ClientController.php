@@ -384,7 +384,7 @@ class ClientController extends Controller
         $comments = Comment::getAllCommentsOfCommenter($client_id);
 
         foreach ($comments as $comment) {
-            $timeline[(string)$comment->updated_at] = "Has commented <q> <i>" . $comment->comment . "</i></q> on " . $comment->activity_type . "<q> " . $comment->getTaskName($comment->activity_id)  . "</q>" ;
+            $timeline[(string)$comment->updated_at] = "Has commented <q> <i>" . $comment->comment . "</i></q> on " . $comment->activity_type . "<q> " . $comment->getActivityName($comment->activity_type, $comment->activity_id)  . "</q>" ;
 
         }
 
@@ -394,6 +394,8 @@ class ClientController extends Controller
             $timeline[(string)$text->updated_at] = "Was sent " . $text->type . " <q>" . $text->text_body . "</q> by " . User::find($text->from)->name ;
 
         }
+
+        
 
         krsort($timeline);
 
@@ -514,7 +516,13 @@ class ClientController extends Controller
                 $complete_task_count += $all_tasks->where('status', 'complete')->count();
             }
 
-            $completion_array[$program] = ($complete_task_count / $all_task_count) * 100;
+            if($all_task_count != 0) {
+                $completion_array[$program] = ($complete_task_count / $all_task_count) * 100;
+            } else {
+                $completion_array[$program] = 0;
+            }
+
+            
         }
 
         return $completion_array;

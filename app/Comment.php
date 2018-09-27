@@ -42,10 +42,19 @@ class Comment extends Model
         return static::where('commenter_id', $commenter_id)->get();
     }
 
-    public function getTaskName($activity_id)
+    public function getActivityName($activity_type, $activity_id)
     {
-        $task_id = ClientTask::find($activity_id)->task_id;
+        if($activity_type == 'task') {
 
-        return Task::find($task_id)->task_name;
+            $task_id = ClientTask::find($activity_id)->task_id;
+
+            return Task::find($task_id)->task_name;
+
+        } else {
+
+            return Appointment::find($activity_id)->title;
+
+        }
+        
     }
 }

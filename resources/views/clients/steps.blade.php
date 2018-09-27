@@ -23,15 +23,47 @@
 
 @section('content')
 <div class="container-fluid">
-   <div class="panel">
-      <div class="panel-heading">
-         <h3 class="panel-title">Step Lists</h3>
-         @if(Auth::user()->user_role != 'client')
-         <div class="right">
-            <a href="#" type="button" class="btn btn-success button2" data-toggle="modal" data-target="#addStep">Add Step</a>
-         </div>
-         @endif
+
+  {{-- Profile and Cover image --}}
+
+  <div class="panel">
+
+    <div class="panel-footer">
+
+      <div class="profile-header">
+
+        <div class="profile-main">
+
+          <img src="{{ asset('img/blank-dp.png') }}" class="img-circle" alt="Avatar" height="100">
+
+          <a href="{{ url('client/action/' . $client->id) }}"><h3 class="name">{{ $client->name }}</h3></a>
+
+        </div>
+
       </div>
+
+    </div>
+    
+  </div>
+
+   <div class="panel">
+
+      <div class="panel-heading">
+
+         <h3 class="panel-title">Step Lists</h3>
+
+         @if(Auth::user()->user_role != 'client')
+
+           <div class="right">
+
+              <a href="#" type="button" class="btn btn-success button2" data-toggle="modal" data-target="#addStep">Add Step</a>
+
+           </div>
+
+         @endif
+
+      </div>
+      
       <div class="panel-body">
         @if($assigned_steps->steps)
          <table class="table table-striped">
@@ -50,7 +82,7 @@
               <td>{{ App\Step::find($step)->step_name }}</td>
               <td>
                   <a href="{{ route('client.mytasks', [$step, $client->id]) }}">
-                  <button class="btn btn-info button2">View Tasks</button>
+                  <button class="btn btn-info btn-block button2">View Tasks</button>
                </a>
              </td>
             </tr>

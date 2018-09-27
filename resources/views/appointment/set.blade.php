@@ -6,6 +6,7 @@
 
 @section('header_scripts')
 
+
 @endsection
 
 @section('content')
@@ -54,7 +55,9 @@
 		         </div>
 		      </div>
 
-		      <div class="col-md-6">
+		      
+
+		      {{-- <div class="col-md-6">
 		         <div class="field-spacing">
 		         	{!! Form::label('appointee', 'Select RM / Counsellor: ') !!}
 		            <div class="input-group">
@@ -62,7 +65,13 @@
 		               {!! Form::select('appointee', $rms_counsellors->pluck('name', 'id'), null, ['class'=>'form-control']) !!}
 		            </div>
 		         </div>
-		      </div>
+		      </div> --}}
+
+		      
+
+		      {{ Form::hidden('appointee', Auth::user()->id) }}
+
+		      
 
 		      <div class="col-md-6">
 		         <div class="field-spacing">

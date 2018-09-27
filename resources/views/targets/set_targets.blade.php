@@ -9,6 +9,10 @@
 
 	<div class="panel panel-headline">
 
+      @if(Auth::user()->user_role != 'backend')
+      @if(Auth::user()->user_role != 'rm')
+      @if(Auth::user()->user_role != 'counselor')
+
 		<div class="panel-body">
 
 			<h3 class="text-center sub-header-padding">Set Target:</h3>
@@ -59,6 +63,10 @@
 
 		</div>	
 
+      @endif
+      @endif
+      @endif
+
 
 
    <div class="panel">
@@ -77,7 +85,7 @@
 
                   <th>SL.</th>
 
-                  <th>Month-Year</th>
+                  <th>Period</th>
 
                   <th>Target</th>
 
