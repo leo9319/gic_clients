@@ -16,6 +16,7 @@ class RmController extends Controller
      */
     public function index()
     {
+        $data['previous'] = url()->previous();
         $data['active_class'] = 'assigend_clients';
         $data['rms'] = User::where('user_role', 'rm')->get();
 

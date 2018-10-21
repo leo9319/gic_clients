@@ -18,6 +18,7 @@ use App\SpouseTask;
 use Carbon;
 use Auth;
 use PDF;
+use URL;
 
 class PaymentController extends Controller
 {
@@ -28,6 +29,7 @@ class PaymentController extends Controller
      */
     public function index()
     {
+        $data['previous'] = URL::to('/dashboard');
         $data['active_class'] = 'payments';
         $data['clients'] = User::userRole('client')->get();
         $data['programs'] = Program::all();
@@ -44,6 +46,7 @@ class PaymentController extends Controller
     {
         //
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -64,6 +67,7 @@ class PaymentController extends Controller
             'name_on_card' => $request->name_on_card,
             'card_number' => $request->card_number,
             'expiry_date' => $request->expiry_date,
+            'approval_code' => $request->approval_code,
             'bank_name' => $request->bank_name,
             'cheque_number' => $request->cheque_number,
             'phone_number' => $request->phone_number,
@@ -71,8 +75,10 @@ class PaymentController extends Controller
             'embassy_student_fee' => $request->embassy_student_fee,
             'service_solicitor_fee' => $request->service_solicitor_fee,
             'other' => $request->other,
-            'total_amount' => $total_amount,
+            'total_amount' => $request->total_amount,
             'amount_paid' => $request->amount_paid,
+            'due_clearance_date' => $request->due_clearance_date,
+            'created_by' => Auth::user()->id,
         ]);
 
         $program_id = $request->program_id;
@@ -123,27 +129,8 @@ class PaymentController extends Controller
             Target::addOneToTarget($associated_counselor);
         }
 
-        $client = User::find($client_id);
-        $client_additional_info = ClientFileInfo::where('client_id', $client_id)->first();
-
-        $data['name'] = $client->name;
-        $data['address'] = $client_additional_info->address;
-        $data['country_of_choice'] = json_decode($client_additional_info->country_of_choice);
-        $data['mobile'] = $client->mobile;
-        $data['email'] = $client->email;
-        $data['date'] = Carbon\Carbon::now()->format('d-m-Y');
-        $data['client_code'] = $client->client_code;
-        $data['created_by'] = Auth::user()->name;
-        $data['program'] = Program::find($request->program_id)->program_name;
-        $data['step_number'] = $request->step_no;
-        $data['opening_fee'] = $request->opening_fee;
-        $data['embassy_student_fee'] = $request->embassy_student_fee;
-        $data['service_solicitor_fee'] = $request->service_solicitor_fee;
-        $data['other'] = $request->other;
-        $data['amount_paid'] = $request->amount_paid;
-
-        $pdf = PDF::loadView('invoice.index', $data);
-        return $pdf->download('invoice.pdf');
+        return redirect()->back()->with('success', 'Payment Created Successfully!');
+        
 
     }
 
@@ -155,7 +142,15 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment)
     {
-        // 
+        // Get the client information:
+
+        $data['client'] = User::find($payment->client_id);
+        $data['client_file_info'] = ClientFileInfo::find($payment->client_id);
+        $data['program'] = Program::find($payment->program_id);
+        $data['payment'] = $payment;
+        $data['step'] = Step::find($payment->step_no);
+
+        return view('payments.show', $data);
     }
 
     /**
@@ -194,9 +189,74 @@ class PaymentController extends Controller
 
     public function paymentHistory()
     {
+        $data['previous'] = url()->previous();
         $data['active_class'] = 'payments';
         $data['payments'] = Payment::orderBy('created_at', 'desc')->get();
 
         return view('payments.history', $data);
     }
+
+    public function verification(Payment $payment)
+    {
+        Payment::find($payment->id)->update(['verified' => 1]);
+        
+        return redirect()->back();
+    }
+
+    public function chequeVerification(Payment $payment)
+    {
+        Payment::find($payment->id)->update(['cheque_verified' => 1]);
+        
+        return redirect()->back();
+
+        echo $payment;
+    }
+
+    public function generateInvoice(Payment $payment)
+    {
+        $client = User::find($payment->client_id);
+        $client_additional_info = ClientFileInfo::where('client_id', $payment->client_id)->first();
+
+        $data['name'] = $client->name;
+        $data['address'] = $client_additional_info->address;
+        $data['country_of_choice'] = json_decode($client_additional_info->country_of_choice);
+        $data['mobile'] = $client->mobile;
+        $data['email'] = $client->email;
+        $data['date'] = Carbon\Carbon::now()->format('d-m-Y');
+        $data['client_code'] = $client->client_code;
+        $data['program'] = Program::find($payment->program_id)->program_name;
+        $data['step_number'] = $payment->step_no;
+        $data['opening_fee'] = $payment->opening_fee;
+        $data['embassy_student_fee'] = $payment->embassy_student_fee;
+        $data['service_solicitor_fee'] = $payment->service_solicitor_fee;
+        $data['other'] = $payment->other;
+        $data['amount_paid'] = $payment->amount_paid;
+
+        $created_by = User::find($payment->created_by);
+        $data['created_by'] = $created_by ? $created_by->name : '';
+
+        $pdf = PDF::loadView('invoice.index', $data);
+        return $pdf->download('invoice.pdf');
+    }
+
+
+    public function statement()
+    {
+        $data['active_class'] = 'payments';
+        $data['clients'] = User::userRole('client')->get();
+
+        return view('payments.statement', $data);
+    }
+
+    public function showStatement($client_id)
+    {
+        $data['client'] = User::find($client_id);
+        $data['client_info'] = ClientFileInfo::where('client_id', $client_id)->first();
+        $data['rms'] = RmClient::getAssignedRms($client_id);
+        $data['counselors'] = CounsellorClient::assignedCounselor($client_id);
+        $data['payment_histories'] = Payment::where('client_id', $client_id)->get();
+
+        return view('payments.show_statement', $data);
+    }
+
 }

@@ -400,6 +400,7 @@ class ClientController extends Controller
         krsort($timeline);
 
         $data['timelines'] = $timeline;
+        $data['previous'] = url()->previous();
 
         return view('profile.index', $data);
     }
@@ -510,7 +511,10 @@ class ClientController extends Controller
                 $all_task_count = 0;
                 $complete_task_count = 0;
 
-                $all_tasks =  ClientTask::where('step_id', $step);
+                $all_tasks =  ClientTask::where([
+                    'step_id' => $step,
+                    'client_id' => $client_id,
+                ]);
 
                 $all_task_count +=  $all_tasks->count();
                 $complete_task_count += $all_tasks->where('status', 'complete')->count();
@@ -544,6 +548,55 @@ class ClientController extends Controller
         $data['rms'] = RmClient::assignedRm($client_id);
 
         return view('clients.assigned_rm', $data);
+    }
+
+    public function clientDestroy($client_id)
+    {
+        User::find($client_id)->delete();
+
+        return redirect()->back();
+    }
+
+    public function clientEdit($client_id) 
+    {
+        $data['client'] = User::find($client_id);
+        $data['programs'] = Program::all();
+        $data['client_add'] = ClientFileInfo::where('client_id', $client_id)->first();
+        $data['client_programs'] = ClientProgram::where('client_id', $client_id)->get();
+        $data['adddional_numbers'] = DB::table('additional_client_numbers')->where('client_id', $client_id)->get();
+
+        return view('users.edit', $data);
+    }
+
+    public function clientUpdate(Request $request)
+    {
+
+        User::where('client_code', $request->client_code)->update([
+            'name' => $request->name,
+            'mobile' => $request->mobile,
+            'email' => $request->email
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function getClientName(Request $request)
+    {
+        // $data = DB::table('users AS U')
+        //         ->join('client_programs AS CP', 'CP.client_id', '=', 'U.id')
+        //         ->join('programs AS P', 'P.id', '=', 'CP.program_id')
+        //         ->select('CP.program_id', 'P.program_name', 'U.name', 'U.id')
+        //         ->where('U.id', $request->client_id)
+        //         ->get();
+
+        $data = User::find($request->client_id);
+
+        return response()->json($data);
+    }
+
+    public function statement()
+    {
+        echo 'test';
     }
 
     

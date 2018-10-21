@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', $previous)
+
 @section('title', 'Counslors')
 
 @section('content')

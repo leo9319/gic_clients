@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('url', '/task')
+@section('url', $previous)
 
 @section('title', 'Steps')
 

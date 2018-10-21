@@ -15,6 +15,8 @@ class TextController extends Controller
     	$data['active_class'] = 'my-clients';
     	$data['client'] = User::find($client_id);
 
+        $data['previous'] = url()->previous();
+
     	return view('texts.sms_index', $data);
     }
 

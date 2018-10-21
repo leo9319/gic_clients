@@ -16,12 +16,15 @@ use App\ClientFileInfo;
 use App\Target;
 use App\Payment;
 use App\CounselorRmTask;
+use App\DepartmentTarget;
 use DB;
 use Exception;
 use Mail;
 use Auth;
 use PDF;
 use Carbon\Carbon;
+use URL;
+
 
 class HomeController extends Controller
 {
@@ -44,6 +47,7 @@ class HomeController extends Controller
      */
     public function index()
     {
+        $data['previous'] = URL::to('/');
         $client_id = Auth::user()->id; 
 
         $data['active_class'] = 'dashboard';
@@ -71,7 +75,10 @@ class HomeController extends Controller
                     $all_task_count = 0;
                     $complete_task_count = 0;
 
-                    $all_tasks =  ClientTask::where('step_id', $step);
+                    $all_tasks =  ClientTask::where([
+                        'step_id' => $step,
+                        'client_id' => $client_id,
+                    ]);
 
                     $all_task_count +=  $all_tasks->count();
                     $complete_task_count += $all_tasks->where('status', 'complete')->count();
@@ -110,12 +117,14 @@ class HomeController extends Controller
 
                 $data['files_opened_this_month'] = CounsellorClient::fileOpenedThisMonth($user_id);
                 $data['total_files_opened'] = CounsellorClient::totalFilesOpened($user_id);
+                $data['department_target'] = DepartmentTarget::getCurrentMonthTarget('counseling');
 
             }
             else {
 
                 $data['files_opened_this_month'] = RmClient::fileOpenedThisMonth($user_id);
                 $data['total_files_opened'] = RmClient::totalFilesOpened($user_id); 
+                $data['department_target'] = DepartmentTarget::getCurrentMonthTarget('processing');
 
             }
 
@@ -179,6 +188,10 @@ class HomeController extends Controller
 
     public function storeUser(Request $request)
     {
+        $validatedData = $request->validate([
+            'email' => 'required|unique:users'
+        ]);
+
         User::create([
             'client_code' => $request->client_code,
             'name' => $request->name,
@@ -219,11 +232,20 @@ class HomeController extends Controller
         if ($request->programs) {
             foreach($request->programs as $program) {
                 $first_step = Step::getProgramFirstStep($program);
-                ClientProgram::create([
-                    'client_id' => $user->id,
-                    'program_id' => $program,
-                    'steps' => json_encode(array($first_step->id)),
-                ]);
+
+                if($first_step) {
+                    ClientProgram::create([
+                        'client_id' => $user->id,
+                        'program_id' => $program,
+                        'steps' => json_encode(array($first_step->id)),
+                    ]);
+                } else {
+                    ClientProgram::create([
+                        'client_id' => $user->id,
+                        'program_id' => $program,
+                    ]);
+                }
+                
             }
         }
 
@@ -233,58 +255,61 @@ class HomeController extends Controller
 
                 $first_step = Step::getProgramFirstStep($program);
 
-                // Getting all the task for the client
-                $program_tasks = Task::where([
-                    'step_id' => $first_step->id,
-                    'assigned_to' => 'client',
-                ])->get();
+                if($first_step) {
 
-                // Assigning task to client_tasks table
-                foreach ($program_tasks as $program_task) {
-                    ClientTask::create([
-                        'client_id' => $user->id,
+                    // Getting all the task for the client
+                    $program_tasks = Task::where([
                         'step_id' => $first_step->id,
-                        'task_id' => $program_task->id,
-                        'deadline' => Carbon::now()->addDays($program_task->duration),
-                    ]);
-                }
+                        'assigned_to' => 'client',
+                    ])->get();
 
-                // Get all the task for the rm
-                $program_tasks_for_rm = Task::where([
-                    'step_id' => $first_step->id,
-                    'assigned_to' => 'rm',
-                ])->get();
-
-                // Assigning task to counselor_tasks table
-
-                foreach ($all_rms as $rm) {
-                    foreach ($program_tasks_for_rm as $program_task_for_rm) {
-                        CounselorRmTask::create([
+                    // Assigning task to client_tasks table
+                    foreach ($program_tasks as $program_task) {
+                        ClientTask::create([
                             'client_id' => $user->id,
-                            'user_id' => $rm,
                             'step_id' => $first_step->id,
-                            'task_id' => $program_task_for_rm->id,
-                            'deadline' => Carbon::now()->addDays($program_task_for_rm->duration),
-                            'priority' => $program_task_for_rm->priority,
+                            'task_id' => $program_task->id,
+                            'deadline' => Carbon::now()->addDays($program_task->duration),
                         ]);
                     }
-                } 
 
-                $program_tasks_for_counselors = Task::where([
-                    'step_id' => $first_step->id,
-                    'assigned_to' => 'counselor',
-                ])->get();
+                    // Get all the task for the rm
+                    $program_tasks_for_rm = Task::where([
+                        'step_id' => $first_step->id,
+                        'assigned_to' => 'rm',
+                    ])->get();
 
-                foreach ($all_counselors as $counselor) {
-                    foreach ($program_tasks_for_counselors as $program_task_for_counselor) {
-                        CounselorRmTask::create([
-                            'client_id' => $user->id,
-                            'user_id' => $counselor,
-                            'step_id' => $first_step->id,
-                            'task_id' => $program_task_for_counselor->id,
-                            'deadline' => Carbon::now()->addDays($program_task_for_counselor->duration),
-                            'priority' => $program_task_for_counselor->priority,
-                        ]);
+                    // Assigning task to counselor_tasks table
+
+                    foreach ($all_rms as $rm) {
+                        foreach ($program_tasks_for_rm as $program_task_for_rm) {
+                            CounselorRmTask::create([
+                                'client_id' => $user->id,
+                                'user_id' => $rm,
+                                'step_id' => $first_step->id,
+                                'task_id' => $program_task_for_rm->id,
+                                'deadline' => Carbon::now()->addDays($program_task_for_rm->duration),
+                                'priority' => $program_task_for_rm->priority,
+                            ]);
+                        }
+                    } 
+
+                    $program_tasks_for_counselors = Task::where([
+                        'step_id' => $first_step->id,
+                        'assigned_to' => 'counselor',
+                    ])->get();
+
+                    foreach ($all_counselors as $counselor) {
+                        foreach ($program_tasks_for_counselors as $program_task_for_counselor) {
+                            CounselorRmTask::create([
+                                'client_id' => $user->id,
+                                'user_id' => $counselor,
+                                'step_id' => $first_step->id,
+                                'task_id' => $program_task_for_counselor->id,
+                                'deadline' => Carbon::now()->addDays($program_task_for_counselor->duration),
+                                'priority' => $program_task_for_counselor->priority,
+                            ]);
+                        }
                     }
                 }
             }

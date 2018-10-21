@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('url', '/dashboard')
+@section('url', $previous)
 
 @section('title', 'RM Targets')
 

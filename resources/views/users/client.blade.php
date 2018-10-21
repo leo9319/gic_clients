@@ -36,21 +36,29 @@
                   <th>Name</th>
                   <th>Phone</th>
                   <th>Email</th>
+                  @if(Auth::user()->user_role == 'counselor')
+                  <th>RM</th>
+                  @endif
                   <th>Action</th>
                </tr>
             </thead>
             <tbody>
               @foreach($assigned_clients as $index => $assigned_client)
                 @foreach($assigned_client->clients as $index => $client)
+                @foreach($client->getAssignedRms as $assigned_rm)
                  <tr>
                     <td><a href="{{ route('client.profile', ['client_id'=> $client->id ]) }}">{{ $client->client_code }}</a></td>
                     <td>{{ $client->name }}</td>
                     <td>{{ $client->mobile }}</td>
                     <td>{{ $client->email }}</td>
+                    @if(Auth::user()->user_role == 'counselor')
+                    <td>{{ App\User::find($assigned_rm->rm_id) ? App\User::find($assigned_rm->rm_id)->name : "" }}</td>
+                    @endif
                     <td>
                        <a href="{{ route('client.action', $client->id) }}" class="btn btn-outline-warning button2">View Actions</a>
                     </td>
                  </tr>
+                 @endforeach
                  @endforeach
                @endforeach
             </tbody>
@@ -60,6 +68,9 @@
                   <th>Name</th>
                   <th>Phone</th>
                   <th>Email</th>
+                  @if(Auth::user()->user_role == 'counselor')
+                  <th>RM</th>
+                  @endif
                   <th>Action</th>
                </tr>
             </tfoot>

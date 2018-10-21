@@ -1,4 +1,5 @@
 @extends('layouts.master')
+@section('url', $previous)
 @section('title', 'Profile')
 @section('content')
 @section('header_scripts')

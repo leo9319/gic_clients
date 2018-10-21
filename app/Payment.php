@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
-    protected $fillable = ['client_id', 'program_id', 'step_no', 'payment_type', 'card_type', 'name_on_card', 'card_number', 'expiry_date', 'bank_name', 'cheque_number', 'phone_number', 'opening_fee', 'embassy_student_fee', 'service_solicitor_fee', 'other', 'total_amount', 'amount_paid'];
+    protected $fillable = ['client_id', 'program_id', 'step_no', 'payment_type', 'card_type', 'name_on_card', 'card_number', 'expiry_date', 'approval_code', 'bank_name', 'cheque_number', 'phone_number', 'opening_fee', 'embassy_student_fee', 'service_solicitor_fee', 'other', 'total_amount', 'amount_paid', 'verified', 'cheque_verified', 'created_by'];
 
     public function userInfo()
     {

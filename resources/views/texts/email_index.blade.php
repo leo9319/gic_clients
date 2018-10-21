@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('url', '/client/action/' . $client->id)
+
 @section('title', 'Send Email')
 
 @section('content')

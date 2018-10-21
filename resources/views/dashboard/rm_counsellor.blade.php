@@ -108,27 +108,8 @@
 
                   <p>
                      
-                     <span class="number">
-
-                        @if($target->count() > 0)
-
-                        {{ 
-                           $target->whereDate('month_year', Carbon\Carbon::parse()->format('Y-m-01'))->first()->target 
-
-                           - 
-
-                           $target->whereDate('month_year', Carbon\Carbon::parse()->format('Y-m-01'))->first()->achieved
-
-                        }}
-
-                        @else 
-
-                        0
-
-                        @endif
-
-                     </span>
-                     <span class="title">Files Left To Achieve</span>
+                     <span class="number">{{ $department_target->target }}</span>
+                     <span class="title">Department Target</span>
 
                   </p>
 

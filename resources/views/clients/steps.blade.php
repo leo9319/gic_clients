@@ -77,15 +77,17 @@
           <tbody>
 
             @forelse(json_decode($assigned_steps->steps, true) as $index => $step)
+            @if(App\Step::find($step))
             <tr>
               <td>{{ $index + 1 }}</td>
-              <td>{{ App\Step::find($step)->step_name }}</td>
+              <td>{{ App\Step::find($step)->step_name}}</td>
               <td>
                   <a href="{{ route('client.mytasks', [$step, $client->id]) }}">
                   <button class="btn btn-info btn-block button2">View Tasks</button>
                </a>
              </td>
             </tr>
+            @endif
             @empty
             <tr>
                <td>No assigned steps</td>

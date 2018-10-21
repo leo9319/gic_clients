@@ -14,8 +14,7 @@ class TestController extends Controller
     //
     public function index()
     {
-        // echo auth()->user()->name;
-        // echo Auth::user()->name;
+        echo 'test';
     }
     public function sendMaiToClient($data_of_single_client){
         Mail::send('mail.client',$data_of_single_client,function ($message) use ($data_of_single_client){
@@ -106,6 +105,11 @@ class TestController extends Controller
         echo $response . '<br>';
 
 
+    }
+
+    public function test()
+    {
+        echo 'test';
     }
 
 

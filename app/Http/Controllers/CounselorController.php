@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use App\CounsellorClient;
+use URL;
 
 class CounselorController extends Controller
 {
@@ -15,6 +16,7 @@ class CounselorController extends Controller
      */
     public function index()
     {
+        $data['previous'] = URL::to('/dashboard');
         $data['active_class'] = 'assigend_clients';
         $data['counselors'] = User::userRole('counselor')->get();
 

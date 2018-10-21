@@ -160,7 +160,7 @@
         {!! Form::open(['route' => 'task.user.create']) !!}
           <div class="form-group">
             {{ Form::label('Task Name:') }}
-            {{ Form::text('task_name', null, ['class'=>'form-control']) }}
+            {{ Form::text('task_name', null, ['class'=>'form-control', 'required']) }}
             
           </div>
 

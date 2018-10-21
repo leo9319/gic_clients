@@ -27,6 +27,7 @@
                   <th>Phone</th>
                   <th>Email</th>
                   <th>Action</th>
+                  <th>Action</th>
                </tr>
             </thead>
             <tbody>
@@ -39,6 +40,13 @@
                   <td>
                      <a href="{{ route('client.action', $client->id) }}" class="btn btn-outline-warning button2">View Actions</a>
                   </td>
+                  <td>
+
+                    <a href="{{ route('client.edit.ind', $client->id) }}" type="button" class="btn btn-secondary btn-sm"><span class="fa fa-edit fa-xs"></span></a>
+
+                    <a href="{{ route('client.destroy', $client->id) }}" type="button" class="btn btn-danger btn-sm"><span class="fa fa-trash fa-xs"></span></a>
+
+                  </td>
                </tr>
                @endforeach
             </tbody>
@@ -48,6 +56,7 @@
                   <th>Name</th>
                   <th>Phone</th>
                   <th>Email</th>
+                  <th>Action</th>
                   <th>Action</th>
                </tr>
             </tfoot>

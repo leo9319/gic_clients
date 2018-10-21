@@ -22,6 +22,7 @@ class CreatePaymentsTable extends Migration
             $table->string('name_on_card')->nullable();
             $table->string('card_number')->nullable();
             $table->string('expiry_date')->nullable();
+            $table->string('approval_code')->nullable();
             $table->string('bank_name')->nullable();
             $table->string('cheque_number')->nullable();
             $table->string('phone_number')->nullable();
@@ -31,6 +32,10 @@ class CreatePaymentsTable extends Migration
             $table->integer('other');
             $table->integer('total_amount');
             $table->integer('amount_paid');
+            $table->tinyInteger('verified')->default(0);
+            $table->tinyInteger('cheque_verified')->default(0);
+            $table->date('due_clearance_date')->nullable;
+            $table->integer('created_by');
             $table->timestamps();
         });
     }

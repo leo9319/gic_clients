@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Step;
 use App\Program;
+use URL;
 
 class StepController extends Controller
 {
@@ -57,6 +58,7 @@ class StepController extends Controller
         $data['active_class'] = 'tasks';
         $data['steps'] = Step::where('program_id', $id)->get();
         $data['program'] = Program::find($id);
+        $data['previous'] = URL::to('/task');
 
         return view('steps.show', $data);
     }

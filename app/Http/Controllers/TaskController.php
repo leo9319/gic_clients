@@ -16,6 +16,7 @@ use Auth;
 use DB;
 use Storage;
 use Mail;
+use URL;
 
 class TaskController extends Controller
 {
@@ -34,6 +35,8 @@ class TaskController extends Controller
     {
         $data['active_class'] = 'tasks'; 
         $data['programs'] = Program::all();
+
+        $data['previous'] = URL::to('/dashboard');
 
         return view('tasks.index', $data);
     }
@@ -73,6 +76,8 @@ class TaskController extends Controller
         $data['active_class'] = 'tasks';
         $data['tasks'] = Task::where('step_id', $id)->get();
         $data['step'] = Step::find($id);
+
+        $data['previous'] = URL::to("step/$id");
 
         return view('tasks.show', $data);
     }

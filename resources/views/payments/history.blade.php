@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('url', '/dashboard')
+@section('url', $previous)
 
 @section('title', 'Payment History')
 
@@ -51,6 +51,8 @@
 
                <tr>
 
+                  <th>Date</th>
+
                   <th>Client Code.</th>
 
                   <th>Name</th>
@@ -59,9 +61,23 @@
 
                   <th>Step</th>
 
-                  <th>Invoice</th>
-
                   <th>Amount Paid</th>
+
+                  <th>Due</th>
+
+                  <th>Account Verified</th>
+
+                  <th>Cheque Verified</th>
+
+                  <th>Payment Type</th>
+
+                  <th>View Payment</th>
+
+                  @if(Auth::user()->user_role == 'accountant')
+
+                  <th>Action</th>
+
+                  @endif
 
                </tr>
 
@@ -76,6 +92,8 @@
                     @foreach($payment->programInfo as $program)
 
                   	<tr>
+
+                      <td>{{ Carbon\Carbon::parse($client->created_at)->format('d-m-y') }}</td>
                       
                   		<td>
                         
@@ -91,12 +109,62 @@
                       
                   		<td>{{ $program->program_name }}</td>
                       
-                  		<td>{{ $payment->step_no }}</td>
-                      
-                  		<td>{{ number_format($payment->total_amount) }}</td>
+                  		<td>
+
+                        {{ App\Step::find($payment->step_no) ? App\Step::find($payment->step_no)->step_name : ''}}
+
+                      </td>
                       
                   		<td>{{ number_format($payment->amount_paid) }}</td>
-                      
+
+                      @if($payment->total_amount - $payment->amount_paid > 0)
+
+                      <td>{{ number_format($payment->total_amount - $payment->amount_paid) }}</td>
+
+                      @else
+
+                      <td></td>
+
+                      @endif
+
+                      @if(!$payment->verified)
+
+                      <td>Not Verified</td>
+
+                      @else
+
+                      <td>Verified</td>
+
+                      @endif
+
+                      @if($payment->payment_type == 'cheque')
+
+                      @if(!$payment->cheque_verified)
+
+                      <td>Not Verified</td>
+
+                      @else
+
+                      <td>Verified</td>
+
+                      @endif
+
+                      @else
+
+                      <td>N/A</td>
+
+                      @endif
+
+                      <td>{{ $payment->payment_type }}</td>
+
+                      <td><a href="{{ route('payment.show', $payment->id) }}" class="btn btn-defualt button2">View Payment</a></td>
+
+                      @if(Auth::user()->user_role == 'accountant')
+
+                      <td><a href="{{ route('payment.generate.invoice', $payment->id) }}" class="btn btn-info button2">Generate Invoice</a></td>
+
+                      @endif
+
                   	</tr>
 
                   @endforeach
@@ -111,6 +179,8 @@
 
                <tr>
 
+                  <th>Date</th>
+
                   <th>Client Code.</th>
 
                   <th>Name</th>
@@ -119,9 +189,23 @@
 
                   <th>Step</th>
 
-                  <th>Invoice</th>
-
                   <th>Amount Paid</th>
+
+                  <th>Due</th>
+
+                  <th>Account Verified</th>
+
+                  <th>Cheque Verified</th>
+
+                  <th>Payment Type</th>
+
+                  <th>View Payment</th>
+
+                  @if(Auth::user()->user_role == 'accountant')
+
+                  <th>Action</th>
+
+                  @endif
 
                </tr>
 

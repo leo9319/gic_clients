@@ -2,7 +2,7 @@
 
 @section('title', 'Tasks')
 
-@section('url', '/dashboard')
+@section('url', $previous)
 
 @section('content')
 

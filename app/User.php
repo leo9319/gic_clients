@@ -42,4 +42,15 @@ class User extends Authenticatable
         return $this->hasOne('App\ClientFileInfo', 'client_id')->where('spouse_name', '!=', '');
     }
 
+    public function getAssignedRms()
+    {
+        return $this->hasMany('App\RmClient', 'client_id');
+    }
+
+    public function totalAmount()
+    {
+        return $this->hasMany('App\Payment', 'client_id');
+    }
+
+
 }

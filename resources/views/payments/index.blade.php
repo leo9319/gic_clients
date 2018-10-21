@@ -11,7 +11,16 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
+
 @endsection
+
+@if (\Session::has('success'))
+    <div class="alert alert-success">
+        <ul>
+            <li>{!! \Session::get('success') !!}</li>
+        </ul>
+    </div>
+@endif
 
 <div class="container-fluid">
 
@@ -25,17 +34,30 @@
 
 		<div class="panel-footer">
 
+			{{-- {{ Form::open(['autocomplete = off']) }} --}}
 			{{ Form::open() }}
 
-			<label>Choose Client:</label>
+			<label>Client ID:</label>
 
-			<select class="select2 form-control" name="client_id" onchange="checkClientProgram(this)">
+			<select class="select2 form-control" name="client_code" onchange="checkClientInfo(this)">
+
+				<option value="0">No Client Selected</option>
 
 				@foreach($clients as $client)
 
-					<option value="{{ $client->id }}">{{ $client->name }}</option>
+					<option value="{{ $client->id }}">{{ $client->client_code }}</option>
 
 				@endforeach
+
+			</select>
+
+			<br><br>
+
+			<label>Choose Client:</label>
+
+			<select class="select2 form-control" name="client_id" id="client-name" onchange="checkClientProgram(this)">
+
+				<option value="0">No Client Selected</option>
 
 			</select>
 
@@ -62,8 +84,7 @@
 			<select class="select2 form-control" name="payment_type" onchange="addPaymentOptions(this)">
 
 				<option value="cash">Cash</option>
-				<option value="card">Card</option>
-				<option value="emi">EMI</option>
+				<option value="card">POS</option>
 				<option value="cheque">Cheque</option>
 				<option value="bkash">bKash</option>
 				<option value="upay">Upay</option>
@@ -75,33 +96,45 @@
 
 			<div id="payment-container"></div>
 
-			<label>File opening fee</label>
+			<label>File opening fee:</label>
 
-			<input type="number" class="form-control" placeholder="File Opening Fee" name="opening_fee" required="required">
-
-			<br>
-
-			<label>Embassy/Student fee</label>
-
-			<input type="number" class="form-control" placeholder="Embassy/Student fee" name="embassy_student_fee">
+			<input type="number" id="file-opening-fee" value="0" class="form-control" placeholder="File Opening Fee" name="opening_fee" onkeyup="sumOfTotal()" required="required">
 
 			<br>
 
-			<label>Service / Solicitor Charge</label>
+			<label>Embassy/Student fee:</label>
 
-			<input type="number" class="form-control" placeholder="Service / Solicitor Charge" name="service_solicitor_fee">
-
-			<br>
-
-			<label>Other fee</label>
-
-			<input type="number" class="form-control" placeholder="Other Fee" name="other">
+			<input type="number" id="embassy-student-fee" value="0" class="form-control" placeholder="Embassy/Student fee" onkeyup="sumOfTotal()" name="embassy_student_fee">
 
 			<br>
 
-			<label>Amount Paid</label>
+			<label>Service / Solicitor Charge:</label>
+
+			<input type="number" id="service-solicitor-fee" value="0" class="form-control" placeholder="Service / Solicitor Charge" name="service_solicitor_fee" onkeyup="sumOfTotal()">
+
+			<br>
+
+			<label>Other fee:</label>
+
+			<input type="number" id="other-fee" value="0" class="form-control" placeholder="Other Fee" name="other" onkeyup="sumOfTotal()">
+
+			<br>
+
+			<label>Total Amount:</label>
+
+			<input type="number" id="total-amount" class="form-control" placeholder="Total Amount" name="total_amount">
+
+			<br>
+
+			<label>Amount Paid:</label>
 
 			<input type="number" class="form-control" placeholder="Amount Paid" name="amount_paid" required="required">
+
+			<br>
+
+			<label>Due Clearance Date:</label>
+
+			<input type="date" class="form-control" name="due_clearance_date">
 
 			<br>
 
@@ -122,21 +155,15 @@
 <script type="text/javascript">
 
 	function addPaymentOptions(elem) {
+
 		if (elem.value == 'card') {
 
-			var html = '<label>Card Type:</label> <select class="select2 form-control" name="card_type" onchange="addCardCharge(this)"> <option value="visa">Visa</option> <option value="amex">Amex</option> <option value="master">Master</option> <option value="other">Other</option> </select> <br> <div id="other-card-container"></div> <label>Name on card:</label> <input type="text" name="name_on_card" placeholder="Name on card" class="form-control"> <br> <label>Card Number:</label> <input type="number" name="card_number" placeholder="Card Number" class="form-control"> <br> <label>Expiry Date</label> <input type="text" name="expiry_date" placeholder="Expiry Date" class="form-control"> <br>';
+			var html = '<label>Card Type:</label> <select class="select2 form-control" name="card_type" onchange="addCardCharge(this)"> <option value="visa">Visa</option> <option value="amex">Amex</option> <option value="master">Master</option> <option value="other">Other</option> </select> <br> <label>Select Bank:</label> <select class="select2 form-control" name="bank_name" onchange="addBankName(this)"> <option value="ebl">EBL</option> <option value="brac">BRAC</option> <option value="dbbl">DBBL</option> <option value="city">City Bank</option> <option value="other">Other</option> </select> <br> <div id="other-card-container"></div> <label>Name on card:</label> <input type="text" name="name_on_card" placeholder="Name on card" class="form-control" required> <br> <label>Card Number:</label> <input type="number" name="card_number" placeholder="Card Number" class="form-control" required> <br> <label>Expiry Date:</label> <input type="text" name="expiry_date" placeholder="Expiry Date" class="form-control"> <br> <label>Approval Code:</label> <input type="text" name="approval_code" placeholder="Approval Code" class="form-control" required> <br>';
 
 			$('#payment-container').empty();
         	$('#payment-container').append(html);
 
-		} else if(elem.value == 'emi'){
-
-			var html = '<label>Bank Name:</label> <input type="text" name="bank_name" placeholder="Bank Name" class="form-control"> <br> <label>Payment Type:</label> <select class="select2 form-control" name="car_name" onchange="addOtherCard(this)"> <option value="visa">Visa</option> <option value="amex">Amex</option> <option value="master">Master</option> <option value="other">Other</option> </select> <br> <div id="other-card-container2"></div> <label>Name on card:</label> <input type="text" name="name_on_card" placeholder="Name on card" class="form-control"> <br> <label>Card Number:</label> <input type="text" name="card_number" placeholder="Card Number" class="form-control"> <br> <label>Expiry Date</label> <input type="text" name="expiry_date" placeholder="Expiry Date" class="form-control"> <br>';
-
-			$('#payment-container').empty();
-			$('#payment-container').append(html);
-
-		} else if (elem.value == 'cheque'){
+		} else if (elem.value == 'cheque') {
 
 			var html = '<label>Bank Name</label> <input type="text" name="bank_name" placeholder="Bank Name" class="form-control"> <br> <label>Cheque Number</label> <input type="text" name="cheque_number" placeholder="Cheque Number" class="form-control"> <br>';
 
@@ -150,9 +177,17 @@
 			$('#payment-container').empty();
 			$('#payment-container').append(html);
 
+		} else if(elem.value == 'online') {
+
+			var html = '<label>Select Bank:</label> <select class="select2 form-control" name="bank_name" onchange="addCardCharge(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select><br>';
+
+			$('#payment-container').empty();
+			$('#payment-container').append(html);
+
 		} else {
 
 			$('#payment-container').empty();
+
 		}
 	}
 
@@ -160,13 +195,32 @@
 
 		if (elem.value == 'other') {
 
-			var html = '<label>Card Name</label> <input type="text" name="card_type" placeholder="Card Name" class="form-control"> <br> ';
+			var html = '<label>Card Type</label> <input type="text" name="card_type" placeholder="Card Name" class="form-control"> <br> ';
 
 			$('#other-card-container').empty();
 			$('#other-card-container').append(html);
 
 		} else {
+
 			$('#other-card-container').empty();
+
+		}
+
+	}
+
+	function addBankName(elem) {
+
+		if (elem.value == 'other') {
+
+			var html = '<label>Bank Name</label> <input type="text" name="bank_name" placeholder="Bank Name" class="form-control"> <br> ';
+
+			$('#other-card-container').empty();
+			$('#other-card-container').append(html);
+
+		} else {
+
+			$('#other-card-container').empty();
+
 		}
 
 	}
@@ -175,7 +229,7 @@
 
 		if (elem.value == 'other') {
 
-			var html = '<label>Card Name</label> <input type="text" name="card_type" placeholder="Card Name" class="form-control"> <br> ';
+			var html = '<label>Card Type</label> <input type="text" name="card_type" placeholder="Card Name" class="form-control"> <br> ';
 
 			$('#other-card-container2').empty();
 			$('#other-card-container2').append(html);
@@ -183,9 +237,67 @@
 		} else {
 
 			$('#other-card-container2').empty();
-		}
 
-		
+		}
+	}
+
+	function checkClientInfo(elem) {
+
+		var client_id = elem.value;
+		var client_name = '';
+		var programs = '';
+
+		$.ajax({
+
+			type: 'get',
+			url: '{!!URL::to('getClientName')!!}',
+			data: {'client_id' : client_id},
+
+			success:function(data) {
+
+				client_name += '<option value="'+data.id+'">'+data.name+'</option>';
+				document.getElementById('client-name').innerHTML = client_name;	
+
+				// Now fetch the client programs and steps;
+
+				var client_id = data.id;
+
+				$.ajax({
+
+					type: 'get',
+					url: '{!!URL::to('getIndividualClientProgram')!!}',
+					data: {'client_id':client_id},
+
+					success:function(data) {
+
+						if(data.length > 0) {
+
+							programs += '<option value="0">Please select program</option>';
+
+							for(var i = 0; i < data.length; i++) {
+
+								programs += '<option value="'+data[i].program_id+'">'+data[i].program_name+'</option>';
+
+							}
+
+							document.getElementById('programs').innerHTML = programs;
+
+						} else {
+
+							programs += '<option value="0">Not Enrolled</option>';
+
+							document.getElementById('programs').innerHTML = programs;
+							document.getElementById('step-number').innerHTML = programs;
+
+						}
+
+					},
+
+				});
+
+			},
+
+		});
 
 	}
 
@@ -211,10 +323,6 @@
 				document.getElementById('programs').innerHTML = programs;
 
 			},
-
-			error:function() {
-
-			}
 
 		});
 
@@ -243,22 +351,31 @@
 
 			},
 
-			error:function() {
-
-			}
-
 		});
 
 	}
+
+	function sumOfTotal() {
+		var openingFee = document.getElementById("file-opening-fee").value;
+		var embassyStudentFee = document.getElementById("embassy-student-fee").value;
+		var serviceSolicitorFee = document.getElementById("service-solicitor-fee").value;
+		var otherFee = document.getElementById("other-fee").value;
+
+		var totalAmount =  parseInt(openingFee) + parseInt(embassyStudentFee) + parseInt(serviceSolicitorFee) + parseInt(otherFee);
+
+		document.getElementById("total-amount").value = totalAmount;
+	}
+
 	
 	$(document).ready(function() {
 		
 		$(".select2").select2({
-              placeholder: 'Select a value', 
-              allowClear: true
-            });
+			placeholder: 'Select a value', 
+			allowClear: true
+		});
 		
 	});
+
 	
 </script>
 

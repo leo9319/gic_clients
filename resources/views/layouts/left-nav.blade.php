@@ -6,7 +6,7 @@
                <a href="{{ route('dashboard') }}" class="{{ $active_class == 'dashboard' ? 'active' : '' }}"><i class="lnr lnr-home"></i> <span>Dashboard</span></a>
             </li>
 
-            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'counsellor')
+            @if (Auth::user()->user_role == 'admin')
             <li>
                <a href="{{ route('task.index') }}" class="{{ $active_class == 'tasks' ? 'active' : '' }}">
                   <i class="fa fa-tasks"></i> 
@@ -14,7 +14,7 @@
             </li>
             @endif
 
-            @if(Auth::user()->user_role == 'rm' | Auth::user()->user_role == 'counselor')
+            @if(Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'counselor')
                <li>
                   <a href="{{ route('user.clients', Auth::user()->id) }}" class="{{ $active_class == 'my-clients' ? 'active' : '' }}">
                      <i class="fa fa-user-plus"></i>
@@ -110,6 +110,11 @@
                <div id="subTargets" class="collapse ">
                   <ul class="nav">
                      <li>
+                        <a href="{{ route('target.department') }}" class="{{ $active_class == 'department-targets' ? 'active' : '' }}">
+                           <i class="fa fa-bullseye"></i> 
+                           <span>Department Targets</span></a>
+                     </li>
+                     <li>
                         <a href="{{ route('target.rm') }}" class="{{ $active_class == 'set-targets' ? 'active' : '' }}">
                            <i class="fa fa-bullseye"></i> 
                            <span>RMs</span></a>
@@ -193,7 +198,7 @@
 
             @endif
 
-            @if (Auth::user()->user_role == 'admin' | Auth::user()->user_role == 'accountant')
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
 
             <li>
                <a href="#subPayments" data-toggle="collapse" class="collapsed {{ $active_class == 'payments' ? 'active' : '' }}"><i class="fa fa-credit-card"></i> <span>Payments</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
@@ -202,16 +207,28 @@
                   <ul class="nav">
 
                      <li>
+                        <a href="{{ route('payment.statement') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Statement of Accounts</span></a>
+                     </li>
+
+                     <li>
                         <a href="{{ route('payment.history') }}" class="">
                            <i class="fa fa-credit-card"></i>
                            <span>Payment History</span></a>
                      </li>
 
+                     {{-- View only available to Counselor or RM --}}
+
+                     @if(Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
+
                      <li>
                         <a href="{{ route('payment.index') }}" class="">
                            <i class="fa fa-credit-card"></i>
-                           <span>Receive Payment</span></a>
+                           <span>Create Invoice</span></a>
                      </li>
+
+                     @endif
                   </ul>
                </div>
             </li>
@@ -221,16 +238,20 @@
             
 
             @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'backend')
-            <li>
-               <a href="{{ route('client.index') }}" class="{{ $active_class == 'clients' ? 'active' : '' }}">
-                  <i class="fa fa-users"></i> 
-                  <span>All Clients</span></a>
-            </li>
+               <li>
+                  <a href="{{ route('client.index') }}" class="{{ $active_class == 'clients' ? 'active' : '' }}">
+                     <i class="fa fa-users"></i> 
+                     <span>All Clients</span></a>
+               </li>
             @endif
+
+
             
             @if(Auth::user()->user_role == 'admin')
-            <li><a href="{{ route('users') }}" class="{{ $active_class == 'users' ? 'active' : '' }}"><i class="fa fa-user-circle"></i></i> <span>GIC Staffs</span></a></li>
+               <li><a href="{{ route('users') }}" class="{{ $active_class == 'users' ? 'active' : '' }}"><i class="fa fa-user-circle"></i></i> <span>GIC Staffs</span></a></li>
             @endif
+
+
          </ul>
       </nav>
    </div>

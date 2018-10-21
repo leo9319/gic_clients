@@ -100,6 +100,11 @@ Route::post('client/rm/{client_id}', 'ClientController@assignRmStore')->name('cl
 Route::post('client/step/{program_id}/{client_id}', 'ClientController@storeSteps')->name('client.step.store');
 Route::post('client/individual/step/{step_id}/{client_id}', 'ClientController@storeIndividualTask')->name('client.task.individual.store');
 Route::post('spouse/individual/step/{step_id}/{client_id}', 'ClientController@storeSpouseIndividualTask')->name('spouse.task.individual.store');
+Route::get('client/delete/{client_id}', 'ClientController@clientDestroy')->name('client.destroy');
+Route::get('client/edit/ind/{client_id}', 'ClientController@clientEdit')->name('client.edit.ind');
+Route::post('client/update/ind', 'ClientController@clientUpdate')->name('client.update.ind');
+Route::get('getClientName', 'ClientController@getClientName');
+
 
 
 
@@ -148,11 +153,12 @@ Route::post('program/edit', 'ProgramController@editProgram')->name('edit.program
 
 
 
+Route::get('target/department', 'TargetController@department')->name('target.department');
 Route::get('target/rm', 'TargetController@rm')->name('target.rm');
 Route::get('target/counselor', 'TargetController@counselor')->name('target.counselor');
 Route::get('set/target/{user_id}', 'TargetController@setTarget')->name('set.target');
 Route::post('target/{user_id}', 'TargetController@storeTarget')->name('store.target');
-
+Route::post('target/department/set', 'TargetController@storeDepartmentTarget')->name('target.department.store');
 
 
 
@@ -194,6 +200,12 @@ Route::post('form', 'FormController@store')->name('home.form.store');
 
 
 Route::get('history/payment', 'PaymentController@paymentHistory')->name('payment.history');
+Route::get('payment/verification/{payment}', 'PaymentController@verification')->name('payment.verification');
+Route::get('payment/cheque/verification/{payment}', 'PaymentController@chequeVerification')->name('payment.cheque.verification');
+Route::get('payment/generate-invoice/{payment}', 'PaymentController@generateInvoice')->name('payment.generate.invoice');
+
+Route::get('payment/statement/account', 'PaymentController@statement')->name('payment.statement');
+Route::get('payment/show/statement/{payment_id}', 'PaymentController@showStatement')->name('payment.show.statement');
 
 
 
