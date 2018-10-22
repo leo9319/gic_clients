@@ -67,8 +67,6 @@
 
                   <th>Account Verified</th>
 
-                  <th>Cheque Verified</th>
-
                   <th>Payment Type</th>
 
                   <th>View Payment</th>
@@ -76,6 +74,8 @@
                   @if(Auth::user()->user_role == 'accountant')
 
                   <th>Action</th>
+
+                  <th>Edit</th>
 
                   @endif
 
@@ -137,24 +137,6 @@
 
                       @endif
 
-                      @if($payment->payment_type == 'cheque')
-
-                      @if(!$payment->cheque_verified)
-
-                      <td>Not Verified</td>
-
-                      @else
-
-                      <td>Verified</td>
-
-                      @endif
-
-                      @else
-
-                      <td>N/A</td>
-
-                      @endif
-
                       <td>{{ $payment->payment_type }}</td>
 
                       <td><a href="{{ route('payment.show', $payment->id) }}" class="btn btn-defualt button2">View Payment</a></td>
@@ -162,6 +144,11 @@
                       @if(Auth::user()->user_role == 'accountant')
 
                       <td><a href="{{ route('payment.generate.invoice', $payment->id) }}" class="btn btn-info button2">Generate Invoice</a></td>
+
+                      <td>
+                        <a href="{{ route('payment.edit', $payment->id) }}"><i class="fa fa-edit"></i></a>
+                      </td>
+
 
                       @endif
 
@@ -204,6 +191,8 @@
                   @if(Auth::user()->user_role == 'accountant')
 
                   <th>Action</th>
+
+                  <th>Edit</th>
 
                   @endif
 

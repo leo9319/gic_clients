@@ -19,6 +19,7 @@ use Carbon;
 use Auth;
 use PDF;
 use URL;
+use DB;
 
 class PaymentController extends Controller
 {
@@ -161,7 +162,14 @@ class PaymentController extends Controller
      */
     public function edit(Payment $payment)
     {
-        //
+        $data['previous'] = URL::to('/dashboard');
+        $data['active_class'] = 'payments';
+        $data['payment'] = $payment;
+        $data['programs'] = DB::table('client_programs AS CP')
+                            ->join('programs AS P', 'P.id', 'CP.program_id')
+                            ->where('CP.client_id', $payment->client_id)->get();
+
+        return view('payments.edit', $data);
     }
 
     /**

@@ -37,7 +37,7 @@ class HomeController extends Controller
     {
         $this->middleware('auth');
         $this->middleware('role:admin')->only('users', 'updateUserRole');
-        $this->middleware('role:admin,accountant')->only('createUser', 'storeUser');
+        $this->middleware('role:admin,counselor,rm')->only('createUser', 'storeUser');
     }
 
     /**

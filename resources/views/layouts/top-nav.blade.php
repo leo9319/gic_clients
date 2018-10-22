@@ -39,7 +39,7 @@
                   <li><a href="#">Troubleshooting</a></li>
                </ul>
             </li> -->
-            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
             <li><a href="{{ route('user.create') }}"><i class="fa fa-user"></i> <span>Register a Client</span></a></li>
             @endif
             <li class="dropdown">

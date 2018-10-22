@@ -11,7 +11,6 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
-
 @endsection
 
 @if (\Session::has('success'))
@@ -86,7 +85,8 @@
 				<option value="cash">Cash</option>
 				<option value="card">POS</option>
 				<option value="cheque">Cheque</option>
-				<option value="bkash">bKash</option>
+				<option value="bkash_corporate">bKash - Corporate</option>
+				<option value="bkash_salman">bKash - Salman</option>
 				<option value="upay">Upay</option>
 				<option value="online">Online</option>
 
@@ -158,19 +158,33 @@
 
 		if (elem.value == 'card') {
 
-			var html = '<label>Card Type:</label> <select class="select2 form-control" name="card_type" onchange="addCardCharge(this)"> <option value="visa">Visa</option> <option value="amex">Amex</option> <option value="master">Master</option> <option value="other">Other</option> </select> <br> <label>Select Bank:</label> <select class="select2 form-control" name="bank_name" onchange="addBankName(this)"> <option value="ebl">EBL</option> <option value="brac">BRAC</option> <option value="dbbl">DBBL</option> <option value="city">City Bank</option> <option value="other">Other</option> </select> <br> <div id="other-card-container"></div> <label>Name on card:</label> <input type="text" name="name_on_card" placeholder="Name on card" class="form-control" required> <br> <label>Card Number:</label> <input type="number" name="card_number" placeholder="Card Number" class="form-control" required> <br> <label>Expiry Date:</label> <input type="text" name="expiry_date" placeholder="Expiry Date" class="form-control"> <br> <label>Approval Code:</label> <input type="text" name="approval_code" placeholder="Approval Code" class="form-control" required> <br>';
+			var html = '<label>Card Type:</label> <select class="select2 form-control" name="card_type" onchange="addCardCharge(this)"> <option value="visa">Visa</option> <option value="amex">Amex</option> <option value="master">Master</option> <option value="nexus">Nexus</option> <option value="other">Other</option> </select> <br> <label>Select Card/POS Machine:</label> <select class="select2 form-control" name="bank_name" onchange="addBankName(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <div id="other-card-container"></div> <label>Name on card:</label> <input type="text" name="name_on_card" placeholder="Name on card" class="form-control" required> <br> <label>Card Number (Last 4 Digits Only):</label> <input type="text" name="card_number" maxlength="4" placeholder="Card Number" class="form-control" required> <br> <label>Expiry Date:</label> <input type="text" name="expiry_date" placeholder="Expiry Date" class="form-control"> <br> <label>Approval Code:</label> <input type="text" name="approval_code" placeholder="Approval Code" class="form-control" required> <br>';
 
 			$('#payment-container').empty();
         	$('#payment-container').append(html);
 
 		} else if (elem.value == 'cheque') {
 
-			var html = '<label>Bank Name</label> <input type="text" name="bank_name" placeholder="Bank Name" class="form-control"> <br> <label>Cheque Number</label> <input type="text" name="cheque_number" placeholder="Cheque Number" class="form-control"> <br>';
+			var html = '<label>Bank Name (Cheque):</label> <input type="text" name="bank_name_cheque" placeholder="Bank Name (Cheque)" class="form-control"> <br> <label>Cheque Number:</label> <input type="text" name="cheque_number" placeholder="Cheque Number" class="form-control"> <br> <label>GIC Deposit Bank Name:</label> <select class="select2 form-control" name="bank_name"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br>';
 
 			$('#payment-container').empty();
 			$('#payment-container').append(html);
 
-		} else if (elem.value == 'bkash' || elem.value == 'upay') {
+		} else if (elem.value == 'bkash_corporate') {
+
+			var html = '<label>GIC Deposit Bank Name:</label> <input type="text" name="bank_name" placeholder="GIC Deposit Bank Name" class="form-control" value="scb" readonly> <br> <label>Phone Number</label> <input type="text" name="phone_number" placeholder="Phone Number" class="form-control"> <br>';
+
+			$('#payment-container').empty();
+			$('#payment-container').append(html);
+
+		} else if (elem.value == 'bkash_salman') {
+
+			var html = '<label>GIC Deposit Bank Name:</label> <input type="text" name="bank_name" placeholder="GIC Deposit Bank Name" class="form-control" value="salman bkash" readonly> <br> <label>Phone Number</label> <input type="text" name="phone_number" placeholder="Phone Number" class="form-control"> <br>';
+
+			$('#payment-container').empty();
+			$('#payment-container').append(html);
+
+		} else if (elem.value == 'upay') {
 
 			var html = '<label>Phone Number</label> <input type="text" name="phone_number" placeholder="Phone Number" class="form-control"> <br> ';
 
@@ -343,7 +357,7 @@
 
 				for(var i = 0; i < data.length; i++) {
 
-					option += '<option value="'+data[i].order+'">'+data[i].step_name+'</option>';
+					option += '<option value="'+data[i].id+'">'+data[i].step_name+'</option>';
 
 				}
 
