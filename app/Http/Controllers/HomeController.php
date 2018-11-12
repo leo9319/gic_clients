@@ -132,7 +132,7 @@ class HomeController extends Controller
         }
         
         else {
-            $data['recent_clients'] = Payment::where('step_no', 1)->orderBy('created_at', 'desc')->limit(5)->get();
+            $data['recent_clients'] = Payment::orderBy('created_at', 'desc')->limit(5)->get();
             $data['appointments'] = Appointment::limit(5)->where('app_date', '>', Carbon::now())->get();
             $data['targets'] = Target::limit(5)->orderBy('month_year', 'asc')->get();
             $data['payments'] = Payment::limit(5)->get();
@@ -189,7 +189,8 @@ class HomeController extends Controller
     public function storeUser(Request $request)
     {
         $validatedData = $request->validate([
-            'email' => 'required|unique:users'
+            'email' => 'required|unique:users',
+            'programs' => 'required',
         ]);
 
         User::create([
@@ -315,7 +316,7 @@ class HomeController extends Controller
             }
         }
 
-        $url = $_SERVER['SERVER_NAME'] . '/leos/gicclients';
+        $url = URL::to('/');
         $invoice_url = $_SERVER['SERVER_NAME'] . '/invoice/opening/' . $user->id;
 
         $data = [
@@ -327,11 +328,11 @@ class HomeController extends Controller
             'subject' => 'GIC File Opened'
         ];
             
-        Mail::send('mail.file_open', $data, function($message) use ($data) {
-            $message->from('s.simab@gmail.com', 'GIC File Opened');
-            $message->to($data['email']);
-            $message->subject($data['subject']);
-        });
+        // Mail::send('mail.file_open', $data, function($message) use ($data) {
+        //     $message->from('s.simab@gmail.com', 'GIC File Opened');
+        //     $message->to($data['email']);
+        //     $message->subject($data['subject']);
+        // });
 
         $phone = $request->mobile;
         $username = 'admin';

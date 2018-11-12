@@ -330,18 +330,18 @@ class ClientController extends Controller
     {
         // Auto assign first step:
 
-        // $step = Step::getProgramFirstStep($request->program_id);
-
-        // ClientProgram::updateOrCreate(
-        //     ['client_id' => $client_id, 'program_id' => $request->program_id],
-        //     ['steps' => json_encode(array($step->id))]
-        // );
-
-        // Just assigning the program
+        $step = Step::getProgramFirstStep($request->program_id);
 
         ClientProgram::updateOrCreate(
-            ['client_id' => $client_id, 'program_id' => $request->program_id]
+            ['client_id' => $client_id, 'program_id' => $request->program_id],
+            ['steps' => json_encode(array($step->id))]
         );
+
+        // // Just assigning the program
+
+        // ClientProgram::updateOrCreate(
+        //     ['client_id' => $client_id, 'program_id' => $request->program_id]
+        // );
 
         return redirect()->back();
     }

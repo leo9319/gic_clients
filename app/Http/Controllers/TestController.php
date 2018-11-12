@@ -8,13 +8,14 @@ use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use URL;
 
 class TestController extends Controller
 {
     //
     public function index()
     {
-        echo 'test';
+        echo URL::to('/');
     }
     public function sendMaiToClient($data_of_single_client){
         Mail::send('mail.client',$data_of_single_client,function ($message) use ($data_of_single_client){

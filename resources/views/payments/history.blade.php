@@ -61,22 +61,22 @@
 
                   <th>Step</th>
 
-                  <th>Amount Paid</th>
-
                   <th>Due</th>
 
                   <th>Account Verified</th>
 
-                  <th>Payment Type</th>
-
-                  <th>View Payment</th>
+                  <th>Cheque Verified</th>
 
                   @if(Auth::user()->user_role == 'accountant')
 
                   <th>Action</th>
 
-                  <th>Edit</th>
+                  @endif
 
+                  <th>View Payment</th>
+
+                  @if(Auth::user()->user_role == 'accountant')
+                  <th>Edit</th>
                   @endif
 
                </tr>
@@ -111,45 +111,62 @@
                       
                   		<td>
 
-                        {{ App\Step::find($payment->step_no) ? App\Step::find($payment->step_no)->step_name : ''}}
+                        {{ App\Step::find($payment->step_id) ? App\Step::find($payment->step_id)->step_name : ''}}
 
                       </td>
-                      
-                  		<td>{{ number_format($payment->amount_paid) }}</td>
 
                       @if($payment->total_amount - $payment->amount_paid > 0)
 
-                      <td>{{ number_format($payment->total_amount - $payment->amount_paid) }}</td>
+                      <td>
+                        {{ number_format($payment->total_amount - $payment->amount_paid) }}
+                        <a href="{{ route('payment.clear.due', $payment->id) }}" class="label label-warning">CLEAR</a>
+                      </td>
 
                       @else
 
+                      <td>0</td>
+
+                      @endif
+
+                      
+
+                      @if($payment->recheck == 1)
+                      <td class="text-danger">Recheck</td>
+                      @elseif($payment->recheck == 0)
+                      <td class="text-success"><b>Verified</b></td>
+                      @else
                       <td></td>
-
                       @endif
 
-                      @if(!$payment->verified)
+                      @if($payment->payment_type == 'cheque')
 
-                      <td>Not Verified</td>
+                        @if($payment->cheque_verified == 0)
+                        <td class="text-danger">Unverified</td>
+                        @elseif($payment->cheque_verified == 1)
+                        <td class="text-success"><b>Verified</b></td>
+                        @else
+                        <td class="text-warning"><b>Pending</b></td>
+                        @endif
 
                       @else
 
-                      <td>Verified</td>
+                        <td></td>
 
                       @endif
 
-                      <td>{{ $payment->payment_type }}</td>
-
-                      <td><a href="{{ route('payment.show', $payment->id) }}" class="btn btn-defualt button2">View Payment</a></td>
 
                       @if(Auth::user()->user_role == 'accountant')
 
-                      <td><a href="{{ route('payment.generate.invoice', $payment->id) }}" class="btn btn-info button2">Generate Invoice</a></td>
+                      <td><a href="{{ route('payment.generate.invoice', $payment->id) }}" class="btn btn-info btn-sm button2">Generate Invoice</a></td>
 
+                      @endif
+
+                      <td><a href="{{ route('payment.show', $payment->id) }}" class="btn btn-defualt btn-sm button2">View Payment</a></td>
+
+                      @if(Auth::user()->user_role == 'accountant')
                       <td>
                         <a href="{{ route('payment.edit', $payment->id) }}"><i class="fa fa-edit"></i></a>
                       </td>
-
-
                       @endif
 
                   	</tr>
@@ -176,24 +193,22 @@
 
                   <th>Step</th>
 
-                  <th>Amount Paid</th>
-
                   <th>Due</th>
 
                   <th>Account Verified</th>
 
                   <th>Cheque Verified</th>
 
-                  <th>Payment Type</th>
-
-                  <th>View Payment</th>
-
                   @if(Auth::user()->user_role == 'accountant')
 
                   <th>Action</th>
 
-                  <th>Edit</th>
+                  @endif
 
+                  <th>View Payment</th>
+
+                  @if(Auth::user()->user_role == 'accountant')
+                  <th>Edit</th>
                   @endif
 
                </tr>

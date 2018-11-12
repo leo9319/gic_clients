@@ -153,7 +153,7 @@
                            <td>{{ $user->client_code }}</td>
                            <td>{{ $user->name }}</td>
                            <td>{{ App\Program::find($payment->program_id)->program_name }}</td>
-                           <td>{{ $payment->step_no }}</td>
+                           <td>{{ App\Step::find($payment->step_id) ? App\Step::find($payment->step_id)->step_name : 'N/A' }}</td>
                            <td>{{ $payment->total_amount }}</td>
                            <td>{{ $payment->amount_paid }}</td>
 

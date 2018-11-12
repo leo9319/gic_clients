@@ -201,11 +201,31 @@ Route::post('form', 'FormController@store')->name('home.form.store');
 
 Route::get('history/payment', 'PaymentController@paymentHistory')->name('payment.history');
 Route::get('payment/verification/{payment}', 'PaymentController@verification')->name('payment.verification');
-Route::get('payment/cheque/verification/{payment}', 'PaymentController@chequeVerification')->name('payment.cheque.verification');
+Route::get('payment/disapprove/{payment}', 'PaymentController@disapprove')->name('payment.disapprove');
+
+Route::get('payment/cheque/verification/{payment}/{status}', 'PaymentController@chequeVerification')->name('payment.cheque.verification');
 Route::get('payment/generate-invoice/{payment}', 'PaymentController@generateInvoice')->name('payment.generate.invoice');
 
 Route::get('payment/statement/account', 'PaymentController@statement')->name('payment.statement');
 Route::get('payment/show/statement/{payment_id}', 'PaymentController@showStatement')->name('payment.show.statement');
+Route::get('payment/recheck/{payment}', 'PaymentController@recheck')->name('payment.recheck');
+Route::get('payment/bank/account', 'PaymentController@bankAccount')->name('payment.bank.account');
+Route::get('payment/account/detials/{account}', 'PaymentController@accountDetails')->name('payment.account.detials');
+Route::post('payment/account/transfer', 'PaymentController@transfer')->name('payment.account.transfer');
+
+Route::get('payment/create/incomes', 'PaymentController@createIncome')->name('payment.income');
+Route::post('payment/store/incomes', 'PaymentController@storeIncomesAndExpenses')->name('payment.store.income.and.expenses');
+
+Route::get('payment/create/expenses', 'PaymentController@createExpense')->name('payment.expense');
+
+Route::get('payment/incomes/expenses', 'PaymentController@showIncomesAndExpenses')->name('payment.show.income.and.expenses');
+
+Route::post('payment/update/incomes/expenses', 'PaymentController@updateIncomesAndExpenses')->name('payment.update.income.and.expenses');
+Route::get('payment/clear/due/{payment}', 'PaymentController@clearDue')->name('payment.clear.due');
+
+Route::get('findIncomeAndExpenses', 'PaymentController@findIncomeAndExpenses');
+
+
 
 
 

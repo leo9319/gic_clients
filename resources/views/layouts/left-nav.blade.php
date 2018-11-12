@@ -205,6 +205,38 @@
 
                <div id="subPayments" class="collapse ">
                   <ul class="nav">
+                     @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
+
+                     <li>
+                        <a href="{{ route('payment.income') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Income</span>
+                        </a>
+                     </li>
+
+                     <li>
+                        <a href="{{ route('payment.expense') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Expense</span>
+                        </a>
+                     </li>
+
+                     <li>
+                        <a href="{{ route('payment.show.income.and.expenses') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>View Income/Expense</span>
+                        </a>
+                     </li>
+
+                     @endif
+
+                     @if(Auth::user()->user_role == 'admin')
+                     <li>
+                        <a href="{{ route('payment.bank.account') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Bank Account</span></a>
+                     </li>
+                     @endif
 
                      <li>
                         <a href="{{ route('payment.statement') }}" class="">
@@ -215,12 +247,12 @@
                      <li>
                         <a href="{{ route('payment.history') }}" class="">
                            <i class="fa fa-credit-card"></i>
-                           <span>Payment History</span></a>
+                           <span>Client Payment History</span></a>
                      </li>
 
                      {{-- View only available to Counselor or RM --}}
 
-                     @if(Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
+                     @if(Auth::user()->user_role == 'accountant')
 
                      <li>
                         <a href="{{ route('payment.index') }}" class="">

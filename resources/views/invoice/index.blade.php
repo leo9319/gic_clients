@@ -169,7 +169,7 @@
         <table  width="100%" id="details" border="1">
             <tr>
                 <th>Programs</th>
-                <th>Step Number</th>
+                <th>Step Name</th>
                 <th>File opening fee</th>
                 <th>Embassy/Student fee</th>
                 <th>Service / Solicitor Charge</th>
@@ -178,7 +178,7 @@
             </tr>
             <tr id="hiderow">
                 <td>{{ $program }}</td>
-                <td>{{ $step_number }}</td>
+                <td>{{ $step ? $step->step_name : 'N/A' }}</td>
                 <td>{{ $opening_fee }}</td>
                 <td>{{ $embassy_student_fee }}</td>
                 <td>{{ $service_solicitor_fee }}</td>

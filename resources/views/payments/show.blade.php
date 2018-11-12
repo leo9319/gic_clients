@@ -156,46 +156,52 @@
               <td colspan="2">TOTAL DUE</td>
               <td>{{ number_format($payment->total_amount - $payment->amount_paid) }}</td>
            </tr>
+           <tr>
+             <td colspan="2"></td>
+             <td colspan="2"></td>
+             <td></td>
+           </tr>
+           <tr>
+              <td colspan="2"></td>
+              <td colspan="2">BANK CHARGE</td>
+              <td>{{ $payment->bank_charges }} %</td>
+           </tr>
+           <tr>
+              <td colspan="2"></td>
+              <td colspan="2">AMOUNT AFTER CHARGE</td>
+              <td>{{ number_format($payment->total_after_charge,2) }}</td>
+           </tr>
+           <tr>
+             
+           </tr>
+           
         </tfoot>
      </table>
 
      
       <div id="details" class="clearfix">
-
+        @if($payment->recheck == 1)
          <div id="client">
             <table>
                <tr>
                   <td>Verified by Accounts</td>
-                  @if($payment->verified == 1)
+                  @if($payment->recheck == 0)
                   <td><img src="{{ asset('img/tick.png') }}" width="30"></td>
-                  @else
+                  @elseif($payment->recheck == 1)
                   <td><img src="{{ asset('img/cross.png') }}" width="30"></td>
                   @endif
-                  @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
+                  @if(Auth::user()->user_role == 'accountant')
                   <td><a href="{{ route('payment.verification', $payment->id) }}" class="btn btn-success">Verify</a></td>
                   @endif
                </tr>
-               @if($payment->payment_type == 'cheque')
-               <tr>
-                  <td>Cheque verified</td>
-                  @if($payment->cheque_verified == 1)
-                  <td><img src="{{ asset('img/tick.png') }}" width="30"></td>
-                  @else
-                  <td><img src="{{ asset('img/cross.png') }}" width="30"></td>
-                  @endif
-                  @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'counselor'|| Auth::user()->user_role == 'rm')
-                  <td><a href="{{ route('payment.cheque.verification', $payment->id) }}" class="btn btn-success">Verify</a></td>
-                  @else
-                  <td></td>
-                  @endif
-               </tr>
-               @endif
             </table>
          </div>
 
+         @endif
+
          <div id="invoice">
 
-            <h2 class="name">Payment Method: <b>{{ ucfirst($payment->payment_type) }}</b></h2>
+            <h2 class="name">Payment Method: <b>{{ str_replace("_", " ", ucfirst($payment->payment_type)) }}</b></h2>
 
             <div class="date">
 
@@ -233,12 +239,16 @@
                   <td>{{ $payment->name_on_card }}</td>
                </tr>
                <tr>
-                  <td><b>Card number:</b>
+                  <td><b>Card number (Last 4 digits):</b>
                   <td>{{ $payment->card_number }}</td>
                </tr>
                <tr>
                   <td><b>Expiry Date:</b>
                   <td>{{ $payment->expiry_date }}</td>
+               </tr>
+               <tr>
+                  <td><b>Approval Code:</b>
+                  <td>{{ $payment->approval_code }}</td>
                </tr>
             </table>
 
@@ -246,7 +256,7 @@
                <table>
                <tr>
                   <td><b>Bank Name</b>
-                  <td>{{ $payment->bank_name }}</td>
+                  <td>{{ strtoupper($payment->bank_name) }}</td>
                </tr>
                <tr>
                   <td><b>Cheque Number:</b>
@@ -257,13 +267,17 @@
             @elseif($payment->payment_type == 'online')
             <table>
                <tr>
-                  <td><b>Bank Name</b>
+                  <td><b>Bank Desposited</b>
                   <td>{{ strtoupper($payment->bank_name) }}</td>
                </tr>
             </table>
 
-            @elseif($payment->payment_type == 'bkash' || $payment->payment_type == 'upay')
+            @elseif($payment->payment_type == 'bkash_corporate' ||$payment->payment_type == 'bkash_salman' || $payment->payment_type == 'upay')
             <table>
+               <tr>
+                  <td><b>Bank Deposited</b>
+                  <td>{{ strtoupper($payment->bank_name) }}</td>
+               </tr>
                <tr>
                   <td><b>Phone Number</b>
                   <td>{{ $payment->phone_number }}</td>
@@ -326,7 +340,29 @@
 
             @endif --}}
 
+            @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
+              @if($payment->payment_type == 'cheque')
+                @if($payment->cheque_verified == -1)
+                  <a href="{{ route('payment.cheque.verification', [$payment->id, 1]) }}" class="btn btn-success">Verify Cheque</a>
+                  <a href="{{ route('payment.cheque.verification', [$payment->id, 0]) }}" class="btn btn-danger">Disapprove</a>
+                @elseif($payment->cheque_verified == 0)
+                  <h2 style="color: red"><b>Cheque Bounced <i class="fas fa-times"></i></b></h2>
+                @elseif($payment->cheque_verified == 1)
+                  <h2 style="color: green"><b>Cheque Verified By Counselor / RM <i class="fas fa-check"></i></b></h2>
+                @endif
+              @endif
+            @endif
+
          </div>
+
+         @if(Auth::user()->user_role == 'admin')
+
+            @if($payment->recheck == -1 || $payment->recheck == 0)
+              <a href="{{ route('payment.recheck', $payment->id) }}" class="btn btn-danger btn-block" style="width: 100%">Recheck This Entry</a>
+            @elseif($payment->recheck == 1)
+              <a href="javascript:void(0)" class="btn btn-success btn-block" style="width: 100%">Sent for Recheck</a>
+            @endif
+         @endif
 
       </div>
 
