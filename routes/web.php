@@ -203,7 +203,7 @@ Route::get('history/payment', 'PaymentController@paymentHistory')->name('payment
 Route::get('payment/verification/{payment}', 'PaymentController@verification')->name('payment.verification');
 Route::get('payment/disapprove/{payment}', 'PaymentController@disapprove')->name('payment.disapprove');
 
-Route::get('payment/cheque/verification/{payment}/{status}', 'PaymentController@chequeVerification')->name('payment.cheque.verification');
+Route::get('payment/cheque/verification/{payment_type}/{status}', 'PaymentController@chequeVerification')->name('payment.cheque.verification');
 Route::get('payment/generate-invoice/{payment}', 'PaymentController@generateInvoice')->name('payment.generate.invoice');
 
 Route::get('payment/statement/account', 'PaymentController@statement')->name('payment.statement');
@@ -223,7 +223,12 @@ Route::get('payment/incomes/expenses', 'PaymentController@showIncomesAndExpenses
 Route::post('payment/update/incomes/expenses', 'PaymentController@updateIncomesAndExpenses')->name('payment.update.income.and.expenses');
 Route::get('payment/clear/due/{payment}', 'PaymentController@clearDue')->name('payment.clear.due');
 
+Route::post('payment/types', 'PaymentController@types')->name('payment.types');
 Route::get('findIncomeAndExpenses', 'PaymentController@findIncomeAndExpenses');
+Route::get('payment/acknowledgement/thank-you', function() {
+	return view('payments.acknowledgement');
+})->name('payment.acknowledgement');
+Route::get('payment/structure/client/{payment_type_id}/{type}', 'PaymentController@structureClient')->name('payment.structure.client');
 
 
 

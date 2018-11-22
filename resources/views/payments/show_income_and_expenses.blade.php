@@ -85,7 +85,7 @@
 
                       <td>{{ Carbon\Carbon::parse($transaction->created_at)->format('d-M-Y') }}</td>
                       <td>{{ ucfirst($transaction->payment_type) }}</td>
-                      <td>{{ number_format(abs($transaction->total_after_charge)) }}</td>
+                      <td>{{ number_format(abs($transaction->total_amount)) }}</td>
                       <td>{{ $transaction->description }}</td>
                       <td>{{ strtoupper($transaction->bank_name) }}</td>
 
