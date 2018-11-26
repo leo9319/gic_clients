@@ -250,6 +250,12 @@
                            <span>Client Payment History</span></a>
                      </li>
 
+                     <li>
+                        <a href="{{ route('payment.client.refund') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Refund Client</span></a>
+                     </li>
+
                      {{-- View only available to Counselor or RM --}}
 
                      @if(Auth::user()->user_role == 'accountant')
@@ -261,13 +267,21 @@
                      </li>
 
                      @endif
+
                   </ul>
                </div>
             </li>
 
             @endif
 
-            
+            @if(Auth::user()->user_role == 'admin')
+            <li>
+               <a href="{{ route('reports.index') }}" class="{{ $active_class == 'reports' ? 'active' : '' }}">
+                  <i class="fa fa-folder-open"></i>
+                  <span>Reports</span></a>
+            </li>
+
+            @endif
 
             @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'backend')
                <li>
@@ -276,8 +290,6 @@
                      <span>All Clients</span></a>
                </li>
             @endif
-
-
             
             @if(Auth::user()->user_role == 'admin')
                <li><a href="{{ route('users') }}" class="{{ $active_class == 'users' ? 'active' : '' }}"><i class="fa fa-user-circle"></i></i> <span>GIC Staffs</span></a></li>

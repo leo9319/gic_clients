@@ -8,28 +8,72 @@
 
 @section('header_scripts')
 
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 
 <script>
+$(function() {
 
-   $(document).ready( function () {
+  var $tableSel = $('#example');
+  $tableSel.dataTable({
+    "order": [[ 5, "asc" ]]
+  });
+  
+  $('#filter').on('click', function(e){
+    e.preventDefault();
+    var startDate = $('#start').val(),
+        endDate = $('#end').val();
+    
+    filterByDate(0, startDate, endDate); // We call our filter function
+    
+    $tableSel.dataTable().fnDraw(); // Manually redraw the table after filtering
+  });
+  
+  // Clear the filter. Unlike normal filters in Datatables,
+  // custom filters need to be removed from the afnFiltering array.
+  $('#clearFilter').on('click', function(e){
+    e.preventDefault();
+    $.fn.dataTableExt.afnFiltering.length = 0;
+    $tableSel.dataTable().fnDraw();
+  });
+  
+});
 
-       $('#payment-history').DataTable({
+var filterByDate = function(column, startDate, endDate) {
+  // Custom filter syntax requires pushing the new filter to the global filter array
+    $.fn.dataTableExt.afnFiltering.push(
+        function( oSettings, aData, iDataIndex ) {
+          var rowDate = normalizeDate(aData[column]),
+              start = normalizeDate(startDate),
+              end = normalizeDate(endDate);
 
-       	'columnDefs' : [
+          
+          // If our date from the row is between the start and end
+          if (start <= rowDate && rowDate <= end) {
+            return true;
+          } else if (rowDate >= start && end === '' && start !== ''){
+            return true;
+          } else if (rowDate <= end && start === '' && end !== ''){
+            return true;
+          } else {
+            return false;
+          }
+        }
+    );
+  };
 
-       		{
-
-       		}
-
-       	]
-
-       });
-
-   });
-
+  var normalizeDate = function(dateString) {
+  var date = new Date(dateString);
+  var normalized = date.getFullYear() + '' + (("0" + (date.getMonth() + 1)).slice(-2)) + '' + ("0" + date.getDate()).slice(-2);
+  return normalized;
+}
 </script>
+
 
 @stop
 
@@ -41,11 +85,37 @@
 
 			<h2>Income/Expense History</h2>
 
+      <div class="pull-right">
+        <a href="{{ route('payment.income.pdf') }}" class="btn btn-success btn-sm">View All Incomes</a>
+        <a href="{{ route('payment.expense.pdf') }}" class="btn btn-danger btn-sm">View All Expenses</a>
+
+        <a href="{{ route('payment.income.expense.pdf') }}" class="btn btn-info btn-sm">View Summary</a>
+      </div>
+
 		</div>
 
 		<div class="panel-footer">
 
-			<table id="payment-history" class="table table-striped table-bordered" style="width:100%">
+      <table border="0" cellspacing="5" cellpadding="5">
+        <tbody>
+          <tr>
+            <td>Start Date: </td>
+            <td><input type="date" id="start" name="min" class="form-control"></td>
+          </tr>
+          <tr>
+              <td>End Date: </td>
+              <td><input type="date" id="end" name="max" class="form-control"></td>
+          </tr>
+      </tbody>
+    </table>
+
+  <hr>
+
+  <button id="filter" class="btn btn-success btn-sm">Filter</button>
+  <button id="clearFilter" class="btn btn-info btn-sm" class="btn btn-success">Clear Filter</button>
+  <hr>
+
+			<table id="example" class="table table-striped table-bordered" style="width:100%">
 
             <thead>
 
@@ -102,11 +172,9 @@
                         @else
 
                         <td>
-                          {{-- <a href="{{ route('payment.verification', $transaction->id) }}" class="label label-success">Approve</a> --}}
+                          <a href="{{ route('payment.recheck', [$transaction->id, 0]) }}" class="label label-success">Approve</a>
 
-                          <a href="javascript:void(0)" class="label label-success" onclick="approve()">Approve</a>
-
-                          <a href="{{ route('payment.disapprove', $transaction->id) }}" class="label label-danger">Disapprove</a>
+                          <a href="{{ route('payment.recheck', [$transaction->id, -1]) }}" class="label label-danger">Disapprove</a>
                         </td>
 
                         @endif

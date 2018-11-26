@@ -208,7 +208,9 @@ Route::get('payment/generate-invoice/{payment}', 'PaymentController@generateInvo
 
 Route::get('payment/statement/account', 'PaymentController@statement')->name('payment.statement');
 Route::get('payment/show/statement/{payment_id}', 'PaymentController@showStatement')->name('payment.show.statement');
-Route::get('payment/recheck/{payment}', 'PaymentController@recheck')->name('payment.recheck');
+
+Route::get('payment/incomes/expenses/approve/{income_expenes_id}/{approve}', 'PaymentController@recheck')->name('payment.recheck');
+
 Route::get('payment/bank/account', 'PaymentController@bankAccount')->name('payment.bank.account');
 Route::get('payment/account/detials/{account}', 'PaymentController@accountDetails')->name('payment.account.detials');
 Route::post('payment/account/transfer', 'PaymentController@transfer')->name('payment.account.transfer');
@@ -229,6 +231,14 @@ Route::get('payment/acknowledgement/thank-you', function() {
 	return view('payments.acknowledgement');
 })->name('payment.acknowledgement');
 Route::get('payment/structure/client/{payment_type_id}/{type}', 'PaymentController@structureClient')->name('payment.structure.client');
+
+Route::get('payment/income/pdf', 'PaymentController@generateIncomePDF')->name('payment.income.pdf');
+Route::get('payment/expense/pdf', 'PaymentController@generateExpensePDF')->name('payment.expense.pdf');
+Route::get('payment/income/expense/pdf', 'PaymentController@generateIncomeExpensePDF')->name('payment.income.expense.pdf');
+Route::get('payment/client/refund', 'PaymentController@clientRefund')->name('payment.client.refund');
+Route::post('payment/store/client/refund', 'PaymentController@storeClientRefund')->name('payment.store.client.refund');
+
+
 
 
 
@@ -252,10 +262,14 @@ Route::get('/', function () {
 
 
 
-
 Route::get('thank-you', function () {
     	return view('file.acknowledgement');
 })->name('thanks');
+
+
+Route::get('reports', 'ReportController@index')->name('reports.index');
+Route::get('reports/profit/loss', 'ReportController@profitAndLoss')->name('reports.profit.loss');
+Route::post('reports/monthly', 'ReportController@monthly')->name('reports.monthly');
 
 
 

@@ -15,6 +15,7 @@ class CreateIncomeExpensesTable extends Migration
     {
         Schema::create('income_expenses', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('client_id');
             $table->string('payment_type');
             $table->integer('total_amount');
             $table->string('bank_name');

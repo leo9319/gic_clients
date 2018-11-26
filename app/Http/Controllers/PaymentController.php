@@ -36,7 +36,7 @@ class PaymentController extends Controller
     public function __construct() 
     {
         $this->middleware('auth');
-        $this->middleware('role:admin')->only('bankAccount', 'accountDetails');
+        $this->middleware('role:admin')->only('bankAccount', 'accountDetails', 'recheck');
     }
 
 
@@ -463,20 +463,6 @@ class PaymentController extends Controller
         return view('payments.history', $data);
     }
 
-    public function verification(Payment $payment)
-    {
-        Payment::find($payment->id)->update(['recheck' => 0]);
-        
-        return redirect()->back();
-    }
-
-    public function disapprove(Payment $payment)
-    {
-        Payment::find($payment->id)->update(['recheck' => -1]);
-        
-        return redirect()->back();
-    }
-
     public function chequeVerification(PaymentType $payment_type, $status)
     {
         PaymentType::find($payment_type->id)->update(['cheque_verified' => $status]);
@@ -532,9 +518,9 @@ class PaymentController extends Controller
         return view('payments.show_statement', $data);
     }
 
-    public function recheck(Payment $payment)
+    public function recheck($income_expenes_id, $status)
     {
-        Payment::find($payment->id)->update(['recheck' => '1']);
+        IncomeExpense::find($income_expenes_id)->update(['recheck' => $status]);
 
         return redirect()->back();
     }
@@ -546,27 +532,57 @@ class PaymentController extends Controller
 
         // Previous one:
 
-        $data['payment_details'] = DB::table('payments')
-                 ->select('bank_name', DB::raw('SUM(total_after_charge) AS total, SUM(total_amount) AS total_amount'))
-                 ->groupBy('bank_name')
-                 ->where('bank_name', '!=', 'NULL')
-                 ->where('recheck', '=', 0)
-                 ->where('cheque_verified', '=', 1)
-                 ->get();
+        $bank_account_income_expenses = IncomeExpense::where('recheck', 0)->get();
+        $bank_account_client = PaymentType::all();
 
+        $banks = [
+            'cash' => 0,
+            'scb' => 0,
+            'city' => 0,
+            'dbbl' => 0,
+            'ebl' => 0,
+            'ucb' => 0,
+            'brac' => 0,
+            'agrani' => 0,
+            'icb' => 0,
+            'salman account' => 0,
+            'kamran account' => 0
+         ];
 
          $data['bank_accounts'] = [
+            'cash' => 'CASH',
             'scb' => 'SCB',
-            'city' => 'City Bank',
+            'city' => 'CITY',
             'dbbl' => 'DBBL',
             'ebl' => 'EBL',
             'ucb' => 'UCB',
             'brac' => 'BRAC',
-            'agrani' => 'Agrani Bank',
+            'agrani' => 'AGRANI',
             'icb' => 'ICB',
             'salman account' => 'Salman Account',
             'kamran account' => 'Kamran Account'
          ];
+
+        foreach ($bank_account_client as $bac_key => $bac_value) {
+
+            foreach ($banks as $key => $value) {
+                
+                if($bac_value['bank_name'] == $key) {
+                    $banks[$key] += $bac_value['amount_received'];
+                }
+            }
+        }
+
+        foreach ($bank_account_income_expenses as $baie_key => $baie_value) {
+
+            foreach ($banks as $key => $value) {
+                if($baie_value['bank_name'] == $key) {
+                    $banks[$key] += $baie_value['total_amount'];
+                }
+            }
+        }
+
+        $data['banks'] = $banks; 
 
         return view('payments.bank_account', $data);
     }
@@ -584,24 +600,24 @@ class PaymentController extends Controller
 
     public function transfer(Request $request)
     {
-        Payment::create([
-            'payment_type' => 'Cash Transfer To',
+        $date_timestamp = Carbon::parse($request->date)->toDateTimeString();
+
+        IncomeExpense::create([
+            'payment_type' => 'Cash Transfer In',
             'bank_name' => $request->bank_name,
-            'total_after_charge' => $request->amount,
-            'amount_paid' => $request->amount,
-            'cheque_verified' => 1,
+            'total_amount' => $request->amount,
             'recheck' => 0,
             'created_by' => Auth::user()->id,
+            'created_at' => $date_timestamp, 
         ]);
 
-        Payment::create([
-            'payment_type' => 'Cash Transfer from',
+        IncomeExpense::create([
+            'payment_type' => 'Cash Transfer Out',
             'bank_name' => 'cash',
-            'total_after_charge' => -1 * $request->amount,
-            'amount_paid' => -1 * $request->amount,
-            'cheque_verified' => 1,
+            'total_amount' => -1 * $request->amount,
             'recheck' => 0,
             'created_by' => Auth::user()->id,
+            'created_at' => $date_timestamp, 
         ]);
 
         return redirect()->back();
@@ -680,7 +696,7 @@ class PaymentController extends Controller
         $data['active_class'] = 'payment';
         $data['previous'] = URL::to('/dashboard');
 
-        $data['transactions'] = IncomeExpense::whereIn('payment_type', ['income', 'expense'])->get();
+        $data['transactions'] = IncomeExpense::orderBy('recheck', 'DESC')->get();
 
         $data['bank_accounts'] = [
             'cash' => 'Cash',
@@ -776,6 +792,63 @@ class PaymentController extends Controller
                 # code...
                 break;
         }
+    }
+
+    public function generateIncomePDF() 
+    {
+        $data['incomes'] = IncomeExpense::where('payment_type', 'income')->get();
+
+        return view('payments.income_pdf', $data);
+    }
+
+    public function generateExpensePDF() 
+    {
+        $data['expenses'] = IncomeExpense::where('payment_type', 'expense')->get();
+
+        return view('payments.expenses_pdf', $data);
+    }
+
+    public function generateIncomeExpensePDF() 
+    {
+        $data['incomes'] = IncomeExpense::where('payment_type', 'income')->get();
+        $data['expenses'] = IncomeExpense::where('payment_type', 'expense')->get();
+
+        return view('payments.income_expense_pdf', $data);
+    }
+
+    public function clientRefund()
+    {
+        $data['previous'] = URL::to('/dashboard');
+        $data['active_class'] = 'payments';
+        $data['clients'] = User::userRole('client')->get();
+        $data['programs'] = Program::all();
+
+        $data['bank_accounts'] = [
+            'cash' => 'CASH',
+            'scb' => 'SCB',
+            'city' => 'CITY',
+            'dbbl' => 'DBBL',
+            'ebl' => 'EBL',
+            'ucb' => 'UCB',
+            'brac' => 'BRAC',
+            'agrani' => 'AGRANI',
+            'icb' => 'ICB',
+            'salman account' => 'Salman Account',
+            'kamran account' => 'Kamran Account'
+         ];
+
+        return view('payments.refund', $data);
+    }
+
+    public function storeClientRefund(Request $request)
+    {
+        $validatedData = $request->validate([
+            'client_id' => 'required|not_in:0',
+            'bank_name' => 'required',
+            'amount' => 'required|min:1',
+        ]);
+
+        return $request->all();
     }
 
 }

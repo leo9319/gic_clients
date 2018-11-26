@@ -40,6 +40,7 @@
 		<div class="panel-body">
 
 			<h2>Bank Account</h2>
+      <h5>Total Balance: {{ number_format(array_sum($banks)) }}</h5>
 
 		</div>
 
@@ -57,8 +58,6 @@
 
                   <th>Account Name</th>
 
-                  <th>Received</th>
-
                   <th>Balance (Bank)</th>
 
                   <th class="text-center">Action</th>
@@ -70,11 +69,10 @@
             <tfoot>
 
                <tr>
+
                   <th>SL.</th>
 
                   <th>Account Name</th>
-
-                  <th>Received</th>
 
                   <th>Balance (Bank)</th>
 
@@ -85,15 +83,16 @@
             </tfoot>
 
             <tbody>
-            	@foreach($payment_details as $index => $payment_detail)
+              <?php $index = 1 ?>
+            	@foreach($banks as $key => $value)
             	<tr>
-                <td>{{ $index + 1 }}</td>
-                <td>{{ strtoupper($payment_detail->bank_name) }}</td>
-            		<td>{{ number_format($payment_detail->total_amount, 2) }}</td>
-                <td>{{ number_format($payment_detail->total, 2) }}</td>
+                <td>{{ $index }}</td>
+                <td>{{ strtoupper($key) }}</td>
+            		<td>{{ number_format($value) }}</td>
             		<td>
-            			<a href="{{ route('payment.account.detials', $payment_detail->bank_name) }}" class="btn btn-info btn-sm button2 btn-block">View Details</a>
+            			<a href="#" class="btn btn-info btn-sm button2 btn-block">View Details</a>
             		</td>
+                <?php $index++ ?>
             	</tr>
             	@endforeach
             </tbody>            
@@ -118,13 +117,18 @@
 
         <button type="button" class="close" data-dismiss="modal">&times;</button>
 
-        <h4 class="modal-title">Modal Header</h4>
+        <h4 class="modal-title">Transfer Cash</h4>
 
       </div>
 
       <div class="modal-body">
 
         {{ Form::open(['route'=>'payment.account.transfer']) }}
+
+          <div class="form-group">
+            {{ Form::label('Date:') }}
+            {{ Form::date('date', Carbon\Carbon::now(), ['class'=>'form-control', 'required']) }}
+          </div>
 
           <div class="form-group">
 
