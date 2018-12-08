@@ -154,7 +154,20 @@ var filterByDate = function(column, startDate, endDate) {
                     <tr>
 
                       <td>{{ Carbon\Carbon::parse($transaction->created_at)->format('d-M-Y') }}</td>
-                      <td>{{ ucfirst($transaction->payment_type) }}</td>
+
+                      <td>
+
+                        {{ ucfirst($transaction->payment_type) }}
+
+                        @if(isset($transaction->client_id))
+
+                          to {{ App\User::find($transaction->client_id)->name }}
+
+                        @endif
+
+                      </td>
+
+
                       <td>{{ number_format(abs($transaction->total_amount)) }}</td>
                       <td>{{ $transaction->description }}</td>
                       <td>{{ strtoupper($transaction->bank_name) }}</td>

@@ -8,20 +8,19 @@
 
 @section('header_scripts')
 
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
-<style type="text/css">
-	/* Hide HTML5 Up and Down arrows. */
-input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
- 
-input[type="number"] {
-    -moz-appearance: textfield;
-}
-</style>
+<script type="text/javascript">
+	$(function(){
+	  $(':input[type=number]').on('mousewheel',function(e){ $(this).blur(); });
+	});
+</script>
 
 @endsection
 
@@ -43,6 +42,12 @@ input[type="number"] {
     </div>
 @endif
 
+@if (isset($message))
+    <div class="alert alert-danger">
+        <p class="text-center">{{'!!! ' . strtoupper($message) . ' !!!'}}</p>
+    </div>
+@endif
+
 <div class="container-fluid">
 
 	<div class="panel">
@@ -55,17 +60,18 @@ input[type="number"] {
 
 		<div class="panel-footer">
 
-			{{ Form::open(['route'=>'payment.store', 'id' => 'myForm']) }}
+			{{ Form::open(['route'=>'payment.store', 'id' => 'myForm', 'autocomplete'=>'off']) }}
 
 			<input type="hidden" name="payment_id" value="{{ $payment_id }}">
+			<input type="hidden" name="date" value="{{ $date }}">
 
 			<div class="form-group">
 
 				<label class="text-success">Payment Type:</label>
 
-				<select id="0" class="form-control" name="payment_type-0" onchange="addPaymentOptions(this)">
+				<select id="0" class="form-control" name="payment_type-0" onchange="addPaymentOptions(this)" required="">
 
-					<option value="">Select a payment method</option>
+					<option value="0">Select a payment method</option>
 					<option value="cash">Cash</option>
 					<option value="card">POS</option>
 					<option value="cheque">Cheque</option>
@@ -92,6 +98,8 @@ input[type="number"] {
 
 				<label>Total Amount:</label>
 				<input type="text" name="total_amount" class="form-control" id="total_amount" value="{{ $total_amount }}" disabled="disabled">
+
+				<input type="hidden" name="total_amount" value="{{ $total_amount }}">
 				
 			</div>
 
@@ -105,7 +113,7 @@ input[type="number"] {
 			<div class="form-group"> 
 
 				<label>Due Date:</label> 
-				<input type="date" name="due_date" id="due-date" class="form-control"> 
+				<input type="text" placeholder="Due Date" name="due_date" id="due-date" class="form-control" required="">
 
 			</div>
 
@@ -126,7 +134,6 @@ input[type="number"] {
 
 <script type="text/javascript">
 
-
 	$(document).ready(function() {
 
 		$("#deliveryNext").prop('disabled', true);
@@ -137,7 +144,7 @@ input[type="number"] {
 
 	function addPaymentType() {
 
-		var html = '<div id="payment-div-#"><div class="form-group"> <label class="text-success">Payment Type:</label> <select id=# class="select2 form-control" name="payment_type-#" onchange="addPaymentOptions(this)"> <option value="">Select a payment method</option> <option value="cash">Cash</option> <option value="card">POS</option> <option value="cheque">Cheque</option> <option value="bkash_corporate">bKash - Corporate</option> <option value="bkash_salman">bKash - Salman</option> <option value="upay">Upay</option> <option value="online">Online</option> </select> </div><div id="payment-container-#"></div><input type="hidden" name="counter" value="#"><a class="text-danger" href="javascript:void(0)" onclick="removePaymentType(#)">(-) Remove This Payment Type</a><hr></div>';
+		var html = '<div id="payment-div-#"><div class="form-group"> <label class="text-success">Payment Type:</label> <select id=# class="select2 form-control" name="payment_type-#" onchange="addPaymentOptions(this)" required> <option value="">Select a payment method</option> <option value="cash">Cash</option> <option value="card">POS</option> <option value="cheque">Cheque</option> <option value="bkash_corporate">bKash - Corporate</option> <option value="bkash_salman">bKash - Salman</option> <option value="upay">Upay</option> <option value="online">Online</option> </select> </div><div id="payment-container-#"></div><input type="hidden" name="counter" value="#"><a class="text-danger" href="javascript:void(0)" onclick="removePaymentType(#)">(-) Remove This Payment Type</a><hr></div>';
 
 		html = html.replace(/#/g, number);
 
@@ -218,7 +225,7 @@ input[type="number"] {
 
 		} else if(elem.value == 'online') {
 
-			var html = '<label>Select Bank:</label> <select class="select2 form-control" name="bank_name-#" onchange="addCardCharge(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid online" name="total_amount-#" onchange="getTotalAmount(this)" required></div> <br>';
+			var html = '<label>Select Bank:</label> <select class="select2 form-control" name="bank_name-#" onchange="addCardCharge(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <label>Deposit Date:</label> <input type="date" class="form-control" name="deposit_date-#" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid online" name="total_amount-#" onchange="getTotalAmount(this)" required> </div> <br>';
 
 			html = html.replace(/#/g, number);
 
@@ -246,6 +253,14 @@ input[type="number"] {
             document.getElementById(elementTagForPosMachine).disabled = true;
 
             document.getElementById('alternate_' + elementTagForPosMachine).innerHTML += '<input type="hidden" name="' + elementTagForPosMachine + '" value="city">';
+			
+		} else if (card_type == 'nexus') {
+            objSelect = document.getElementById(elementTagForPosMachine)
+            setSelectedValue(objSelect, "DBBL");
+
+            document.getElementById(elementTagForPosMachine).disabled = true;
+
+            document.getElementById('alternate_' + elementTagForPosMachine).innerHTML += '<input type="hidden" name="' + elementTagForPosMachine + '" value="dbbl">';
 			
 		} else {
 			setSelectedValue(objSelect, "BRAC");
@@ -302,7 +317,7 @@ input[type="number"] {
 	      if(form.elements[i].value === '' && form.elements[i].hasAttribute('required')){
 	        alert('There are some required fields!');
 	        form.elements[i].style.borderColor = "red";
-	        // return false;
+	        return false;
 	      }
 	    }
 
@@ -317,8 +332,6 @@ input[type="number"] {
 
 	    } else {
 
-	    	
-
 	    	if(due_date_element.value) {
 
 	    		form.submit();
@@ -331,6 +344,15 @@ input[type="number"] {
 	    	}
 	    }
 	}
+
+	$( function() {
+		var today = new Date();
+
+	    $("#due-date").datepicker({
+	    	dateFormat: 'yy-mm-dd',
+		    minDate: '0',
+		});
+	});
 
 	$(document).ready(function() {
 		

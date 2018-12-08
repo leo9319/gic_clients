@@ -91,6 +91,25 @@
                             </div>
                         </div>
 
+                        @if(Auth::user()->user_role == 'admin')
+
+                        <div class="form-group{{ $errors->has('status') ? ' has-error' : '' }}">
+                            <label for="status" class="col-md-3 control-label">Status</label>
+
+                            <div class="col-md-6">
+
+                                <select name="status" class="form-control">
+                                    <option value="active">Active</option>
+                                    <option value="successful">Successful</option>
+                                    <option value="closed">Closed</option>
+                                    <option value="canceled">Canceled</option>
+                                </select>
+
+                            </div>
+                        </div>
+
+                        @endif
+
 
                         <div class="form-group">
                             <div class="col-md-6 col-md-offset-3">

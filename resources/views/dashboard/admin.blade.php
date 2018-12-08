@@ -146,20 +146,16 @@
 
                      @foreach($payments as $payment)
 
-                        @foreach($payment->userInfo as $user)
-
                         <tr>
 
-                           <td>{{ $user->client_code }}</td>
-                           <td>{{ $user->name }}</td>
+                           <td>{{$payment->userInfo->client_code }}</td>
+                           <td>{{$payment->userInfo->name }}</td>
                            <td>{{ App\Program::find($payment->program_id)->program_name }}</td>
                            <td>{{ App\Step::find($payment->step_id) ? App\Step::find($payment->step_id)->step_name : 'N/A' }}</td>
                            <td>{{ $payment->total_amount }}</td>
                            <td>{{ $payment->amount_paid }}</td>
 
                         </tr>
-
-                        @endforeach
 
                      @endforeach
 
@@ -233,20 +229,18 @@
                   <tbody>
 
                      @foreach($recent_clients as $index => $recent_client)
-                        @foreach($recent_client->userInfo as $client)
 
                      <tr>
 
-                        <td>{{ $client->client_code }}</td>
-                        <td>{{ $client->name }}</td>
-                        <td>{{ Carbon\Carbon::parse($client->created_at)->format('d-M-Y') }}</td>
+                        <td>{{ $recent_client->userInfo->client_code }}</td>
+                        <td>{{ $recent_client->userInfo->name }}</td>
+                        <td>{{ Carbon\Carbon::parse($recent_client->userInfo->created_at)->format('d-M-Y') }}</td>
                         <td>
                            <a href="{{ route('client.profile', $recent_client->client_id) }}"><span class="label label-primary">VIEW PROFILE</span></a>
                         </td>
 
                      </tr>
-
-                        @endforeach
+                     
                      @endforeach
 
                   </tbody>

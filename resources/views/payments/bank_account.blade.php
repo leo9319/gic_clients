@@ -29,6 +29,10 @@
 
    });
 
+   $(function(){
+    $(':input[type=number]').on('mousewheel',function(e){ $(this).blur(); });
+  });
+
 </script>
 
 @stop
@@ -46,7 +50,7 @@
 
 		<div class="panel-footer">
 
-      <a href="#" data-toggle="modal" data-target="#transferCash" class="btn btn-success pull-right button2" style="margin: 10px">Transfer cash</a>
+      <a href="#" data-toggle="modal" data-target="#transferAmount" class="btn btn-success pull-right button2" style="margin: 10px">Transfer from Account</a>
 
 			<table id="bank-account" class="table table-striped table-bordered" style="width:100%">
 
@@ -90,7 +94,7 @@
                 <td>{{ strtoupper($key) }}</td>
             		<td>{{ number_format($value) }}</td>
             		<td>
-            			<a href="#" class="btn btn-info btn-sm button2 btn-block">View Details</a>
+            			<a href="{{ route('payment.account.detials', $key) }}" class="btn btn-info btn-sm button2 btn-block">View Details</a>
             		</td>
                 <?php $index++ ?>
             	</tr>
@@ -106,7 +110,7 @@
 </div>
 
 <!-- Modal -->
-<div id="transferCash" class="modal fade" role="dialog">
+<div id="transferAmount" class="modal fade" role="dialog">
 
   <div class="modal-dialog">
 
@@ -117,7 +121,7 @@
 
         <button type="button" class="close" data-dismiss="modal">&times;</button>
 
-        <h4 class="modal-title">Transfer Cash</h4>
+        <h4 class="modal-title">Transfer From Account</h4>
 
       </div>
 
@@ -133,14 +137,21 @@
           <div class="form-group">
 
             {{ Form::label('Amount:') }}
-            {{ Form::text('amount', null, ['class'=>'form-control', 'required']) }}
+            {{ Form::number('amount', null, ['class'=>'form-control', 'required']) }}
+            
+          </div>
+
+          <div class="form-group">
+
+            {{ Form::label('Transfer From:') }}
+            {{ Form::select('from_account', $bank_accounts, null, ['class'=>'form-control']) }}
             
           </div>
 
           <div class="form-group">
 
             {{ Form::label('Transfer To:') }}
-            {{ Form::select('bank_name', $bank_accounts, null, ['class'=>'form-control']) }}
+            {{ Form::select('to_account', $bank_accounts, null, ['class'=>'form-control']) }}
             
           </div>
 

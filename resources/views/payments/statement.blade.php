@@ -17,14 +17,6 @@
 
        $('#statement').DataTable({
 
-       	'columnDefs' : [
-
-       		{
-
-       		}
-
-       	]
-
        });
 
    });

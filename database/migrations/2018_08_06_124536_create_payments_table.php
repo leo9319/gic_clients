@@ -15,6 +15,7 @@ class CreatePaymentsTable extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('receipt_id')->nullable();
             $table->integer('client_id');
             $table->integer('program_id');
             $table->integer('step_id');
@@ -23,6 +24,9 @@ class CreatePaymentsTable extends Migration
             $table->integer('service_solicitor_fee');
             $table->integer('other');
             $table->tinyInteger('recheck')->default(0);
+            $table->integer('dues')->default(0);
+            $table->date('due_date')->nullable();
+            $table->date('due_cleared_date')->nullable();
             $table->text('description');
             $table->integer('created_by');
             $table->timestamps();

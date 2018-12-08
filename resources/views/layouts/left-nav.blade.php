@@ -198,14 +198,13 @@
 
             @endif
 
-            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
 
             <li>
-               <a href="#subPayments" data-toggle="collapse" class="collapsed {{ $active_class == 'payments' ? 'active' : '' }}"><i class="fa fa-credit-card"></i> <span>Payments</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+               <a href="#subIncomesAndExpenses" data-toggle="collapse" class="collapsed {{ $active_class == 'incomes-expenses' ? 'active' : '' }}"><i class="fa fa-credit-card"></i> <span>Incomes/Expenses</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 
-               <div id="subPayments" class="collapse ">
+               <div id="subIncomesAndExpenses" class="collapse ">
                   <ul class="nav">
-                     @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
 
                      <li>
                         <a href="{{ route('payment.income') }}" class="">
@@ -227,8 +226,21 @@
                            <span>View Income/Expense</span>
                         </a>
                      </li>
+                     
+                  </ul>
+               
+            </li>
 
-                     @endif
+
+            @endif
+
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
+
+            <li>
+               <a href="#subPayments" data-toggle="collapse" class="collapsed {{ $active_class == 'payments' ? 'active' : '' }}"><i class="fa fa-credit-card"></i> <span>Payments</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+
+               <div id="subPayments" class="collapse ">
+                  <ul class="nav">
 
                      @if(Auth::user()->user_role == 'admin')
                      <li>
@@ -250,12 +262,6 @@
                            <span>Client Payment History</span></a>
                      </li>
 
-                     <li>
-                        <a href="{{ route('payment.client.refund') }}" class="">
-                           <i class="fa fa-credit-card"></i>
-                           <span>Refund Client</span></a>
-                     </li>
-
                      {{-- View only available to Counselor or RM --}}
 
                      @if(Auth::user()->user_role == 'accountant')
@@ -267,6 +273,44 @@
                      </li>
 
                      @endif
+
+                  </ul>
+               </div>
+            </li>
+
+            @endif
+
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
+
+            <li>
+               <a href="#subDues" data-toggle="collapse" class="collapsed {{ $active_class == 'dues' ? 'active' : '' }}"><i class="fa fa-credit-card"></i> <span>Dues and Refund</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+
+               <div id="subDues" class="collapse ">
+                  <ul class="nav">
+
+                     <li>
+                        <a href="{{ route('payment.client.dues.history') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Due Payment History</span></a>
+                     </li>
+
+                     <li>
+                        <a href="{{ route('payment.client.dues') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Client Dues</span></a>
+                     </li>
+
+                     <li>
+                        <a href="{{ route('payment.client.refund.history') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Refund History</span></a>
+                     </li>
+
+                     <li>
+                        <a href="{{ route('payment.client.refund') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Refund Client</span></a>
+                     </li>
 
                   </ul>
                </div>

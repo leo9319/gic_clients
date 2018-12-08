@@ -574,7 +574,8 @@ class ClientController extends Controller
         User::where('client_code', $request->client_code)->update([
             'name' => $request->name,
             'mobile' => $request->mobile,
-            'email' => $request->email
+            'email' => $request->email,
+            'status' => $request->status,
         ]);
 
         return redirect()->back();

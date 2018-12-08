@@ -56,7 +56,11 @@
 
            <div class="right">
 
+            @if($client->status == 'active')
+
               <a href="#" type="button" class="btn btn-success button2" data-toggle="modal" data-target="#addStep">Add Step</a>
+
+            @endif
 
            </div>
 

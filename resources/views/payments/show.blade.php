@@ -77,7 +77,7 @@
      <tr>
         <td class="no">01</td>
         <td class="desc">
-           <h3>Opening Fee</h3>
+           <h3>Initial Assessment Fee</h3>
         </td>
         <td></td>
         <td></td>
@@ -190,7 +190,7 @@
 
 @if(Auth::user()->user_role == 'admin')
   @if($payment->recheck == -1 || $payment->recheck == 0)
-    <a href="{{ route('payment.recheck', $payment->id) }}" class="btn btn-danger btn-block" style="width: 100%">Recheck This Entry</a>
+    <a href="{{ route('payment.client.payment.recheck', $payment->id) }}" class="btn btn-danger btn-block" style="width: 100%">Recheck This Entry</a>
   @elseif($payment->recheck == 1)
     <a href="javascript:void(0)" class="btn btn-success btn-block" style="width: 100%">Sent for Recheck</a>
   @endif

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Program;
 use Illuminate\Http\Request;
 use DB;
+use App\Step;
+use App\ClientProgram;
 
 class ProgramController extends Controller
 {
@@ -120,6 +122,23 @@ class ProgramController extends Controller
 
         return response()->json($data);
     }
+
+
+    public function clientProgramStep(Request $request)
+    {
+        $steps = ClientProgram::where([
+                    'client_id' => $request->client_id,
+                    'program_id' => $request->program_id,
+                ])->first()->steps;
+
+        $data = DB::table('steps')
+                ->whereIn('id', json_decode($steps))
+                ->get();
+
+        return response()->json($data);
+    }
+
+
 
     public function individualClientProgram(Request $request)
     {

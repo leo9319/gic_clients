@@ -144,6 +144,7 @@ Route::get('client/appointments/{client_id}', 'AppointmentController@clientAppoi
 Route::get('program/delete/{program_id}', 'ProgramController@deleteProgram')->name('delete.program');
 Route::get('findClientProgram', 'ProgramController@clientProgram');
 Route::get('findProgramStep', 'ProgramController@programStep');
+Route::get('findClientProgramStep', 'ProgramController@clientProgramStep');
 Route::get('getIndividualClientProgram', 'ProgramController@individualClientProgram');
 
 Route::post('program/edit', 'ProgramController@editProgram')->name('edit.program');
@@ -235,8 +236,23 @@ Route::get('payment/structure/client/{payment_type_id}/{type}', 'PaymentControll
 Route::get('payment/income/pdf', 'PaymentController@generateIncomePDF')->name('payment.income.pdf');
 Route::get('payment/expense/pdf', 'PaymentController@generateExpensePDF')->name('payment.expense.pdf');
 Route::get('payment/income/expense/pdf', 'PaymentController@generateIncomeExpensePDF')->name('payment.income.expense.pdf');
+
+
 Route::get('payment/client/refund', 'PaymentController@clientRefund')->name('payment.client.refund');
+Route::get('payment/client/refund/history', 'PaymentController@clientRefundHistory')->name('payment.client.refund.history');
+
+
 Route::post('payment/store/client/refund', 'PaymentController@storeClientRefund')->name('payment.store.client.refund');
+Route::get('payment/client/dues', 'PaymentController@clientDues')->name('payment.client.dues');
+Route::get('payment/client/dues/detials/{payment_id}', 'PaymentController@clientDuesDetails')->name('payment.client.dues.details');
+Route::get('payment/client/dues/payment/{payment_id}', 'PaymentController@duePayment')->name('payment.client.dues.payment');
+Route::post('payment/client/dues/payment/store', 'PaymentController@storeDuePayment')->name('payment.client.dues.payment.store');
+Route::get('payment/client/dues/history', 'PaymentController@dueHistory')->name('payment.client.dues.history');
+Route::get('payment/client/dues/pdf/{payment_id}', 'PaymentController@generateDuePDF')->name('payment.client.dues.pdf');
+Route::get('payment/client/payment/recheck/{payment_id}', 'PaymentController@recheckPayment')->name('payment.client.payment.recheck');
+
+Route::get('getClientPaymentId', 'PaymentController@getClientPaymentId');
+
 
 
 

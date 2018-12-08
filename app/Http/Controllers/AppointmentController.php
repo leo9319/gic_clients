@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\User;
 use Auth;
 use App\Appointment;
+use App\RmClient;
+use App\CounsellorClient;
 
 class AppointmentController extends Controller
 {
@@ -23,8 +25,23 @@ class AppointmentController extends Controller
     {
         $data['active_class'] = 'appointments';
         $data['clients'] = User::userRole('client')->get();
-        $data['rms'] = User::userRole('rm')->get();
-        $data['counselors'] = User::userRole('counselor')->get();
+        
+
+        if(Auth::user()->user_role == 'client') {
+
+            $client_id = Auth::user()->id;
+            $rm_ids = RmClient::getAssignedRms($client_id)->pluck('rm_id');
+            $counselor_ids = CounsellorClient::assignedCounselor($client_id)->pluck('counsellor_id');
+
+            $data['rms'] = User::find($rm_ids);
+            $data['counselors'] = User::find($counselor_ids);
+
+        } else {
+
+            $data['rms'] = User::userRole('rm')->get();
+            $data['counselors'] = User::userRole('counselor')->get();
+
+        }
 
         return view('appointment.rm_apointment', $data);
     }
@@ -33,8 +50,22 @@ class AppointmentController extends Controller
     {
     	$data['active_class'] = 'appointments';
         $data['clients'] = User::userRole('client')->get();
-        $data['rms'] = User::userRole('rm')->get();
-        $data['counselors'] = User::userRole('counselor')->get();
+
+        if(Auth::user()->user_role == 'client') {
+
+            $client_id = Auth::user()->id;
+            $rm_ids = RmClient::getAssignedRms($client_id)->pluck('rm_id');
+            $counselor_ids = CounsellorClient::assignedCounselor($client_id)->pluck('counsellor_id');
+
+            $data['rms'] = User::find($rm_ids);
+            $data['counselors'] = User::find($counselor_ids);
+
+        } else {
+
+            $data['rms'] = User::userRole('rm')->get();
+            $data['counselors'] = User::userRole('counselor')->get();
+
+        }
 
     	return view('appointment.counselor_appointment', $data);
     }

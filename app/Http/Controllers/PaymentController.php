@@ -44,7 +44,7 @@ class PaymentController extends Controller
     {
         $data['previous'] = URL::to('/dashboard');
         $data['active_class'] = 'payments';
-        $data['clients'] = User::userRole('client')->get();
+        $data['clients'] = User::userRole('client')->where('status', 'active')->get();
         $data['programs'] = Program::all();
 
         return view('payments.index', $data);
@@ -73,6 +73,11 @@ class PaymentController extends Controller
 
         $data['previous'] = URL::to('/');
         $data['active_class'] = 'payments';
+        $data['date'] = Carbon::parse($request->date)->toDateTimeString();
+
+        // Generating receipt_id
+
+        $receipt_id = 'GIC-' . $request->client_id . $request->program_id . $request->step_id;
 
         $payment = Payment::updateOrCreate(
             [
@@ -81,16 +86,26 @@ class PaymentController extends Controller
                 'step_id' => $request->step_id
             ],
             [
+                'receipt_id' => $receipt_id,
                 'opening_fee' => $request->opening_fee,
                 'embassy_student_fee' => $request->embassy_student_fee,
                 'service_solicitor_fee' => $request->service_solicitor_fee,
                 'other' => $request->other,
                 'created_by' => Auth::user()->id,
+                'created_at' => $data['date'],
             ]);
 
         $data['total_amount'] = $request->opening_fee + $request->embassy_student_fee + $request->service_solicitor_fee + $request->other;
 
         $data['payment_id'] = $payment->id;
+
+        // Check if the client has made payment for this program and step before:
+
+        $previous_payments =  PaymentType::where('payment_id', $data['payment_id'])->get();
+
+        if(count($previous_payments) > 0) {
+            $data['message'] = 'Payment has been made previously on this program and step';
+        } 
 
         return view('payments.types', $data);
 
@@ -106,12 +121,11 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         $counter = 0;
-        $charge = 0;
         $counter = $request->counter;
         $payment_id = Input::get('payment_id');
 
         for ($i=0; $i < $counter + 1; $i++) { 
-
+            $charge = 0;
             $cheque_verified = 1;
             $payment_type = Input::get('payment_type-' . $i);
             $bank_deposited = Input::get('bank_name-' . $i);
@@ -170,7 +184,7 @@ class PaymentController extends Controller
 
                 $cheque_verified = -1;
 
-            } else if($payment_type == 'bkash_corporate') {
+            } else if($payment_type == 'bkash_corporate' || $payment_type == 'upay') {
 
                 $charge = 1.5;
 
@@ -207,6 +221,8 @@ class PaymentController extends Controller
                 'bank_charge' => $charge,
                 'amount_paid' => Input::get('total_amount-' . $i),
                 'amount_received' => $after_charge,
+                'deposit_date' => Input::get('deposit_date-' . $i),
+                'created_at' => $request->date,
             ]);
             
         }
@@ -216,7 +232,14 @@ class PaymentController extends Controller
         if($request->due_date) {
             // there is a due date field
 
-            Payment::find($payment_id)->update(['due_date' => Input::get('due_date')]);
+            $total_paid = PaymentType::where('payment_id', $payment_id)->sum('amount_paid');
+
+            $dues = $request->total_amount - $total_paid;
+
+            Payment::find($payment_id)->update([
+                'dues' => $dues,
+                'due_date' => Input::get('due_date'),
+            ]);
         } 
 
         $payment = Payment::find(Input::get('payment_id'));
@@ -332,7 +355,7 @@ class PaymentController extends Controller
 
         $data['steps'] = Step::getProgramAllStep($payment->program_id);
 
-
+        $data['payment_types'] = PaymentType::where('payment_id', $payment->id)->get();
 
         return view('payments.edit', $data);
     }
@@ -451,14 +474,33 @@ class PaymentController extends Controller
      */
     public function destroy(Payment $payment)
     {
-        //
+        Payment::find($payment->id)->delete();
+        PaymentType::where('payment_id', $payment->id)->delete();
+
+        return redirect()->back();
     }
 
     public function paymentHistory()
     {
         $data['previous'] = URL::to('/dashboard');
         $data['active_class'] = 'payments';
-        $data['payments'] = Payment::orderBy('created_at', 'desc')->get();
+
+        if(Auth::user()->user_role == 'rm') {
+
+
+            $rm_id = Auth::user()->id;
+            $client_ids = RmClient::where('rm_id', $rm_id)->pluck('client_id');
+            $data['payments'] = Payment::whereIn('client_id', $client_ids)->orderBy('created_at', 'desc')->get();
+
+        } else if(Auth::user()->user_role == 'counselor'){
+
+            $counselor_id = Auth::user()->id;
+            $client_ids = CounsellorClient::where('counsellor_id', $counselor_id)->pluck('client_id');
+            $data['payments'] = Payment::whereIn('client_id', $client_ids)->orderBy('created_at', 'desc')->get();
+
+        } else {
+            $data['payments'] = Payment::orderBy('created_at', 'desc')->get();
+        }
 
         return view('payments.history', $data);
     }
@@ -480,15 +522,18 @@ class PaymentController extends Controller
         $data['country_of_choice'] = json_decode($client_additional_info->country_of_choice);
         $data['mobile'] = $client->mobile;
         $data['email'] = $client->email;
-        $data['date'] = Carbon::now()->format('d-m-Y');
+        $data['date'] = Carbon::parse($payment->created_at)->format('d/m/Y');
         $data['client_code'] = $client->client_code;
         $data['program'] = Program::find($payment->program_id)->program_name;
         $data['step'] = Step::find($payment->step_id);
+        $data['receipt_id'] = $payment->receipt_id;
         $data['opening_fee'] = $payment->opening_fee;
         $data['embassy_student_fee'] = $payment->embassy_student_fee;
         $data['service_solicitor_fee'] = $payment->service_solicitor_fee;
         $data['other'] = $payment->other;
-        $data['amount_paid'] = $payment->amount_paid;
+        $data['amount_paid'] = PaymentType::where('payment_id', $payment->id)->sum('amount_paid');
+        $data['dues'] = $payment->dues;
+        $data['due_date'] = $payment->due_date;
 
         $created_by = User::find($payment->created_by);
         $data['created_by'] = $created_by ? $created_by->name : '';
@@ -502,9 +547,27 @@ class PaymentController extends Controller
     {
         $data['active_class'] = 'payments';
         $data['previous'] = URL::to('/dashboard');
-        $data['clients'] = User::userRole('client')->get();
+
+        // Get the assigend client for the RMS:
+
+        if(Auth::user()->user_role == 'counselor') {
+
+            $counselor_id = Auth::user()->id;
+            $client_ids = CounsellorClient::where('counsellor_id', $counselor_id)->pluck('client_id');
+            $data['clients'] = User::find($client_ids);
+
+        } else if(Auth::user()->user_role == 'rm') {
+            
+            $rm_id = Auth::user()->id;
+            $client_ids = RmClient::where('rm_id', $rm_id)->pluck('client_id');
+            $data['clients'] = User::find($client_ids);
+
+        } else {
+            $data['clients'] = User::userRole('client')->get();
+        }
 
         return view('payments.statement', $data);
+
     }
 
     public function showStatement($client_id)
@@ -513,7 +576,29 @@ class PaymentController extends Controller
         $data['client_info'] = ClientFileInfo::where('client_id', $client_id)->first();
         $data['rms'] = RmClient::getAssignedRms($client_id);
         $data['counselors'] = CounsellorClient::assignedCounselor($client_id);
-        $data['payment_histories'] = Payment::where('client_id', $client_id)->get();
+        $payment_histories = $data['payment_histories'] = Payment::where('client_id', $client_id)->get();
+
+        $data['payable'] =  $payment_histories->sum('opening_fee') +
+                            $payment_histories->sum('embassy_student_fee') +
+                            $payment_histories->sum('service_solicitor_fee') +
+                            $payment_histories->sum('other');
+
+        $income_expenes = IncomeExpense::where([
+            'payment_type' => 'refund',
+            'client_id' => $client_id,
+        ]);
+
+        // Get all the payment_ids of that client:
+
+        $payment_ids = $payment_histories->pluck('id');
+        $data['refunds'] = PaymentType::whereIn('payment_id', $payment_ids)->where('refund_payment', 1)->get();
+
+        $data['amount_refunded'] = $income_expenes->sum('total_amount');
+        $payment_ids = Payment::where('client_id', $client_id)->pluck('id');
+        $payment_type = PaymentType::whereIn('payment_id', $payment_ids);
+        $data['paid'] = $payment_type->sum('amount_paid');
+        $data['received'] = $payment_type->sum('amount_received');
+        $data['dues'] = $data['payable'] - $data['paid'];
 
         return view('payments.show_statement', $data);
     }
@@ -525,13 +610,17 @@ class PaymentController extends Controller
         return redirect()->back();
     }
 
+    public function recheckPayment($payment_id)
+    {
+        Payment::find($payment_id)->update(['recheck' => 1]);
+
+        return redirect()->back();
+    }
+
     public function bankAccount()
     {
         $data['active_class'] = 'payments';
         $data['previous'] = URL::to('/dashboard');
-
-        // Previous one:
-
         $bank_account_income_expenses = IncomeExpense::where('recheck', 0)->get();
         $bank_account_client = PaymentType::all();
 
@@ -593,7 +682,13 @@ class PaymentController extends Controller
         $data['previous'] = URL::to('payment/bank/account');
         $data['account'] = $account;
 
-        $data['payment_histories'] = Payment::where('bank_name', $account)->get();
+        $data['payment_histories'] = PaymentType::where('bank_name', $account)->get();
+        $data['incomes_and_expenses'] = IncomeExpense::where([
+            'bank_name' => $account,
+            'recheck' => 0,
+        ])->get();
+
+        $data['total_amount'] = $data['payment_histories']->sum('amount_paid') + $data['incomes_and_expenses']->sum('total_amount');
 
         return view('payments.account_details', $data);
     }
@@ -604,7 +699,7 @@ class PaymentController extends Controller
 
         IncomeExpense::create([
             'payment_type' => 'Cash Transfer In',
-            'bank_name' => $request->bank_name,
+            'bank_name' => $request->to_account,
             'total_amount' => $request->amount,
             'recheck' => 0,
             'created_by' => Auth::user()->id,
@@ -613,7 +708,7 @@ class PaymentController extends Controller
 
         IncomeExpense::create([
             'payment_type' => 'Cash Transfer Out',
-            'bank_name' => 'cash',
+            'bank_name' => $request->from_account,
             'total_amount' => -1 * $request->amount,
             'recheck' => 0,
             'created_by' => Auth::user()->id,
@@ -621,6 +716,7 @@ class PaymentController extends Controller
         ]);
 
         return redirect()->back();
+
     }
 
     public function createIncome()
@@ -844,11 +940,322 @@ class PaymentController extends Controller
     {
         $validatedData = $request->validate([
             'client_id' => 'required|not_in:0',
+            'program_id' => 'required|not_in:0',
+            'payment_type' => 'required|not_in:0',
             'bank_name' => 'required',
             'amount' => 'required|min:1',
         ]);
 
-        return $request->all();
+        PaymentType::create([
+            'payment_id' => $request->payment_id,
+            'payment_type' => $request->payment_type,
+            'bank_name' => $request->bank_name,
+            'cheque_number' => $request->cheque_number,
+            'amount_paid' => $request->amount,
+            'amount_received' => $request->amount,
+            'refund_payment' => 1,
+
+        ]);
+
+        return redirect()->back()->with('success', 'Refund has been created!');
+
+    }
+
+    public function clientRefundHistory()
+    {
+        $data['active_class'] = 'dues';
+
+        if(Auth::user()->user_role == 'counselor') {
+
+            $counselor_id = Auth::user()->id;
+            $client_ids = CounsellorClient::where('counsellor_id', $counselor_id)->pluck('client_id');
+            $payment_ids = Payment::whereIn('client_id', $client_ids)->pluck('id');
+            $data['refunds'] = PaymentType::whereIn('payment_id', $payment_ids)->where('refund_payment', 1)->get();
+
+        } else if(Auth::user()->user_role == 'rm') {
+            
+            $rm_id = Auth::user()->id;
+            $client_ids = RmClient::where('rm_id', $rm_id)->pluck('client_id');
+            $payment_ids = Payment::whereIn('client_id', $client_ids)->pluck('id');
+            $data['refunds'] = PaymentType::whereIn('payment_id', $payment_ids)->where('refund_payment', 1)->get();
+
+        } else {
+            $data['refunds'] = PaymentType::where('refund_payment', 1)->get();
+        }
+
+        return view('payments.refund_history', $data);
+    }
+
+    public function clientDues()
+    {
+        $data['previous'] = URL::to('/dashboard');
+        $data['active_class'] = 'payments';
+
+        if(Auth::user()->user_role == 'counselor') {
+
+            $counselor_id = Auth::user()->id;
+            $client_ids = CounsellorClient::where('counsellor_id', $counselor_id)->pluck('client_id');
+            $data['all_dues'] = Payment::whereIn('client_id', $client_ids)->where('dues', '>', 0)->get();
+
+        } else if(Auth::user()->user_role == 'rm') {
+            
+            $rm_id = Auth::user()->id;
+            $client_ids = RmClient::where('rm_id', $rm_id)->pluck('client_id');
+            $data['all_dues'] = Payment::whereIn('client_id', $client_ids)->where('dues', '>', 0)->get();
+
+        } else {
+            $data['all_dues'] = Payment::where('dues', '>', 0)->get();
+        }
+
+        
+        return view('payments.dues', $data);
+    }
+
+    public function clientDuesDetails(Payment $payment_id)
+    {
+        $data['previous'] = URL::to('/dashboard');
+        $data['active_class'] = 'payments';
+        $data['payment'] = $payment_id;
+
+        $data['program_fee'] = $payment_id->opening_fee + $payment_id->embassy_student_fee + $payment_id->service_solicitor_fee + $payment_id->other;
+
+        $data['payment_types'] = PaymentType::where('payment_id', $payment_id->id)->get();
+
+        return view('payments.due_details', $data);
+    }
+
+    public function duePayment($payment_id)
+    {
+        $data['previous'] = URL::to('/dashboard');
+        $data['active_class'] = 'payments';
+        $data['payment_id'] = $payment_id;
+        $data['total_amount'] = Payment::find($payment_id)->dues;
+
+        return view('payments.due_payment', $data);
+    }
+
+    public function storeDuePayment(Request $request)
+    {
+        $counter = 0;
+        $counter = $request->counter;
+        $payment_id = Input::get('payment_id');
+
+        for ($i=0; $i < $counter + 1; $i++) { 
+            $charge = 0;
+            $cheque_verified = 1;
+            $payment_type = Input::get('payment_type-' . $i);
+            $bank_deposited = Input::get('bank_name-' . $i);
+            $after_charge = 0;
+
+            if($payment_type == 'card') {
+
+                $POS_machine = Input::get('pos_machine-' . $i);
+                $city_bank = Input::get('city_bank-' . $i);
+                $card_type = Input::get('card_type-' . $i);
+                $charge = 0;
+                $bank_deposited = Input::get('bank_name-' . $i);
+
+                switch ($POS_machine) {
+
+                    case 'city':
+
+                        $bank_deposited = 'scb';
+                        if($card_type == 'amex') {
+                            $charge = 2.5;
+                        } else {
+                            $charge = ($city_bank == 'yes') ? 1 : 2;
+                        }
+                        
+                        break;
+
+                    case 'brac':
+
+                        $bank_deposited = 'brac';
+                        $charge = 1.4;
+                        break;
+
+                    case 'ebl':
+                        
+                        $bank_deposited = 'ebl';
+                        $charge = 1.5;
+                        break;
+
+                    case 'ucb':
+                        
+                        $bank_deposited = 'ucb';
+                        $charge = 1.5;
+                        break;
+
+                    case 'dbbl':
+                        
+                        $bank_deposited = 'dbbl';
+                        $charge = 1.5;
+                        break;
+
+                    default:
+                    // Do nothing
+                }
+
+            } else if($payment_type == 'cheque') {
+
+                $cheque_verified = -1;
+
+            } else if($payment_type == 'bkash_corporate') {
+
+                $charge = 1.5;
+
+            } else if($payment_type == 'bkash_salman') {
+
+                $charge = 2;
+
+            } else {
+
+                // Do nothing
+            }
+
+            $amount_paid = Input::get('total_amount-' . $i);
+
+            if($charge > 0) {
+                $after_charge = $amount_paid - (($charge / 100) * $amount_paid);
+            } else {
+                $after_charge = $amount_paid;
+            }
+
+            PaymentType::create([
+                'payment_id' => $payment_id,
+                'payment_type' => $payment_type,
+                'card_type' => Input::get('card_type-' . $i),
+                'name_on_card' => Input::get('name_on_card-' . $i),
+                'card_number' => Input::get('card_number-' . $i),
+                'expiry_date' => Input::get('expiry_date-' . $i),
+                'pos_machine' => Input::get('pos_machine-' . $i),
+                'approval_code' => Input::get('approval_code-' . $i),
+                'phone_number' => Input::get('phone_number-' . $i),
+                'cheque_number' => Input::get('cheque_number-' . $i),
+                'bank_name' => $bank_deposited,
+                'cheque_verified' => $cheque_verified,
+                'due_payment' => 1,
+                'bank_charge' => $charge,
+                'amount_paid' => Input::get('total_amount-' . $i),
+                'amount_received' => $after_charge,
+            ]);
+
+            Payment::find($payment_id)->update([
+                'dues' => 0,
+                'due_cleared_date' => Carbon::now(),
+            ]);
+            
+        }
+
+        $payment = Payment::find($payment_id);
+
+        $client = User::find($payment->client_id);
+        $client_additional_info = ClientFileInfo::where('client_id', $payment->client_id)->first();
+
+        $due['name'] = $client->name;
+        $due['address'] = $client_additional_info->address;
+        $due['country_of_choice'] = json_decode($client_additional_info->country_of_choice);
+        $due['mobile'] = $client->mobile;
+        $due['email'] = $client->email;
+        $due['date'] = Carbon::now()->format('d-m-Y');
+        $due['client_code'] = $client->client_code;
+        $due['program'] = Program::find($payment->program_id)->program_name;
+        $due['step'] = Step::find($payment->step_id);
+        $due['opening_fee'] = $payment->opening_fee;
+        $due['embassy_student_fee'] = $payment->embassy_student_fee;
+        $due['service_solicitor_fee'] = $payment->service_solicitor_fee;
+        $due['other'] = $payment->other;
+        $due['amount_paid'] = PaymentType::where('payment_id', $payment->id)->sum('amount_paid');
+        $due['payments'] = PaymentType::where('payment_id', $payment_id)->first();
+
+
+        $created_by = User::find($payment->created_by);
+        $due['created_by'] = $created_by ? $created_by->name : '';
+
+        $pdf = PDF::loadView('invoice.due', $due);
+        return $pdf->download('due_clearance_invoice.pdf');
+
+        // return redirect()->route('payment.acknowledgement');  
+    }
+
+    public function dueHistory()
+    {
+        $data['previous'] = URL::to('/dashboard');
+        $data['active_class'] = 'dues';
+
+        
+
+        if(Auth::user()->user_role == 'counselor') {
+
+            $counselor_id = Auth::user()->id;
+            $client_ids = CounsellorClient::where('counsellor_id', $counselor_id)->pluck('client_id');
+
+            $data['due_payments'] = Payment::whereIn('client_id', $client_ids)->whereNotNull('due_cleared_date')->get();
+
+        } else if(Auth::user()->user_role == 'rm') {
+            
+            $rm_id = Auth::user()->id;
+            $client_ids = RmClient::where('rm_id', $rm_id)->pluck('client_id');
+
+            $data['due_payments'] = Payment::whereIn('client_id', $client_ids)->whereNotNull('due_cleared_date')->get();
+
+
+        } else {
+            $data['due_payments'] = Payment::whereNotNull('due_cleared_date')->get();
+        }
+
+        return view('payments.due_payment_history', $data);
+    }
+
+    public function generateDuePDF($payment_id)
+    {
+        $payment = Payment::find($payment_id);
+
+        $client = User::find($payment->client_id);
+        $client_additional_info = ClientFileInfo::where('client_id', $payment->client_id)->first();
+
+        $due['name'] = $client->name;
+        $due['address'] = $client_additional_info->address;
+        $due['country_of_choice'] = json_decode($client_additional_info->country_of_choice);
+        $due['mobile'] = $client->mobile;
+        $due['email'] = $client->email;
+        $due['date'] = Carbon::now()->format('d-m-Y');
+        $due['client_code'] = $client->client_code;
+        $due['program'] = Program::find($payment->program_id)->program_name;
+        $due['step'] = Step::find($payment->step_id);
+        $due['opening_fee'] = $payment->opening_fee;
+        $due['embassy_student_fee'] = $payment->embassy_student_fee;
+        $due['service_solicitor_fee'] = $payment->service_solicitor_fee;
+        $due['other'] = $payment->other;
+        $due['amount_paid'] = PaymentType::where('payment_id', $payment->id)->sum('amount_paid');
+
+        // finding the previously paid amount:
+
+        $due['payments'] = PaymentType::where('payment_id', $payment_id)->get();
+
+        $created_by = User::find($payment->created_by);
+        $due['created_by'] = $created_by ? $created_by->name : '';
+
+        $pdf = PDF::loadView('invoice.due', $due);
+        return $pdf->download('due_clearance_invoice.pdf');
+    }
+
+    public function getClientPaymentId(Request $request)
+    {
+        $payment = Payment::where([
+                            'client_id' => $request->client_id,
+                            'program_id' => $request->program_id,
+                            'step_id' => $request->step_id,]
+                        )->first();
+
+        $data['amount_paid'] = PaymentType::where(
+            'payment_id', '=', $payment->id)
+        ->where('refund_payment', '!=', 1)
+        ->sum('amount_paid');
+
+        $data['payment_id'] = $payment->id;
+
+        return $data;
     }
 
 }

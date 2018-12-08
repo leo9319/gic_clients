@@ -50,13 +50,13 @@
 
                      <span class="number">
 
-                        @if($target->count() > 0)
+                        @if($target->whereDate('month_year', Carbon\Carbon::parse()->format('Y-m-01'))->first() != null)
 
                         {{ $target->whereDate('month_year', Carbon\Carbon::parse()->format('Y-m-01'))->first()->target }}
 
-                        @else
+                        @else 
 
-                         0
+                        Not Set
 
                         @endif
 
@@ -80,7 +80,7 @@
 
                      <span class="number">
 
-                        @if($target->count() > 0)
+                        @if($target->whereDate('month_year', Carbon\Carbon::parse()->format('Y-m-01'))->first() != null)
 
                         {{ $target->whereDate('month_year', Carbon\Carbon::parse()->format('Y-m-01'))->first()->achieved }}
 
@@ -89,6 +89,7 @@
                         0
 
                         @endif
+
 
                      </span>
 
@@ -108,7 +109,7 @@
 
                   <p>
                      
-                     <span class="number">{{ $department_target->target }}</span>
+                     <span class="number">{{ ($department_target) ? $department_target->target : 'Not Set'  }}</span>
                      <span class="title">Department Target</span>
 
                   </p>

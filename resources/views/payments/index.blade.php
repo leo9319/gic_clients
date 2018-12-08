@@ -38,6 +38,11 @@
 			{{-- {{ Form::open(['autocomplete = off']) }} --}}
 			{{ Form::open(['route'=>'payment.types']) }}
 
+			<label>Date:</label>
+			<input type="date" class="form-control" name="date" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}">
+
+			<br>
+
 			<label>Client ID:</label>
 
 			<select class="select2 form-control" name="client_code" onchange="checkClientInfo(this)">
@@ -80,9 +85,9 @@
 
 			<br><br>
 
-			<label>File opening fee:</label>
+			<label>Initial Assessment fee:</label>
 
-			<input type="number" id="file-opening-fee" class="form-control" placeholder="File Opening Fee" name="opening_fee" onkeyup="sumOfTotal()">
+			<input type="number" id="file-opening-fee" class="form-control" placeholder="Initial Assessment fee" name="opening_fee" onkeyup="sumOfTotal()">
 
 			<br>
 
@@ -245,7 +250,11 @@
 	// 	document.getElementById("total-amount").value = totalAmount;
 	// }
 
-	
+	$(function(){
+	  $(':input[type=number]').on('mousewheel',function(e){ $(this).blur(); });
+	});
+
+
 	$(document).ready(function() {
 		
 		$(".select2").select2({

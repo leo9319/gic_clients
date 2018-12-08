@@ -17,6 +17,18 @@
 
        $('#account-details').DataTable({
 
+        'columnDefs' : [
+
+          {
+
+          }
+
+        ]
+
+       });
+
+       $('#incomes-expenses').DataTable({
+
        	'columnDefs' : [
 
        		{
@@ -41,25 +53,25 @@
 
 			<h2 class="text-center">{{ strtoupper($account) }}</h2>
 
-      <p>Total amount : <b>{{ number_format($payment_histories->sum('amount_paid')) }}</b></p>
+      <p>Total amount : <b>{{ number_format($total_amount) }}</b></p>
 
 		</div>
 
 		<div class="panel-footer">
 
-			<table id="account-details" class="table table-striped table-bordered" style="width:100%">
+      <table id="account-details" class="table table-striped table-bordered" style="width:100%">
 
             <thead>
 
                <tr>
+
+                  <th>Date</th>
 
                   <th>Client Name</th>
 
                   <th>Program Name</th>
 
                   <th>Step Name</th>
-
-                  <th>Payment Type</th>
 
                   <th>Recieved</th>
 
@@ -77,13 +89,13 @@
 
                <tr>
 
+                  <th>Date</th>
+
                   <th>Client Name</th>
 
                   <th>Program Name</th>
 
                   <th>Step Name</th>
-
-                  <th>Payment Type</th>
 
                   <th>Recieved</th>
 
@@ -99,30 +111,89 @@
 
             <tbody>
               @foreach($payment_histories as $payment_history)
-            	<tr>
-                <td>
-                  {{ App\User::find($payment_history->client_id) ?  App\User::find($payment_history->client_id)->name: 'N/A'}}
-                </td>
-                <td>
-                  {{ App\Program::find($payment_history->program_id) ?  App\Program::find($payment_history->program_id)->program_name: 'N/A'}}
-                </td>
-                <td>
-                  {{ App\Step::find($payment_history->step_id) ?  App\Step::find($payment_history->step_id)->step_name: 'N/A'}}
-                </td>
-                <td>{{ $payment_history->payment_type }}</td>
+              <tr>
+                <td>{{ Carbon\Carbon::parse($payment_history->created_at)->format('d-M-y') }}</td>
+                <td>{{ $payment_history->payment->userInfo->name }}</td>
+                <td>{{ $payment_history->payment->programInfo->program_name }}</td>
+                <td>{{ $payment_history->payment->stepInfo->step_name }}</td>
                 <td>{{ number_format($payment_history->amount_paid) }}</td>
-                <td>{{ $payment_history->bank_charges }}%</td>
-                <td>{{ number_format($payment_history->total_after_charge,2) }}</td>
+                <td>{{ $payment_history->bank_charge }} %</td>
+                <td>{{ number_format($payment_history->amount_received) }}</td>
                 <td>
-                  <a href="{{ route('payment.show', $payment_history->id) }}" class="btn btn-info btn-sm btn-block button2">View Payment</a>
+                  <a href="{{ route('payment.show', $payment_history->payment->id) }}" class="btn btn-info btn-sm btn-block button2">View Details</a>
                 </td>
+              </tr>
+              @endforeach
+            </tbody>            
+
+         </table> 
+
+    </div>
+
+  </div>
+
+  <div class="panel">
+
+    <div class="panel-body">
+
+      <h2 class="text-center">Income and Expenses</h2>
+      
+    </div>
+
+    <div class="panel-footer">
+
+			<table id="incomes-expenses" class="table table-striped table-bordered" style="width:100%">
+
+            <thead>
+
+               <tr>
+
+                  <th>Date</th>
+
+                  <th>Type</th>
+
+                  <th>Description</th>
+
+                  <th>Amount</th>
+
+               </tr>
+
+            </thead>
+
+            <tfoot>
+
+               <tr>
+
+                  <th>Date</th>
+
+                  <th>Type</th>
+
+                  <th>Description</th>
+
+                  <th>Amount</th>
+
+               </tr>
+
+            </tfoot>
+
+            <tbody>
+              @foreach($incomes_and_expenses as $income_expense)
+            	<tr>
+                <td>{{ Carbon\Carbon::parse($income_expense->created_at)->format('d-M-y') }}</td>
+                <td>{{ ucfirst($income_expense->payment_type) }}</td>
+                <td>{{ $income_expense->description }}</td>
+                <td>{{ number_format(abs($income_expense->total_amount)) }}</td>
             	</tr>
               @endforeach
             </tbody>            
 
          </table>
 
+
+
 		</div>
+
+  </div>
 
 	</div>
 

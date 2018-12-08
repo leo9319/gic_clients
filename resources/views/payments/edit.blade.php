@@ -8,6 +8,11 @@
 
 @section('header_scripts')
 
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
@@ -43,9 +48,17 @@
 
 		<div class="panel-footer">
 
-			{{ Form::model($payment, ['route' => ['payment.update', $payment->id]]) }}
+			{{ Form::model($payment, ['route' => ['payment.update', $payment->id], 'autocomplete'=>'off']) }}
 
 				{{ method_field('PUT') }}
+
+				<div class="form-group">
+
+					{{ Form::label('Receipt Number:') }}
+
+					{{ Form::text('receipt_id', null , ['class'=>'form-control', 'readonly']) }}
+					
+				</div>
 
 				<div class="form-group">
 
@@ -67,7 +80,7 @@
 
 					{{ Form::label('Client Program:') }}
 
-					{{ Form::select('program_id', $programs->pluck('program_name', 'id'), null, ['class'=>'form-control select2', 'onchange' => 'getSteps(this)']) }}
+					{{ Form::text('program_id', $payment->programInfo->program_name, ['class'=>'form-control', 'readonly']) }}
 					
 				</div>
 
@@ -75,26 +88,7 @@
 
 					{{ Form::label('Client Step:') }}
 
-					{{ Form::select('step_id', $steps->pluck('step_name', 'id'), null, ['class'=>'form-control', 'id' => 'step-number']) }}
-					
-				</div>
-
-				<div class="form-group">
-
-					{{ Form::label('Payment Type:') }}
-
-					<select class="select2 form-control" name="payment_type" onchange="addPaymentOptions(this)">
-
-						<option value="">Select a payment method</option>
-						<option value="cash">Cash</option>
-						<option value="card">POS</option>
-						<option value="cheque">Cheque</option>
-						<option value="bkash_corporate">bKash - Corporate</option>
-						<option value="bkash_salman">bKash - Salman</option>
-						<option value="upay">Upay</option>
-						<option value="online">Online</option>
-
-					</select>
+					{{ Form::text('step_id', $payment->stepInfo->step_name, ['class'=>'form-control', 'readonly']) }}
 					
 				</div>
 
@@ -102,7 +96,7 @@
 
 				<div class="form-group">
 
-					<label>File opening fee:</label>
+					<label>Initial Assessment fee:</label>
 
 					{{ Form::number('opening_fee', null, ['class'=>'form-control', 'onkeyup'=>'sumOfTotal()', 'id' => 'file-opening-fee', 'required']) }}
 
@@ -134,35 +128,229 @@
 
 				<div class="form-group">
 
-					<label>Total Amount:</label>
-
-					{{ Form::number('total_amount', null, ['class'=>'form-control', 'id' => 'total-amount', 'required']) }}
-
-				</div>
-
-				<div class="form-group">
-
-					<label>Amount Paid:</label>
-
-					{{ Form::number('amount_paid', null, ['placeholder' => 'Amount Paid', 'class'=>'form-control', 'required']) }}
-
-				</div>
-
-				<div class="form-group">
-
 					<label>Due Clearance Date:</label>
-
-					{{ Form::date('due_clearance_date', null, ['class'=>'form-control']) }}
+					<input type="text" placeholder="Due Date" name="due_date" id="due-date" class="form-control" required="">
 
 				</div>
 
 				<br>
+
+				<h2>Payment Structure</h2>
+				<hr>
+
+				@foreach($payment_types as $payment_type)
+					@if($payment_type->payment_type == 'cash')
+
+						<div class="form-group">
+							<label>Payment Type:</label>
+							
+							<input type="text" class="form-control" name="payment_type" value="{{ ucfirst($payment_type->payment_type) }}" readonly="">
+						</div>
+
+						<div class="form-group">
+							<label>Amount Paid:</label>
+
+							<input type="text" class="form-control" name="amount_paid" value="{{ $payment_type->amount_paid }}">					
+						</div>
+
+						<hr>
+
+					@elseif($payment_type->payment_type == 'card')
+
+						<div class="form-group">
+							<label>Payment Type:</label>
+							
+							<input type="text" class="form-control" name="payment_type" value="{{ ucfirst($payment_type->payment_type) }}" readonly="">
+						</div>
+
+						<div class="form-group">
+						   <label>Card Type:</label> 
+						   <input type="text" class="form-control" name="card_type" value="{{ $payment_type->card_type }}" readonly="">
+						</div>
+
+						<div class="form-group">
+						   <label>Name on card:</label> 
+						   <input type="text" name="name_on_card" placeholder="Name on card" class="form-control" value="{{ $payment_type->name_on_card }}"> 
+						</div>
+
+						<div class="form-group">
+						   <label>Card Number (Last 4 Digits Only):</label>
+						   <input type="text" name="card_number" maxlength="4" placeholder="Card Number" class="form-control" value="{{ $payment_type->card_number }}" required> 
+						</div>
+
+						<div class="form-group">
+						   <label>Expiry Date:</label> 
+						   <input type="text" name="expiry_date" placeholder="Expiry Date" value="{{ $payment_type->expiry_date }}" class="form-control"> 
+						</div>
+
+						<div class="form-group">
+						   <label>Select Card/POS Machine:</label> 
+						   <input type="text" name="pos_machine" class="form-control" value="{{ strtoupper($payment_type->pos_machine) }}" readonly="">
+						</div>
+
+						<div class="form-group">
+						   <label>Approval Code:</label> 
+						   <input type="text" name="approval_code" placeholder="Approval Code" class="form-control" value="{{ $payment_type->approval_code }}"> 
+						</div>
+
+						<div class="form-group">
+						   <label>Total Amount:</label> 
+						   <input type="number" class="total form-control" value="{{ $payment_type->amount_paid }}" placeholder="Amount paid through POS" name="total_amount" onchange="getTotalAmount(this)" required>
+						</div>
+
+						<hr>
+						
+
+					@elseif($payment_type->payment_type == 'cheque')
+
+						<div class="form-group">
+							<label>Payment Type:</label>
+							
+							<input type="text" class="form-control" name="payment_type" value="{{ ucfirst($payment_type->payment_type) }}" readonly="">
+						</div>
+
+						<div class="form-group">
+
+							<label>Cheque Deposited To:</label> 
+							<input type="text" name="bank_name" class="form-control" value="{{ strtoupper($payment_type->bank_name) }}" readonly="">
+
+						</div>
+
+						<div class="form-group">
+
+							<label>Cheque Number:</label> 
+							<input type="text" name="cheque_number" placeholder="Cheque Number" class="form-control" value="{{ $payment_type->cheque_number }}"> 
+
+						</div>
+
+						<div class="form-group">
+
+							<label>Total Amount:</label> 
+							<input type="number" class="form-control" placeholder="Amount paid in cheque" name="total_amount" value="{{ $payment_type->amount_paid }}">
+
+						</div>
+
+						<hr>
+					
+
+					@elseif($payment_type->payment_type == 'bkash_corporate')
+
+						<div class="form-group">
+							<label>Payment Type:</label>
+							
+							<input type="text" class="form-control" name="payment_type" value="{{ ucfirst($payment_type->payment_type) }}" readonly="">
+						</div>
+
+						<div class="form-group"> 
+							<label>GIC Deposit Bank Name:</label> 
+							<input type="text" name="bank_name" placeholder="GIC Deposit Bank Name" class="form-control" value="scb" readonly> 
+						</div>
+
+
+						<div class="form-group"> 
+							<label>Phone Number</label> 
+							<input type="text" name="phone_number" placeholder="Phone Number" class="form-control" value="{{ $payment_type->phone_number }}" required> 
+						</div>
+						 
+
+						<div class="form-group"> 
+							<label>Total Amount:</label> 
+							<input type="number" class="total form-control" placeholder="Amount paid in bKash" name="total_amount" value="{{ $payment_type->amount_paid }}">
+						</div>
+
+						<hr>
+
+					@elseif($payment_type->payment_type == 'bkash_salman')
+
+						<div class="form-group">
+							<label>Payment Type:</label>
+							
+							<input type="text" class="form-control" name="payment_type" value="{{ ucfirst($payment_type->payment_type) }}" readonly="">
+						</div>
+
+						<div class="form-group">
+							<label>GIC Deposit Bank Name:</label> 
+							<input type="text" name="bank_name" placeholder="GIC Deposit Bank Name" class="form-control" value="salman account" readonly>  
+						</div>
+
+						<div class="form-group">
+							<label>Phone Number</label> 
+							<input type="text" name="phone_number" placeholder="Phone Number" class="form-control" value="{{ $payment_type->phone_number }}"> 
+						</div>
+						 
+
+						<div class="form-group">
+							<label>Total Amount:</label> 
+							<input type="number" class="total form-control" placeholder="Amount paid in bKash" name="total_amount" value="{{ $payment_type->amount_paid }}" required>
+						</div>
+
+						<hr>
+
+					@elseif($payment_type->payment_type == 'upay')
+						<div class="form-group">
+							<label>Payment Type:</label>
+							
+							<input type="text" class="form-control" name="payment_type" value="{{ ucfirst($payment_type->payment_type) }}" readonly="">
+						</div>
+
+						<div class="form-group">
+							<label>GIC Deposit Bank Name:</label> 
+							<input type="text" name="bank_name" placeholder="GIC Deposit Bank Name" class="form-control" value="ucb" readonly> 
+						</div>
+						 
+
+						<div class="form-group">
+							<label>Phone Number</label> 
+							<input type="text" name="phone_number" placeholder="Phone Number" class="form-control" value="{{ $payment_type->phone_number }}" required="">  
+						</div>
+
+
+						<div class="form-group">
+							<label>Total Amount:</label> 
+							<input type="number" class="total form-control" placeholder="Amount paid in bKash" name="total_amount" value="{{ $payment_type->amount_paid }}" required>
+						</div>
+
+						<hr>
+
+					@elseif($payment_type->payment_type == 'online')
+
+						<div class="form-group">
+							<label>Payment Type:</label>
+							
+							<input type="text" class="form-control" name="payment_type" value="{{ ucfirst($payment_type->payment_type) }}" readonly="">
+						</div>
+
+						<div class="form-group">
+							<label>Select Bank:</label> 
+							<input type="text" name="bank_name" class="form-control" value="{{ strtoupper($payment_type->bank_name) }}" readonly="">
+						</div>
+
+
+						<div class="form-group">
+							<label>Deposit Date:</label> 
+							<input type="date" class="form-control" name="deposit_date" value="{{ $payment_type->deposit_date }}" required>
+						</div>
+						 
+
+						<div class="form-group">
+							<label>Total Amount:</label> 
+							<input type="number" class="total form-control" placeholder="Amount paid in bKash" name="total_amount" value="{{ $payment_type->amount_paid }}" required>
+						</div>
+ 
+
+					</div>
+
+					@endif
+
+
+				@endforeach
 
 				<div class="form-group">
 					{{ Form::submit('Update', ['class'=>'btn btn-primary btn-block button2']) }}
 				</div>
 
 			{{ Form::close() }}
+
 			
 		</div>
 
@@ -278,6 +466,15 @@
 			allowClear: true
 		});
 		
+	});
+
+	$( function() {
+		var today = new Date();
+
+	    $("#due-date").datepicker({
+	    	dateFormat: 'yy-mm-dd',
+		    minDate: '0',
+		});
 	});
 
 </script>

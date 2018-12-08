@@ -53,6 +53,8 @@
 
                   <th>Date</th>
 
+                  <th>Receipt ID</th>
+
                   <th>Client Code.</th>
 
                   <th>Name</th>
@@ -71,6 +73,7 @@
 
                   @if(Auth::user()->user_role == 'accountant')
                   <th>Edit</th>
+                  <th>Delete</th>
                   @endif
 
                </tr>
@@ -81,27 +84,25 @@
 
             	@foreach($payments as $payment)
 
-                @foreach($payment->userInfo as $client)
-
-                    @foreach($payment->programInfo as $program)
-
                   	<tr>
 
-                      <td>{{ Carbon\Carbon::parse($client->created_at)->format('d-m-y') }}</td>
+                      <td>{{ Carbon\Carbon::parse($payment->created_at)->format('d-m-y') }}</td>
+
+                      <td>{{ $payment->receipt_id }}</td>
                       
                   		<td>
                         
                   			<a href="{{ route('client.profile', $payment->client_id) }}">
                           
-                  				{{ $client->client_code }}
+                  				{{ $payment->userInfo->client_code }}
                           
                   			</a>
                         
                   		</td>
                       
-                  		<td>{{ $client->name }}</td>
+                  		<td>{{ $payment->userInfo->name }}</td>
                       
-                  		<td>{{ $program->program_name }}</td>
+                  		<td>{{ $payment->programInfo->program_name }}</td>
                       
                   		<td>
 
@@ -121,13 +122,16 @@
                       <td>
                         <a href="{{ route('payment.edit', $payment->id) }}"><i class="fa fa-edit"></i></a>
                       </td>
+                      <td>
+
+                        {{ Form::open([ 'method'  => 'delete', 'route' => [ 'payment.destroy', $payment->id ] ]) }}
+                          {{ Form::submit('Delete', ['class' => 'btn btn-danger btn-sm button2']) }}
+                        {{ Form::close() }}
+
+                      </td>
                       @endif
 
                   	</tr>
-
-                  @endforeach
-
-                @endforeach
 
             	@endforeach
 
@@ -138,6 +142,8 @@
                <tr>
 
                   <th>Date</th>
+
+                  <th>Receipt ID</th>
 
                   <th>Client Code.</th>
 
@@ -157,6 +163,7 @@
 
                   @if(Auth::user()->user_role == 'accountant')
                   <th>Edit</th>
+                  <th>Delete</th>
                   @endif
 
                </tr>

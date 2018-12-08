@@ -74,31 +74,31 @@
 		      </td>
 
 		      <td colspan="2" class="blank" style="border-left: 1px solid black">
+		      	Total Amount Payable:<br>
+		      	<br>
+		      	<br>
 		      	Total Amount Paid:<br>
-		      	Total Amount Due:<br>
+		      	(Recieved After Bank Charges:)<br>
 		      	<br>
+		      	Total Dues:<br>
+		      	Refunded:<br>
 		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
+		      	Overall Received:<br>
 		      	<br>
 		      	<br>
 		      	<br>
 		      </td>
 		      <td colspan="2" class="blank">
-		      	{{ number_format($client->totalAmount->sum('total_amount')) }}<br>
-		      	{{ number_format($client->totalAmount->sum('total_amount') - $client->totalAmount->sum('amount_paid')) }}<br>
+		      	{{ number_format($payable, 2) }}<br>
 		      	<br>
 		      	<br>
+		      	{{ number_format($paid, 2) }}<br>
+		      	{{ number_format($received, 2) }}<br>
 		      	<br>
+		      	{{ number_format($dues, 2) }}<br>
+		      	{{ number_format(abs($amount_refunded), 2) }}<br>
 		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
+		      	{{ number_format($paid + $amount_refunded, 2) }}<br>
 		      	<br>
 		      	<br>
 		      	<br>
@@ -106,6 +106,10 @@
 		  </tr>
 		
 		</table>
+
+		<br>
+
+		<h3>Programs:</h3>
 		
 		<table id="items">
 		
@@ -113,10 +117,9 @@
 		      <th>Program Name</th>
 		      <th>Step Name</th>
 		      <th>Date</th>
+		      <th>Total Amount</th>
 		      <th>Amount Paid</th>
 		      <th>Due</th>
-		      <th>Payment Method</th>
-		      <th>Total Amount</th>
 		  </tr>
 
 		  @foreach($payment_histories as $payment_history)
@@ -129,30 +132,52 @@
 
 		      </td>
 
-
 		      <td>
-		      	{{ App\Step::find($payment_history->step_no) ? App\Step::find($payment_history->step_no)->step_name : 'N/A' }}
+		      	{{ App\Step::find($payment_history->step_id) ? App\Step::find($payment_history->step_id)->step_name : 'N/A' }}
 		      </td>
 
 		      <td>{{ Carbon\Carbon::parse($payment_history->created_at)->format('d-m-y') }}</td>
-		      <td>{{ number_format($payment_history->amount_paid) }}</td>
-		      <td>{{ number_format($payment_history->total_amount - $payment_history->amount_paid) }}</td>
-		      <td>{{ $payment_history->payment_type }}</td>
-		      <td>{{ number_format($payment_history->total_amount) }}</td>
+
+		      <td>
+		      	{{ number_format($payment_history->opening_fee + $payment_history->embassy_student_fee + $payment_history->service_solicitor_fee + $payment_history->other) }}
+		      </td>
+
+		      <td>{{ number_format(App\PaymentType::where('payment_id', $payment_history->id)->sum('amount_paid')) }}</td>
+		      <td>
+		      	
+		      	{{ number_format(($payment_history->opening_fee + $payment_history->embassy_student_fee + $payment_history->service_solicitor_fee + $payment_history->other) - App\PaymentType::where('payment_id', $payment_history->id)->sum('amount_paid')) }}
+
+		      </td>
+		  </tr>
+
+		  @endforeach
+		
+		</table>
+
+		<br>
+
+		<h3>Refunds:</h3>
+
+		<table id="items">
+		
+		  <tr>
+		      <th>Program Name</th>
+		      <th>Step Name</th>
+		      <th>Bank Name</th>
+		      <th>Amount Refunded</th>
+		  </tr>
+
+		  @foreach($refunds as $refund)
+
+		  <tr class="item-row">
+		  	<td>{{ $refund->payment->programInfo->program_name }}</td>
+		  	<td>{{ $refund->payment->stepInfo->step_name }}</td>
+		  	<td>{{ strtoupper($refund->bank_name) }}</td>
+		  	<td>{{ number_format($refund->amount_paid) }}</td>
 		  </tr>
 
 		  @endforeach
 
-		  <tr>
-		      <td colspan="6" class="total-line">Grand Total</td>
-		      
-		      <td class="total-value">
-		      	<div id="subtotal">
-		      		{{ number_format($client->totalAmount->sum('total_amount')) }}
-		      	</div>
-		      </td>
-		  </tr>
-		
 		</table>
 
 		<br><br>

@@ -29,7 +29,10 @@ class CreatePaymentTypesTable extends Migration
             $table->decimal('bank_charge', 4,2);
             $table->integer('amount_paid');
             $table->decimal('amount_received', 10,2);
+            $table->date('deposit_date')->nullable();
             $table->tinyInteger('cheque_verified');
+            $table->tinyInteger('due_payment')->default(0);
+            $table->tinyInteger('refund_payment')->default(0);
             $table->timestamps();
         });
     }

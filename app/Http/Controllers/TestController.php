@@ -15,7 +15,7 @@ class TestController extends Controller
     //
     public function index()
     {
-        echo URL::to('/');
+        return view('invoice.test2');
     }
     public function sendMaiToClient($data_of_single_client){
         Mail::send('mail.client',$data_of_single_client,function ($message) use ($data_of_single_client){

@@ -146,6 +146,10 @@
                 </div>
                 <table id="meta" >
                     <tr>
+                        <td class="back">Receipt ID</td>
+                        <td > {{ $receipt_id }}</td>
+                    </tr>
+                    <tr>
                         <td class="back">Date</td>
                         <td > {{ $date }}</td>
                     </tr>
@@ -157,6 +161,12 @@
                         <td class="back">Invoice created by</td>
                         <td>{{ $created_by }}</td>
                     </tr>
+                    @if(isset($due_date))
+                    <tr>
+                        <td class="back">Due Date</td>
+                        <td>{{ Carbon\Carbon::parse($due_date)->format('d-M-y') }}</td>
+                    </tr>
+                    @endif
                 </table>
             </div>
 
@@ -170,20 +180,22 @@
             <tr>
                 <th>Programs</th>
                 <th>Step Name</th>
-                <th>File opening fee</th>
+                <th>Initial Assessment fee</th>
                 <th>Embassy/Student fee</th>
                 <th>Service / Solicitor Charge</th>
                 <th>Other fee</th>
+                <th>Due</th>
                 <th>Amount Paid</th>
             </tr>
             <tr id="hiderow">
                 <td>{{ $program }}</td>
                 <td>{{ $step ? $step->step_name : 'N/A' }}</td>
-                <td>{{ $opening_fee }}</td>
-                <td>{{ $embassy_student_fee }}</td>
-                <td>{{ $service_solicitor_fee }}</td>
-                <td>{{ $other }}</td>
-                <td>{{ $amount_paid }}</td>
+                <td>{{ number_format($opening_fee) }}</td>
+                <td>{{ number_format($embassy_student_fee) }}</td>
+                <td>{{ number_format($service_solicitor_fee) }}</td>
+                <td>{{ number_format($other) }}</td>
+                <td>{{ number_format($dues) }}</td>
+                <td>{{ number_format($amount_paid) }}</td>
             </tr>
         </table>
 

@@ -26,6 +26,7 @@
                   <th>Name</th>
                   <th>Phone</th>
                   <th>Email</th>
+                  <th>Status</th>
                   <th>Action</th>
                   <th>Action</th>
                </tr>
@@ -37,6 +38,7 @@
                   <td>{{ $client->name }}</td>
                   <td>{{ $client->mobile }}</td>
                   <td>{{ $client->email }}</td>
+                  <td>{{ $client->status }}</td>
                   <td>
                      <a href="{{ route('client.action', $client->id) }}" class="btn btn-outline-warning button2">View Actions</a>
                   </td>
@@ -56,6 +58,7 @@
                   <th>Name</th>
                   <th>Phone</th>
                   <th>Email</th>
+                  <th>Status</th>
                   <th>Action</th>
                   <th>Action</th>
                </tr>

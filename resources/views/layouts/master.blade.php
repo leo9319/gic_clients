@@ -34,8 +34,8 @@
 				<div class="container-fluid">
 					<!-- OVERVIEW -->
 
-					<a href="@yield('url')"><i class="fa fa-arrow-circle-left fa-lg"></i> Back</a>
-					<br><br>
+					{{-- <a href="@yield('url')"><i class="fa fa-arrow-circle-left fa-lg"></i> Back</a>
+					<br><br> --}}
 
 						
 				</div>

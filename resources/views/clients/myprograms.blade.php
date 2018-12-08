@@ -39,7 +39,11 @@
 
            <div class="right">
 
+           	@if($client->status == 'active')
+
               <a href="#" class="btn btn-success button2" data-toggle="modal" data-target="#addProgram">Add Program</a>
+
+          	@endif
 
            </div>
 

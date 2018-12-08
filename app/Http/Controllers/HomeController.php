@@ -111,7 +111,7 @@ class HomeController extends Controller
                                         'app_date' => $todays_date->format('y-m-d')
                                     ])->get();
             
-            $data['target'] = Target::getUserTarget($user_id);
+            $target = $data['target'] = Target::getUserTarget($user_id);
 
             if (Auth::user()->user_role == 'counselor') {
 
@@ -337,7 +337,7 @@ class HomeController extends Controller
         $phone = $request->mobile;
         $username = 'admin';
         $password = 'Generic!1234';
-        $message ="Dear $request->name,\nYour file has been opened with GIC. Visit link $url\nYour Email ID is $request->email and your password is $request->password.\nThank you.";
+        $message ="Dear $request->name,\nYour file has been opened with GIC. Visit link $url\nYour Client ID $request->client_code\n Your Email ID is $request->email and your password is $request->password.\nThank you.";
 
         $message = urlencode($message);
 
