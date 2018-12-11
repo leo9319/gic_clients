@@ -62,8 +62,8 @@
             	<tr>
             		<td>{{ $client->client_code }}</td>
             		<td>{{ $client->name }}</td>
-            		<td>{{ number_format($client->totalAmount->sum('total_amount')) }}</td>
-            		<td>{{ number_format($client->totalAmount->sum('total_amount') - $client->totalAmount->sum('amount_paid')) }}</td>
+            		<td>{{ number_format($client->getTotalAmountPaid()) }}</td>
+            		<td>{{ number_format($client->payments->sum('dues')) }}</td>
             		<td><a href="{{ route('payment.show.statement', $client->id) }}" class="btn btn-info button2">View Statement</a></td>
             	</tr>
             	@endforeach

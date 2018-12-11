@@ -306,11 +306,15 @@
                            <span>Refund History</span></a>
                      </li>
 
+                     @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
+
                      <li>
                         <a href="{{ route('payment.client.refund') }}" class="">
                            <i class="fa fa-credit-card"></i>
                            <span>Refund Client</span></a>
                      </li>
+
+                     @endif
 
                   </ul>
                </div>

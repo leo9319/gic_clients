@@ -109,6 +109,11 @@
 
 			<br>
 
+			<label>Comment:</label>
+			<textarea class="form-control" name="comments"></textarea>
+
+			<br>
+
 			<input class="btn btn-primary btn-block button2" type="submit" name="" value="Proceed to Payment">
 
 			{{ Form::close() }}

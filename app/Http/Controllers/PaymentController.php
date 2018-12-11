@@ -92,6 +92,7 @@ class PaymentController extends Controller
                 'service_solicitor_fee' => $request->service_solicitor_fee,
                 'other' => $request->other,
                 'created_by' => Auth::user()->id,
+                'comments' => $request->comments,
                 'created_at' => $data['date'],
             ]);
 
@@ -331,7 +332,7 @@ class PaymentController extends Controller
 
         $data['total_amount'] = $payment->opening_fee + $payment->embassy_student_fee + $payment->service_solicitor_fee + $payment->other;
 
-        $data['payment_types'] = PaymentType::where('payment_id', $payment->id)->get();
+        $data['payment_types'] = PaymentType::where('payment_id', $payment->id)->where('cheque_verified', '!=', 0)->get();
 
         return view('payments.show', $data);
     }
@@ -355,7 +356,7 @@ class PaymentController extends Controller
 
         $data['steps'] = Step::getProgramAllStep($payment->program_id);
 
-        $data['payment_types'] = PaymentType::where('payment_id', $payment->id)->get();
+        $data['payment_types'] = PaymentType::where('payment_id', $payment->id)->where('due_payment', 0)->get();
 
         return view('payments.edit', $data);
     }
@@ -370,100 +371,75 @@ class PaymentController extends Controller
     public function update(Request $request, Payment $payment)
     {
         $validatedData = $request->validate([
-            'payment_type' => 'required'
+            'opening_fee' => 'required_without_all:embassy_student_fee,service_solicitor_fee,other',
+            'embassy_student_fee' => 'required_without_all:opening_fee,service_solicitor_fee,other',
+            'service_solicitor_fee' => 'required_without_all:opening_fee,embassy_student_fee,other',
+            'other' => 'required_without_all:opening_fee,embassy_student_fee,service_solicitor_fee',
         ]);
 
-        $POS_machine = $request->pos_machine;
-        $bank_card = $request->banks_card;
-        $card_type = $request->card_type;
-        $charge = 0;
-        $bank_deposited = $request->bank_name;
+        $total_amount = $request->opening_fee + $request->embassy_student_fee + $request->service_solicitor_fee + $request->other;
 
-        // Payment taken by POS machine
+        $total_amount_paid = array_sum(array_column($request->payment, 'amount_paid'));
 
-        switch ($POS_machine) {
-
-            case 'city':
-
-                $bank_deposited = 'scb';
-
-                if($bank_card == 'city') {
-
-                    $charge = 1;
-                    
-                } else {
-
-                    $charge = ($card_type == 'amex') ? 2.5 : 2;
-                }
-                
-                break;
-
-            case 'brac':
-
-                $bank_deposited = 'brac';
-                $charge = 1.4;
-                break;
-
-            case 'ebl':
-                
-                $bank_deposited = 'ebl';
-                $charge = 1.5;
-                break;
-
-            case 'ucb':
-                
-                $bank_deposited = 'ucb';
-                $charge = 1.5;
-                break;
-
-            case 'dbbl':
-                
-                $bank_deposited = 'dbbl';
-                $charge = 1.5;
-                break;
-
-            default:
-                // Do nothing
-        }
-
-        if($request->payment_type == 'bkash_corporate') {
-            $charge = 1.5;
-        } elseif($request->payment_type == 'bkash_salman') {
-            $charge = 2;
-        }
+        $due = $total_amount - $total_amount_paid;
 
 
-        if($charge > 0) {
-            $after_charge = $request->amount_paid - (($charge / 100) * $request->amount_paid);
-        } else {
-            $after_charge = $request->amount_paid;
-        }
-
-
-        Payment::where('id', $payment->id)->update([
-            'program_id' => $request->program_id,
-            'step_id' => $request->step_id,
-            'payment_type' => $request->payment_type,
-            'card_type' => $request->card_type,
-            'name_on_card' => $request->name_on_card,
-            'card_number' => $request->card_number,
-            'expiry_date' => $request->expiry_date,
-            'approval_code' => $request->approval_code,
-            'bank_name' => $bank_deposited,
-            'cheque_number' => $request->cheque_number,
-            'phone_number' => $request->phone_number,
+        Payment::find($payment->id)->update([
             'opening_fee' => $request->opening_fee,
             'embassy_student_fee' => $request->embassy_student_fee,
             'service_solicitor_fee' => $request->service_solicitor_fee,
             'other' => $request->other,
-            'total_amount' => $request->total_amount,
-            'total_after_charge' => $after_charge,
-            'bank_charges' => $charge,
-            'amount_paid' => $request->amount_paid,
-            'due_clearance_date' => $request->due_clearance_date,
+            'dues' => $due
         ]);
 
-        return redirect()->back()->with('success', 'Payment Edited Successfully');
+
+        PaymentType::where('payment_id', $payment->id)->delete();
+
+        foreach ($request->payment as $key => $value) {
+
+            $payment_type =  isset($value['payment_type']) ? $value['payment_type'] : NULL;
+            $amount_paid =  isset($value['amount_paid']) ? $value['amount_paid'] : NULL;
+            $bank_name =  isset($value['bank_name']) ? $value['bank_name'] : NULL;
+            $bank_charge =  isset($value['bank_charge']) ? $value['bank_charge'] : NULL;
+            $name_on_card =  isset($value['name_on_card']) ? $value['name_on_card'] : NULL;
+            $card_number =  isset($value['card_number']) ? $value['card_number'] : NULL;
+            $expiry_date =  isset($value['expiry_date']) ? $value['expiry_date'] : NULL;
+            $pos_machine =  isset($value['pos_machine']) ? $value['pos_machine'] : NULL;
+            $approval_code =  isset($value['approval_code']) ? $value['approval_code'] : NULL;
+            $cheque_number =  isset($value['cheque_number']) ? $value['cheque_number'] : NULL;
+            $cheque_verified =  isset($value['cheque_verified']) ? $value['cheque_verified'] : 1;
+            $bank_name =  isset($value['bank_name']) ? $value['bank_name'] : NULL;
+            $bank_charge =  isset($value['bank_charge']) ? $value['bank_charge'] : NULL;
+            $phone_number =  isset($value['phone_number']) ? $value['phone_number'] : NULL;
+            $deposit_date =  isset($value['deposit_date']) ? $value['deposit_date'] : NULL;
+            $card_type =  isset($value['card_type']) ? $value['card_type'] : NULL;
+
+            $after_charge = $amount_paid - (($bank_charge / 100) * $amount_paid);
+
+            PaymentType::create([
+
+                'payment_id' => $payment->id,
+                'payment_type' => $payment_type,
+                'card_type' => $card_type,
+                'name_on_card' => $name_on_card,
+                'card_number' => $card_number,
+                'expiry_date' => $expiry_date,
+                'pos_machine' => $pos_machine,
+                'approval_code' => $approval_code,
+                'phone_number' => $phone_number,
+                'cheque_number' => $cheque_number,
+                'bank_name' => $bank_name,
+                'cheque_verified' => $cheque_verified,
+                'bank_charge' => $bank_charge,
+                'amount_paid' => $amount_paid,
+                'amount_received' => $after_charge,
+                'deposit_date' => $deposit_date,
+
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Payment has been edited successfully');
+
     }
 
     /**
@@ -508,7 +484,17 @@ class PaymentController extends Controller
     public function chequeVerification(PaymentType $payment_type, $status)
     {
         PaymentType::find($payment_type->id)->update(['cheque_verified' => $status]);
-        
+
+        // if the cheque is dissapproved then the due will increase
+        if(!$status) {
+            $payment_id = $payment_type->payment_id;
+            $total_amount = $this->findingTotalAmount($payment_id);
+            $total_amount_paid = $this->findingTotalPaidAmount($payment_id);
+            $dues = $total_amount - $total_amount_paid;
+
+            Payment::find($payment_id)->update(['dues' => $dues]);
+        }
+
         return redirect()->back();
     }
 
@@ -531,15 +517,18 @@ class PaymentController extends Controller
         $data['embassy_student_fee'] = $payment->embassy_student_fee;
         $data['service_solicitor_fee'] = $payment->service_solicitor_fee;
         $data['other'] = $payment->other;
-        $data['amount_paid'] = PaymentType::where('payment_id', $payment->id)->sum('amount_paid');
+        // $data['amount_paid'] = PaymentType::where('payment_id', $payment->id)->sum('amount_paid');
         $data['dues'] = $payment->dues;
         $data['due_date'] = $payment->due_date;
+        $data['comments'] = $payment->comments;
+
+        $data['payment_methods'] = PaymentType::where('payment_id', $payment->id)->where('cheque_verified', '!=', 0)->get();
 
         $created_by = User::find($payment->created_by);
         $data['created_by'] = $created_by ? $created_by->name : '';
 
         $pdf = PDF::loadView('invoice.index', $data);
-        return $pdf->download('invoice.pdf');
+        return $pdf->download($client->client_code.'-payment-invoice.pdf');
     }
 
 
@@ -622,7 +611,10 @@ class PaymentController extends Controller
         $data['active_class'] = 'payments';
         $data['previous'] = URL::to('/dashboard');
         $bank_account_income_expenses = IncomeExpense::where('recheck', 0)->get();
-        $bank_account_client = PaymentType::all();
+        $bank_account_client = PaymentType::where([
+            'cheque_verified' => 1,
+            'refund_payment' => 0,
+        ])->get();
 
         $banks = [
             'cash' => 0,
@@ -682,13 +674,13 @@ class PaymentController extends Controller
         $data['previous'] = URL::to('payment/bank/account');
         $data['account'] = $account;
 
-        $data['payment_histories'] = PaymentType::where('bank_name', $account)->get();
+        $data['payment_histories'] = PaymentType::where('bank_name', $account)->where('cheque_verified', 1)->get();
         $data['incomes_and_expenses'] = IncomeExpense::where([
             'bank_name' => $account,
             'recheck' => 0,
         ])->get();
 
-        $data['total_amount'] = $data['payment_histories']->sum('amount_paid') + $data['incomes_and_expenses']->sum('total_amount');
+        $data['total_amount'] = $data['payment_histories']->sum('amount_received') + $data['incomes_and_expenses']->sum('total_amount');
 
         return view('payments.account_details', $data);
     }
@@ -1019,7 +1011,7 @@ class PaymentController extends Controller
 
         $data['program_fee'] = $payment_id->opening_fee + $payment_id->embassy_student_fee + $payment_id->service_solicitor_fee + $payment_id->other;
 
-        $data['payment_types'] = PaymentType::where('payment_id', $payment_id->id)->get();
+        $data['payment_types'] = PaymentType::where('payment_id', $payment_id->id)->where('cheque_verified', '!=', 0)->get();
 
         return view('payments.due_details', $data);
     }
@@ -1172,10 +1164,10 @@ class PaymentController extends Controller
         $created_by = User::find($payment->created_by);
         $due['created_by'] = $created_by ? $created_by->name : '';
 
-        $pdf = PDF::loadView('invoice.due', $due);
-        return $pdf->download('due_clearance_invoice.pdf');
+        // $pdf = PDF::loadView('invoice.due', $due);
+        // return $pdf->download($client->client_code.'-due-clearance-invoice.pdf');
 
-        // return redirect()->route('payment.acknowledgement');  
+        return redirect()->route('payment.acknowledgement');  
     }
 
     public function dueHistory()
@@ -1209,7 +1201,7 @@ class PaymentController extends Controller
 
     public function generateDuePDF($payment_id)
     {
-        $payment = Payment::find($payment_id);
+        $due['payment'] = $payment = Payment::find($payment_id);
 
         $client = User::find($payment->client_id);
         $client_additional_info = ClientFileInfo::where('client_id', $payment->client_id)->first();
@@ -1227,11 +1219,11 @@ class PaymentController extends Controller
         $due['embassy_student_fee'] = $payment->embassy_student_fee;
         $due['service_solicitor_fee'] = $payment->service_solicitor_fee;
         $due['other'] = $payment->other;
-        $due['amount_paid'] = PaymentType::where('payment_id', $payment->id)->sum('amount_paid');
+        $due['comments'] = $payment->comments;
 
         // finding the previously paid amount:
 
-        $due['payments'] = PaymentType::where('payment_id', $payment_id)->get();
+        $due['payments'] = PaymentType::where('payment_id', $payment_id)->where('cheque_verified', '!=', 0)->get();
 
         $created_by = User::find($payment->created_by);
         $due['created_by'] = $created_by ? $created_by->name : '';
@@ -1256,6 +1248,20 @@ class PaymentController extends Controller
         $data['payment_id'] = $payment->id;
 
         return $data;
+    }
+
+    public function findingTotalAmount($payment_id)
+    {
+        $payment = Payment::find($payment_id);
+
+        return $total_amount = $payment->opening_fee + $payment->embassy_student_fee + $payment->service_solicitor_fee + $payment->other;
+    }
+
+    public function findingTotalPaidAmount($payment_id)
+    {
+        $payment_types = PaymentType::where('payment_id', $payment_id)->where('cheque_verified', '!=', 0)->get();
+
+        return $payment_types->sum('amount_paid');
     }
 
 }

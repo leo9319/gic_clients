@@ -29,6 +29,7 @@ class CreatePaymentsTable extends Migration
             $table->date('due_cleared_date')->nullable();
             $table->text('description');
             $table->integer('created_by');
+            $table->text('comments')->nullable();
             $table->timestamps();
         });
     }

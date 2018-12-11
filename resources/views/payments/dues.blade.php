@@ -51,7 +51,7 @@
 
                <tr>
 
-                  <th>Clearance Date</th>
+                  <th>Payment Date</th>
 
                   <th>Client Name</th>
 
@@ -65,7 +65,13 @@
 
                   <th>Due</th>
 
+                  <th>Due Date</th>
+
+                   @if(Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'admin')
+
                   <th class="text-center">Action</th>
+
+                  @endif
 
                </tr>
 
@@ -75,7 +81,7 @@
 
                <tr>
 
-                  <th>Clearance Date</th>
+                  <th>Payment Date</th>
 
                   <th>Client Name</th>
 
@@ -89,7 +95,13 @@
 
                   <th>Due</th>
 
+                  <th>Due Date</th>
+
+                  @if(Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'admin')
+
                   <th class="text-center">Action</th>
+
+                  @endif
 
                </tr>
 
@@ -98,7 +110,9 @@
             <tbody>
               @foreach($all_dues as $all_due)
             	<tr>
-                <td>{{ Carbon\Carbon::parse($all_due->due_date)->format('d-M-y') }}</td>
+
+                <td>{{ Carbon\Carbon::parse($all_due->created_at)->format('d-M-y') }}</td>
+                
 
                 <td>{{ $all_due->userInfo->name }}</td>
 
@@ -110,10 +124,15 @@
                   {{ number_format($all_due->opening_fee + $all_due->embassy_student_fee + $all_due->service_solicitor_fee + $all_due->other) }}
                 </td>
 
-                <td>{{ number_format($all_due->totalPayment->sum('amount_paid')) }}</td>
+                <td>{{ number_format($all_due->totalPayment->where('cheque_verified', '!=', 0)->sum('amount_paid')) }}</td>
 
                 <td>{{ number_format($all_due->dues) }}</td>
+
+                <td>{{ Carbon\Carbon::parse($all_due->due_date)->format('d-M-y') }}</td>
+
+                 @if(Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'admin')
                 <td><a href="{{ route('payment.client.dues.details', $all_due->id) }}" class="btn btn-success btn-sm button2">Clear Due</a></td>
+                @endif
             	</tr>
               @endforeach
             </tbody>            

@@ -146,6 +146,10 @@
                 </div>
                 <table id="meta" >
                     <tr>
+                        <td class="back">Receipt ID</td>
+                        <td>{{ $payment->receipt_id }}D</td>
+                    </tr>
+                    <tr>
                         <td class="back">Due Cleared On</td>
                         <td>{{ Carbon\Carbon::parse($payments->first()->payment->due_cleared_date)->format('d-M-y') }}</td>
                     </tr>
@@ -177,13 +181,34 @@
             <tr id="hiderow">
                 <td>{{ $program }}</td>
                 <td>{{ $step->step_name }}</td>
-                <td>{{ number_format($payments->where('due_payment', 0)->sum('amount_received')) }}</td>
-                <td>{{ number_format($payments->where('due_payment', 1)->sum('amount_received')) }}</td>
-                <td>{{ number_format($payments->sum('amount_received')) }}</td>
+                <td>{{ number_format($payments->where('due_payment', 0)->sum('amount_paid')) }}</td>
+                <td>{{ number_format($payments->where('due_payment', 1)->sum('amount_paid')) }}</td>
+                <td>{{ number_format($payments->sum('amount_paid')) }}</td>
             </tr>
         </table>
+
+        <h3>Payment Methods:</h3>
+
+        <table width="100%" id="details" border="1">
+            <tr>
+                <th>Method</th>
+                <th>Amount Paid</th>
+            </tr>
+            @foreach($payments as $payment)
+            <tr id="hiderow">
+                <td>{{ ucfirst($payment->payment_type) }}</td>
+                <td>{{ number_format($payment->amount_paid) }}</td>
+            </tr>
+            @endforeach
+        </table>
+
+        <div>
+            <h4>Comments:</h4>
+            <p>{{ $comments }}</p>
+        </div>
         
         <div id="terms">
+            <small>*This is a computer generated invoice*</small>
             <div>If you have any questions concerning this invoice, contact us @ 09678744223.</div>
         </div>
     </div>

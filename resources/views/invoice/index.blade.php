@@ -195,12 +195,33 @@
                 <td>{{ number_format($service_solicitor_fee) }}</td>
                 <td>{{ number_format($other) }}</td>
                 <td>{{ number_format($dues) }}</td>
-                <td>{{ number_format($amount_paid) }}</td>
+                <td>{{ number_format($payment_methods->sum('amount_paid')) }}</td>
             </tr>
         </table>
 
+        <h3>Payment Methods:</h3>
+
+        <table  width="100%" id="details" border="1">
+            <tr>
+                <th>Method</th>
+                <th>Amount Paid</th>
+            </tr>
+            @foreach($payment_methods as $payment_method)
+            <tr id="hiderow">
+                <td>{{ ucfirst($payment_method->payment_type) }}</td>
+                <td>{{ number_format($payment_method->amount_paid) }}</td>
+            </tr>
+            @endforeach
+        </table>
+
+        <div>
+            <h4>Comments:</h4>
+            <p>{{ $comments }}</p>
+        </div>
+
 
         <div id="terms">
+            <small>*This is a computer generated invoice*</small>
             <div>If you have any questions concerning this invoice, contact us @ 09678744223.</div>
         </div>
     </div>

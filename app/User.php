@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use DB;
 
 class User extends Authenticatable
 {
@@ -48,6 +49,20 @@ class User extends Authenticatable
     }
 
     public function totalAmount()
+    {
+        return $this->hasMany('App\Payment', 'client_id');
+    }
+
+    public function getTotalAmountPaid()
+    {
+        // get the payment ids;
+
+        $payment_ids = Payment::where('client_id', $this->id)->pluck('id');
+        return PaymentType::whereIn('payment_id', $payment_ids)->sum('amount_paid');
+
+    }
+
+    public function payments()
     {
         return $this->hasMany('App\Payment', 'client_id');
     }
