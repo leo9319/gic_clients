@@ -67,5 +67,9 @@ class User extends Authenticatable
         return $this->hasMany('App\Payment', 'client_id');
     }
 
+    public function getAdditionalInfo()
+    {
+        return $this->hasOne('App\ClientFileInfo', 'client_id');
+    }
 
 }

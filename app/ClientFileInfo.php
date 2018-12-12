@@ -12,4 +12,9 @@ class ClientFileInfo extends Model
     {
     	return static::where('client_id', $client_id)->first();
     }
+
+    public function user()
+    {
+    	return $this->belongsTo('App\User');
+    }
 }

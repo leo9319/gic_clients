@@ -69,9 +69,9 @@
 
 				<label class="text-success">Payment Type:</label>
 
-				<select id="0" class="form-control" name="payment_type-0" onchange="addPaymentOptions(this)" required="">
+				<select id="0" class="form-control" name="payment_type-0" onchange="addPaymentOptions(this)" required>
 
-					<option value="0">Select a payment method</option>
+					<option value="">Select a payment method</option>
 					<option value="cash">Cash</option>
 					<option value="card">POS</option>
 					<option value="cheque">Cheque</option>
@@ -113,7 +113,7 @@
 			<div class="form-group"> 
 
 				<label>Due Date:</label> 
-				<input type="text" placeholder="Due Date" name="due_date" id="due-date" class="form-control" required="">
+				<input type="text" placeholder="Due Date" name="due_date" id="due-date" class="form-control">
 
 			</div>
 
@@ -312,6 +312,15 @@
 
 	function myFunction() {
 		var form = document.getElementById('myForm');
+		var total_amount = document.getElementById('total_amount').value;
+		var amount_paid = document.getElementById('amount-paid').value;
+		var due_date_element = document.getElementById('due-date');
+
+		if(total_amount != amount_paid) {
+	    	due_date_element.required = true;
+	    } else {
+	    	due_date_element.required = false;
+	    }
 
 		for(var i=0; i < form.elements.length; i++){
 	      if(form.elements[i].value === '' && form.elements[i].hasAttribute('required')){
@@ -321,28 +330,7 @@
 	      }
 	    }
 
-	    var total_amount = document.getElementById('total_amount').value;
-	    var amount_paid = document.getElementById('amount-paid').value;
-	    var due_date_element = document.getElementById('due-date');
-
-	    if(total_amount == amount_paid) {
-
-	    	due_date_element.required = false;
-	    	form.submit();
-
-	    } else {
-
-	    	if(due_date_element.value) {
-
-	    		form.submit();
-
-	    	} else {
-
-	    		due_date_element.required = true;
-
-
-	    	}
-	    }
+	    form.submit();
 	}
 
 	$( function() {

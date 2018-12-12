@@ -562,32 +562,27 @@ class PaymentController extends Controller
     public function showStatement($client_id)
     {
         $data['client'] = User::find($client_id);
-        $data['client_info'] = ClientFileInfo::where('client_id', $client_id)->first();
         $data['rms'] = RmClient::getAssignedRms($client_id);
         $data['counselors'] = CounsellorClient::assignedCounselor($client_id);
-        $payment_histories = $data['payment_histories'] = Payment::where('client_id', $client_id)->get();
 
-        $data['payable'] =  $payment_histories->sum('opening_fee') +
-                            $payment_histories->sum('embassy_student_fee') +
-                            $payment_histories->sum('service_solicitor_fee') +
-                            $payment_histories->sum('other');
+        $data['payment_histories'] = Payment::where('client_id', $client_id)->get();
 
-        $income_expenes = IncomeExpense::where([
-            'payment_type' => 'refund',
-            'client_id' => $client_id,
-        ]);
+        $data['payable'] =  $data['payment_histories']->sum('opening_fee') +
+                            $data['payment_histories']->sum('embassy_student_fee') +
+                            $data['payment_histories']->sum('service_solicitor_fee') +
+                            $data['payment_histories']->sum('other');
 
         // Get all the payment_ids of that client:
 
-        $payment_ids = $payment_histories->pluck('id');
+        $payment_ids = $data['payment_histories']->pluck('id');
         $data['refunds'] = PaymentType::whereIn('payment_id', $payment_ids)->where('refund_payment', 1)->get();
 
-        $data['amount_refunded'] = $income_expenes->sum('total_amount');
+        // $data['amount_refunded'] = $income_expenes->sum('total_amount');
         $payment_ids = Payment::where('client_id', $client_id)->pluck('id');
-        $payment_type = PaymentType::whereIn('payment_id', $payment_ids);
+        $data['payment_methods'] = $payment_type = PaymentType::whereIn('payment_id', $payment_ids);
         $data['paid'] = $payment_type->sum('amount_paid');
         $data['received'] = $payment_type->sum('amount_received');
-        $data['dues'] = $data['payable'] - $data['paid'];
+        $data['dues'] = $data['payment_histories']->sum('dues');
 
         return view('payments.show_statement', $data);
     }

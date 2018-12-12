@@ -39,20 +39,20 @@
 		      <td colspan="4" class="blank">
 		      	{{ $client->client_code }} <br>
 		      	{{ $client->name }} <br>
-		      	{{ $client_info ? $client_info->spouse_name : 'N/A' }} <br>
+		      	{{ $client->getAdditionalInfo->spouse_name }} <br>
 		      	{{ $client->mobile }} <br>
 		      	{{ $client->email }} <br>
 		      	<br>
-		      	{{ $client_info ? $client_info->address : 'N/A' }} <br>
+		      	{{ $client->getAdditionalInfo->address }} <br>
 		      	<br>
 
-		      	@if($client_info)
-		      	@forelse(json_decode($client_info->country_of_choice) as $country)
+		      	
+		      	@forelse(json_decode($client->getAdditionalInfo->country_of_choice) as $country)
 		      		{{ ucfirst($country) }} 
 	      		@empty
 	      			N/A
 		      	@endforelse
-		      	@endif
+		      	
 
 		      	<br>
 		      	{{ $client->created_at }} <br>
@@ -89,16 +89,16 @@
 		      	<br>
 		      </td>
 		      <td colspan="2" class="blank">
-		      	{{ number_format($payable, 2) }}<br>
+		      	{{ number_format($payable) }}<br>
 		      	<br>
 		      	<br>
-		      	{{ number_format($paid, 2) }}<br>
-		      	{{ number_format($received, 2) }}<br>
+		      	{{ number_format($payment_methods->where('cheque_verified', '!=', 0)->where('refund_payment', 0)->sum('amount_paid')) }}<br>
+		      	{{ number_format($payment_methods->where('cheque_verified', '!=', 0)->where('refund_payment', 0)->sum('amount_received')) }}<br>
 		      	<br>
 		      	{{ number_format($dues, 2) }}<br>
-		      	{{ number_format(abs($amount_refunded), 2) }}<br>
+		      	{{ number_format($refunds->sum('amount_paid')) }}<br>
 		      	<br>
-		      	{{ number_format($paid + $amount_refunded, 2) }}<br>
+		      	{{ number_format($paid, 2) }}<br>
 		      	<br>
 		      	<br>
 		      	<br>
@@ -126,28 +126,13 @@
 		  
 		  <tr class="item-row">
 
-		      <td>
-
-		      	{{ App\Program::find($payment_history->program_id) ? App\Program::find($payment_history->program_id)->program_name : 'N/A' }}
-
-		      </td>
-
-		      <td>
-		      	{{ App\Step::find($payment_history->step_id) ? App\Step::find($payment_history->step_id)->step_name : 'N/A' }}
-		      </td>
-
+		      <td>{{ $payment_history->programInfo->program_name }}</td>
+		      <td>{{ $payment_history->stepInfo->step_name }}</td>
 		      <td>{{ Carbon\Carbon::parse($payment_history->created_at)->format('d-m-y') }}</td>
+		      <td>{{ number_format($payment_history->totalAmount()) }}</td>
+		      <td>{{ number_format($payment_history->totalPayment->where('refund_payment', 0)->sum('amount_paid')) }}</td>
+		      <td>{{ number_format($payment_history->dues) }}</td>
 
-		      <td>
-		      	{{ number_format($payment_history->opening_fee + $payment_history->embassy_student_fee + $payment_history->service_solicitor_fee + $payment_history->other) }}
-		      </td>
-
-		      <td>{{ number_format(App\PaymentType::where('payment_id', $payment_history->id)->sum('amount_paid')) }}</td>
-		      <td>
-		      	
-		      	{{ number_format(($payment_history->opening_fee + $payment_history->embassy_student_fee + $payment_history->service_solicitor_fee + $payment_history->other) - App\PaymentType::where('payment_id', $payment_history->id)->sum('amount_paid')) }}
-
-		      </td>
 		  </tr>
 
 		  @endforeach
