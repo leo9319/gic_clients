@@ -550,9 +550,9 @@ class ClientController extends Controller
         return view('clients.assigned_rm', $data);
     }
 
-    public function clientDestroy($client_id)
+    public function clientDestroy(Request $request)
     {
-        User::find($client_id)->delete();
+        User::find($request->client_id)->delete();
 
         return redirect()->back();
     }

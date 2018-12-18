@@ -100,7 +100,7 @@ Route::post('client/rm/{client_id}', 'ClientController@assignRmStore')->name('cl
 Route::post('client/step/{program_id}/{client_id}', 'ClientController@storeSteps')->name('client.step.store');
 Route::post('client/individual/step/{step_id}/{client_id}', 'ClientController@storeIndividualTask')->name('client.task.individual.store');
 Route::post('spouse/individual/step/{step_id}/{client_id}', 'ClientController@storeSpouseIndividualTask')->name('spouse.task.individual.store');
-Route::get('client/delete/{client_id}', 'ClientController@clientDestroy')->name('client.destroy');
+Route::post('client/delete', 'ClientController@clientDestroy')->name('client.destroy');
 Route::get('client/edit/ind/{client_id}', 'ClientController@clientEdit')->name('client.edit.ind');
 Route::post('client/update/ind', 'ClientController@clientUpdate')->name('client.update.ind');
 Route::get('getClientName', 'ClientController@getClientName');
@@ -240,6 +240,7 @@ Route::get('payment/income/expense/pdf', 'PaymentController@generateIncomeExpens
 
 Route::get('payment/client/refund', 'PaymentController@clientRefund')->name('payment.client.refund');
 Route::get('payment/client/refund/history', 'PaymentController@clientRefundHistory')->name('payment.client.refund.history');
+Route::get('payment/client/refund/delete/{payment_id}', 'PaymentController@clientRefundDelete')->name('payment.client.refund.delete');
 
 
 Route::post('payment/store/client/refund', 'PaymentController@storeClientRefund')->name('payment.store.client.refund');

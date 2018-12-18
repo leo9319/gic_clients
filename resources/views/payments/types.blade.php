@@ -312,15 +312,23 @@
 
 	function myFunction() {
 		var form = document.getElementById('myForm');
-		var total_amount = document.getElementById('total_amount').value;
-		var amount_paid = document.getElementById('amount-paid').value;
+		var total_amount = parseInt(document.getElementById('total_amount').value);
+		var amount_paid = parseInt(document.getElementById('amount-paid').value);
 		var due_date_element = document.getElementById('due-date');
 
-		if(total_amount != amount_paid) {
+		due_date_element.required = false;
+
+		if(total_amount > amount_paid) {
 	    	due_date_element.required = true;
+	    } else if(total_amount < amount_paid) {
+	    	alert('Amount paid cannot be greater than the total amount!');
+	    	due_date_element.required = false;
+	    	return false;
 	    } else {
 	    	due_date_element.required = false;
 	    }
+
+
 
 		for(var i=0; i < form.elements.length; i++){
 	      if(form.elements[i].value === '' && form.elements[i].hasAttribute('required')){

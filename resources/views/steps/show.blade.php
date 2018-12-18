@@ -40,9 +40,9 @@
 
 						</a>
 
-						<button type="button" class="btn btn-secondary" id="{{ $step->id }}" name="{{ $step->step_name }}" onclick="editStep(this)"><span class="fa fa-edit fa-lg"></span></button>
+						<button type="button" class="btn btn-secondary button2" id="{{ $step->id }}" name="{{ $step->step_name }}" onclick="editStep(this)"><span class="fa fa-edit fa-lg"></span></button>
 
-						{{ link_to_route('step.delete', 'Delete', ['step_id' => $step->id], ['class' => 'btn btn-danger']) }}
+						{{ link_to_route('step.delete', 'Delete', ['step_id' => $step->id], ['class' => 'btn btn-danger button2']) }}
 
 					</span>
 					

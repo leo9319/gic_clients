@@ -23,6 +23,14 @@
     </div>
 @endif
 
+@if (\Session::has('success'))
+    <div class="alert alert-success">
+        <ul>
+            <li>{!! \Session::get('success') !!}</li>
+        </ul>
+    </div>
+@endif
+
 <div class="container-fluid">
 
 	<div class="panel">
@@ -36,7 +44,7 @@
 		<div class="panel-footer">
 
 			{{-- {{ Form::open(['autocomplete = off']) }} --}}
-			{{ Form::open(['route'=>'payment.store.client.refund']) }}
+			{{ Form::open(['route'=>'payment.store.client.refund', 'id' => 'myForm']) }}
 
 			{{-- Hiddin fields --}}
 
@@ -132,7 +140,9 @@
 
 			<div class="form-group">
 
-				<input class="btn btn-danger btn-block button2" type="submit" name="" value="Refund">
+				{{-- <input class="btn btn-danger btn-block button2" type="submit" name="" value="Refund"> --}}
+
+				<button type="button" id="deliveryNext" onclick="myFunction()" class="btn btn-sm btn-success btn-block button2">Refund</button>
 				
 			</div>
 
@@ -334,6 +344,21 @@
 		} else {
 			// 
 		}
+	}
+
+	function myFunction() {
+		var form = document.getElementById('myForm');
+		var total_amount = document.getElementById('total-amount').value;
+		var refund = document.getElementById('amount').value;
+
+
+		if(total_amount >= refund) {
+	    	form.submit();
+	    } else {
+	    	alert('Amount refunded cannot be greater than total amount!');
+	    }
+
+	    
 	}
 
 	$(function(){

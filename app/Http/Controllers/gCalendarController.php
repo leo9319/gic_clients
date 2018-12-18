@@ -87,13 +87,16 @@ class gCalendarController extends Controller
      */
     public function store(Request $request)
     {
+        $start_date = Carbon::parse($request->start_date)->format('Y-m-d');
+        $starttime = date("G:i", strtotime($request->starttime));
+
         session_start();
         $appointee_id = $request->appointee;
         $appointee = User::find($appointee_id);
         $client = User::where('email', $request->client_email)->first();
-        $startDateTime = $request->start_date. 'T' .$request->starttime . ':00+06:00';
-        $endtime = $dt = Carbon::parse($request->start_date . ' ' .$request->starttime. ':00')->addMinutes(30);
-        $endDateTime = $request->start_date. 'T' .$endtime->toTimeString(). '+06:00';
+        $startDateTime = $start_date. 'T' .$starttime . ':00+06:00';
+        $endtime = $dt = Carbon::parse($start_date . ' ' .$starttime. ':00')->addMinutes(30);
+        $endDateTime = $start_date. 'T' .$endtime->toTimeString(). '+06:00';
 
         if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
             $this->client->setAccessToken($_SESSION['access_token']);
@@ -128,11 +131,15 @@ class gCalendarController extends Controller
                 
             ]);
 
+
             $results = $service->events->insert($calendarId, $event, $sendNotifications);
-            if (!$results) {
-                // return response()->json(['status' => 'error', 'message' => 'Something went wrong']);
-                return redirect()->back();
-            }
+            // if ($results) {
+            //     // return response()->json(['status' => 'error', 'message' => 'Something went wrong']);
+            //     // return redirect()->back();
+            //     return view('appointment.acknowledgement');
+            // }
+
+
             // return response()->json(['status' => 'success', 'message' => 'Event Created']);
             Appointment::updateOrCreate(
             [
@@ -145,20 +152,24 @@ class gCalendarController extends Controller
                 'title' => $request->title,
                 'appointer_id' => $appointee->id,
                 'client_id' => $client->id,
-                'app_date' => $request->start_date,
-                'app_time' => $request->starttime,
+                'app_date' => $start_date,
+                'app_time' => $starttime,
             ]);
 
         $appointment = Appointment::where([
                 'appointer_id' => $appointee->id,
                 'client_id' => $client->id,
-                'app_date' => $request->start_date,
-                'app_time' => $request->starttime,
+                'app_date' => $start_date,
+                'app_time' => $starttime,
         ])->first();
 
-            return redirect()->route('email', [$appointee->id, $client->id, $appointment->id]);
+            // return redirect()->route('email', [$appointee->id, $client->id, $appointment->id]);
+        return view('appointment.acknowledgement');
+
         } else {
+            
             return redirect()->route('oauthCallback');
+            
         }
 
     }

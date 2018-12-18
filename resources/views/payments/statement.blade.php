@@ -47,7 +47,7 @@
 
                   <th>Name</th>
 
-                  <th>Total Amount Paid</th>
+                  <th>Total Amount Received</th>
 
                   <th>Total Due</th>
 
@@ -77,7 +77,7 @@
 
                   <th>Name</th>
 
-                  <th>Total Amount Paid</th>
+                  <th>Total Amount Received</th>
 
                   <th>Total Due</th>
 

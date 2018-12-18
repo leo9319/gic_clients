@@ -45,6 +45,9 @@
 					<th>Refunded From</th>
 					<th>Cheque Number</th>
 					<th>Amount Refunded</th>
+					@if(Auth::user()->user_role == 'accountant')
+					<th>Action</th>
+					@endif
 				</tr>
             </thead>
 
@@ -59,6 +62,11 @@
             		<td>{{ strtoupper($refund->bank_name) }}</td>
             		<td>{{ $refund->cheque_number }}</td>
             		<td>{{ number_format($refund->amount_paid) }}</td>
+            		@if(Auth::user()->user_role == 'accountant')
+					<td>
+						<a href="{{ route('payment.client.refund.delete', $refund->id) }}" class="btn btn-danger btn-sm button2">Delete</a>
+					</td>
+					@endif	
               	</tr>
               	@endforeach
               </tbody>
@@ -73,6 +81,9 @@
 					<th>Refunded From</th>
 					<th>Cheque Number</th>
 					<th>Amount Refunded</th>
+					@if(Auth::user()->user_role == 'accountant')
+					<th>Action</th>
+					@endif
 				</tr>
             </tfoot>
          </table>

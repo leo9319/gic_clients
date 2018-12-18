@@ -148,12 +148,12 @@
 
                         <tr>
 
-                           <td>{{$payment->userInfo->client_code }}</td>
-                           <td>{{$payment->userInfo->name }}</td>
-                           <td>{{ App\Program::find($payment->program_id)->program_name }}</td>
-                           <td>{{ App\Step::find($payment->step_id) ? App\Step::find($payment->step_id)->step_name : 'N/A' }}</td>
-                           <td>{{ $payment->total_amount }}</td>
-                           <td>{{ $payment->amount_paid }}</td>
+                           <td>{{ $payment->userInfo->client_code ?? 'Client Removed' }}</td>
+                           <td>{{ $payment->userInfo->name ?? 'Client Removed' }}</td>
+                           <td>{{ $payment->programInfo->program_name ?? '' }}</td>
+                           <td>{{ $payment->stepInfo->step_name ?? '' }}</td>
+                           <td>{{ number_format($payment->totalAmount()) }}</td>
+                           <td>{{ number_format($payment->totalPayment->where('refund_payment', '!=', 1)->sum('amount_paid')) }}</td>
 
                         </tr>
 
@@ -232,9 +232,9 @@
 
                      <tr>
 
-                        <td>{{ $recent_client->userInfo->client_code }}</td>
-                        <td>{{ $recent_client->userInfo->name }}</td>
-                        <td>{{ Carbon\Carbon::parse($recent_client->userInfo->created_at)->format('d-M-Y') }}</td>
+                        <td>{{ $recent_client->userInfo->client_code ?? 'Client Removed' }}</td>
+                        <td>{{ $recent_client->userInfo->name ?? 'Client Removed' }}</td>
+                        <td>{{ Carbon\Carbon::parse($recent_client->userInfo->created_at ?? '00-00-00')->format('d-M-Y') ?? 'N/A' }}</td>
                         <td>
                            <a href="{{ route('client.profile', $recent_client->client_id) }}"><span class="label label-primary">VIEW PROFILE</span></a>
                         </td>

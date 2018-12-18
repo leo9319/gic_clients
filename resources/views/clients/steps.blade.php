@@ -52,15 +52,11 @@
 
          <h3 class="panel-title">Step Lists</h3>
 
-         @if(Auth::user()->user_role != 'client')
+         @if(Auth::user()->user_role != 'client' || $client->status == 'active')
 
            <div class="right">
 
-            @if($client->status == 'active')
-
               <a href="#" type="button" class="btn btn-success button2" data-toggle="modal" data-target="#addStep">Add Step</a>
-
-            @endif
 
            </div>
 

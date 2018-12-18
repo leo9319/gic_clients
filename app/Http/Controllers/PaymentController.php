@@ -332,7 +332,7 @@ class PaymentController extends Controller
 
         $data['total_amount'] = $payment->opening_fee + $payment->embassy_student_fee + $payment->service_solicitor_fee + $payment->other;
 
-        $data['payment_types'] = PaymentType::where('payment_id', $payment->id)->where('cheque_verified', '!=', 0)->get();
+        $data['payment_types'] = PaymentType::where('payment_id', $payment->id)->where('cheque_verified', '!=', 0)->where('refund_payment', '!=', 1)->get();
 
         return view('payments.show', $data);
     }
@@ -481,6 +481,13 @@ class PaymentController extends Controller
         return view('payments.history', $data);
     }
 
+    public function verification($payment_id)
+    {
+        Payment::find($payment_id)->update(['recheck' => 0]);
+
+        return redirect()->back();
+    }
+
     public function chequeVerification(PaymentType $payment_type, $status)
     {
         PaymentType::find($payment_type->id)->update(['cheque_verified' => $status]);
@@ -522,7 +529,7 @@ class PaymentController extends Controller
         $data['due_date'] = $payment->due_date;
         $data['comments'] = $payment->comments;
 
-        $data['payment_methods'] = PaymentType::where('payment_id', $payment->id)->where('cheque_verified', '!=', 0)->get();
+        $data['payment_methods'] = PaymentType::where('payment_id', $payment->id)->where('cheque_verified', '!=', 0)->where('refund_payment', '!=', 1)->get();
 
         $created_by = User::find($payment->created_by);
         $data['created_by'] = $created_by ? $created_by->name : '';
@@ -552,7 +559,7 @@ class PaymentController extends Controller
             $data['clients'] = User::find($client_ids);
 
         } else {
-            $data['clients'] = User::userRole('client')->get();
+            $data['clients'] = User::userRole('client')->where('status', 'active')->get();
         }
 
         return view('payments.statement', $data);
@@ -903,7 +910,7 @@ class PaymentController extends Controller
     {
         $data['previous'] = URL::to('/dashboard');
         $data['active_class'] = 'payments';
-        $data['clients'] = User::userRole('client')->get();
+        $data['clients'] = User::userRole('client')->where('status', 'active')->get();
         $data['programs'] = Program::all();
 
         $data['bank_accounts'] = [
@@ -973,6 +980,13 @@ class PaymentController extends Controller
         return view('payments.refund_history', $data);
     }
 
+    public function clientRefundDelete($payment_id)
+    {
+        PaymentType::find($payment_id)->delete();
+        
+        return redirect()->back();
+    }
+
     public function clientDues()
     {
         $data['previous'] = URL::to('/dashboard');
@@ -1006,7 +1020,7 @@ class PaymentController extends Controller
 
         $data['program_fee'] = $payment_id->opening_fee + $payment_id->embassy_student_fee + $payment_id->service_solicitor_fee + $payment_id->other;
 
-        $data['payment_types'] = PaymentType::where('payment_id', $payment_id->id)->where('cheque_verified', '!=', 0)->get();
+        $data['payment_types'] = PaymentType::where('payment_id', $payment_id->id)->where('cheque_verified', '!=', 0)->where('refund_payment', '!=', 1)->get();
 
         return view('payments.due_details', $data);
     }
@@ -1170,8 +1184,6 @@ class PaymentController extends Controller
         $data['previous'] = URL::to('/dashboard');
         $data['active_class'] = 'dues';
 
-        
-
         if(Auth::user()->user_role == 'counselor') {
 
             $counselor_id = Auth::user()->id;
@@ -1218,7 +1230,7 @@ class PaymentController extends Controller
 
         // finding the previously paid amount:
 
-        $due['payments'] = PaymentType::where('payment_id', $payment_id)->where('cheque_verified', '!=', 0)->get();
+        $due['payments'] = PaymentType::where('payment_id', $payment_id)->where('cheque_verified', '!=', 0)->where('refund_payment', '!=', 1)->get();
 
         $created_by = User::find($payment->created_by);
         $due['created_by'] = $created_by ? $created_by->name : '';

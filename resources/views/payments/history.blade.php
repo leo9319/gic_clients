@@ -84,7 +84,13 @@
 
             	@foreach($payments as $payment)
 
-                  	<tr>
+              @if($payment)
+
+              <?php $class = ($payment->recheck == 1 ? 'text-danger' : '') ?>
+
+              
+
+                  	<tr class="{{ $class }}">
 
                       <td>{{ Carbon\Carbon::parse($payment->created_at)->format('d-m-y') }}</td>
 
@@ -94,15 +100,15 @@
                         
                   			<a href="{{ route('client.profile', $payment->client_id) }}">
                           
-                  				{{ $payment->userInfo->client_code }}
+                  				{{ $payment->userInfo->client_code ?? 'Client Removed'}}
                           
                   			</a>
                         
                   		</td>
                       
-                  		<td>{{ $payment->userInfo->name }}</td>
+                  		<td>{{ $payment->userInfo->name ?? 'Client Removed'}}</td>
                       
-                  		<td>{{ $payment->programInfo->program_name }}</td>
+                  		<td>{{ $payment->programInfo->program_name ?? ''}}</td>
                       
                   		<td>
 
@@ -132,6 +138,8 @@
                       @endif
 
                   	</tr>
+
+              @endif
 
             	@endforeach
 

@@ -34,6 +34,7 @@
 		      	<br>
 		      	<b>RM:</b><br>
 		      	<b>Counselor:</b><br>
+		      	<br>
 		      </td>
 
 		      <td colspan="4" class="blank">
@@ -46,13 +47,11 @@
 		      	{{ $client->getAdditionalInfo->address }} <br>
 		      	<br>
 
-		      	
 		      	@forelse(json_decode($client->getAdditionalInfo->country_of_choice) as $country)
 		      		{{ ucfirst($country) }} 
 	      		@empty
 	      			N/A
 		      	@endforelse
-		      	
 
 		      	<br>
 		      	{{ $client->created_at }} <br>
@@ -63,42 +62,46 @@
 		      	@empty
 		      		No RM assigned
 		      	@endforelse
-		      	<br>
 
+		      	<br>
 		      	@forelse($counselors as $counselor)
 		      		{{ App\User::find($counselor->counsellor_id) ? App\User::find($counselor->counsellor_id)->name : '' }},
 		      	@empty
 		      		No RM assigned
 		      	@endforelse
 		      	<br>
+		      	<br>
 		      </td>
 
 		      <td colspan="2" class="blank" style="border-left: 1px solid black">
-		      	Total Amount Payable:<br>
+		      	Total Program Costs:<br>
+		      	Total Amount Received:<br>
+		      	Dues:
 		      	<br>
 		      	<br>
-		      	Total Amount Paid:<br>
-		      	(Recieved After Bank Charges:)<br>
-		      	<br>
-		      	Total Dues:<br>
 		      	Refunded:<br>
+		      	Total Received after dues and refund:<br>
 		      	<br>
-		      	Overall Received:<br>
+		      	<br>
+		      	<br>
+		      	<br>
+		      	<br>
 		      	<br>
 		      	<br>
 		      	<br>
 		      </td>
 		      <td colspan="2" class="blank">
 		      	{{ number_format($payable) }}<br>
-		      	<br>
-		      	<br>
 		      	{{ number_format($payment_methods->where('cheque_verified', '!=', 0)->where('refund_payment', 0)->sum('amount_paid')) }}<br>
-		      	{{ number_format($payment_methods->where('cheque_verified', '!=', 0)->where('refund_payment', 0)->sum('amount_received')) }}<br>
+		      	{{ number_format($dues) }}<br>
 		      	<br>
-		      	{{ number_format($dues, 2) }}<br>
 		      	{{ number_format($refunds->sum('amount_paid')) }}<br>
+		      	{{ number_format($payment_methods->where('cheque_verified', '!=', 0)->where('refund_payment', 0)->sum('amount_paid') - $refunds->sum('amount_paid')) }}<br>
 		      	<br>
-		      	{{ number_format($paid, 2) }}<br>
+		      	<br>
+		      	<br>
+		      	<br>
+		      	<br>
 		      	<br>
 		      	<br>
 		      	<br>

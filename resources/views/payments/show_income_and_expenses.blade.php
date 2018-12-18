@@ -159,12 +159,6 @@ var filterByDate = function(column, startDate, endDate) {
 
                         {{ ucfirst($transaction->payment_type) }}
 
-                        @if(isset($transaction->client_id))
-
-                          to {{ App\User::find($transaction->client_id)->name }}
-
-                        @endif
-
                       </td>
 
 

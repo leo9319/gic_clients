@@ -79,9 +79,11 @@
 			<br>
 			<label>Choose Date:</label>
 			<input type="text" name="start_date" id="datepicker" class="form-control">
+			{{-- <input type="date" name="start_date"> --}}
 			<br>
 			<label>Choose Time:</label>
 			<input type="text" name="starttime" class="form-control timepicker">
+			{{-- <input type="time" name=starttime> --}}
 			<br>
 			<input class="btn btn-primary btn-block" type="submit" name="">
 			{{ Form::close() }}

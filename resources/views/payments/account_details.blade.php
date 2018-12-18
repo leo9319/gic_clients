@@ -23,7 +23,8 @@
 
           }
 
-        ]
+        ],
+        "order": [[ 7, "asc" ]]
 
        });
 
@@ -79,6 +80,8 @@
 
                   <th>Amount after Charge</th>
 
+                  <th>Balance</th>
+
                   <th class="text-center">Action</th>
 
                </tr>
@@ -103,6 +106,8 @@
 
                   <th>Amount after Charge</th>
 
+                  <th>Balance</th>
+
                   <th class="text-center">Action</th>
 
                </tr>
@@ -110,15 +115,17 @@
             </tfoot>
 
             <tbody>
+              <?php $sum = 0; ?>
               @foreach($payment_histories as $payment_history)
               <tr>
-                <td>{{ Carbon\Carbon::parse($payment_history->created_at)->format('d-M-y') }}</td>
-                <td>{{ $payment_history->payment->userInfo->name }}</td>
+                <td>{{ Carbon\Carbon::parse($payment_history->created_at)->format('d-m-y') }}</td>
+                <td>{{ $payment_history->payment->userInfo->name ?? 'Client Removed' }}</td>
                 <td>{{ $payment_history->payment->programInfo->program_name }}</td>
                 <td>{{ $payment_history->payment->stepInfo->step_name }}</td>
                 <td>{{ number_format($payment_history->amount_paid) }}</td>
                 <td>{{ $payment_history->bank_charge }} %</td>
                 <td>{{ number_format($payment_history->amount_received) }}</td>
+                <td>{{ number_format($sum = $sum + $payment_history->amount_received) }}</td>
                 <td>
                   <a href="{{ route('payment.show', $payment_history->payment->id) }}" class="btn btn-info btn-sm btn-block button2">View Details</a>
                 </td>

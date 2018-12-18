@@ -34,9 +34,9 @@
 
 					</a>
 
-					<button type="button" class="btn btn-secondary" id="{{ $program->id }}" name="{{ $program->program_name }}" onclick="editProgram(this)"><span class="fa fa-edit fa-lg"></span></button>
+					<button type="button" class="btn btn-secondary button2" id="{{ $program->id }}" name="{{ $program->program_name }}" onclick="editProgram(this)"><span class="fa fa-edit fa-lg"></span></button>
 
-					{{ link_to_route('delete.program', 'Delete', ['program_id' => $program->id], ['class' => 'btn btn-danger']) }}
+					{{ link_to_route('delete.program', 'Delete', ['program_id' => $program->id], ['class' => 'btn btn-danger button2']) }}
 
 				</span>
 
