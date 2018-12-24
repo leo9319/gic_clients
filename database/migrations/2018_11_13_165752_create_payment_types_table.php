@@ -33,6 +33,7 @@ class CreatePaymentTypesTable extends Migration
             $table->tinyInteger('cheque_verified');
             $table->tinyInteger('due_payment')->default(0);
             $table->tinyInteger('refund_payment')->default(0);
+            $table->tinyInteger('recheck')->default(-1);
             $table->timestamps();
         });
     }

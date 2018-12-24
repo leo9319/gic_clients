@@ -15,6 +15,11 @@ class RmClient extends Model
         return $this->hasMany('App\User', 'id', 'rm_id');
     }
 
+    public function user()
+    {
+        return $this->hasOne('App\User', 'id', 'rm_id');
+    }
+
     public static function getAssignedRms($client_id) 
     {
     	return RmClient::where('client_id', '=', $client_id)->get();

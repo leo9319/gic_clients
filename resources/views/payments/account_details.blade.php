@@ -12,36 +12,77 @@
 <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 
 <script>
+$(function() {
 
-   $(document).ready( function () {
+  var $tableSel = $('#account-details');
 
-       $('#account-details').DataTable({
-
-        'columnDefs' : [
-
-          {
-
-          }
-
+  $tableSel.dataTable({
+    "ordering": false,
+     dom: 'Bfrtip',
+        buttons: [
+            'csv',
+            'excel',
+            {
+                extend: 'print',
+                text: 'Print all (not just selected)',
+                exportOptions: {
+                    modifier: {
+                        selected: null
+                    }
+                }
+            },
         ],
-        "order": [[ 7, "asc" ]]
+        select: true
+  });
+  
+  $('#filter').on('click', function(e){
+    e.preventDefault();
+    var startDate = $('#start').val(),
+        endDate = $('#end').val();
+    
+    filterByDate(0, startDate, endDate); // We call our filter function
+    
+    $tableSel.dataTable().fnDraw(); // Manually redraw the table after filtering
+  });
+  
+  // Clear the filter. Unlike normal filters in Datatables,
+  // custom filters need to be removed from the afnFiltering array.
+  $('#clearFilter').on('click', function(e){
+    e.preventDefault();
+    $.fn.dataTableExt.afnFiltering.length = 0;
+    $tableSel.dataTable().fnDraw();
+  });
+  
+});
 
-       });
+var filterByDate = function(column, startDate, endDate) {
+  // Custom filter syntax requires pushing the new filter to the global filter array
+    $.fn.dataTableExt.afnFiltering.push(
+        function( oSettings, aData, iDataIndex ) {
+          var rowDate = normalizeDate(aData[column]),
+              start = normalizeDate(startDate),
+              end = normalizeDate(endDate);
 
-       $('#incomes-expenses').DataTable({
+          
+          // If our date from the row is between the start and end
+          if (start <= rowDate && rowDate <= end) {
+            return true;
+          } else if (rowDate >= start && end === '' && start !== ''){
+            return true;
+          } else if (rowDate <= end && start === '' && end !== ''){
+            return true;
+          } else {
+            return false;
+          }
+        }
+    );
+  };
 
-       	'columnDefs' : [
-
-       		{
-
-       		}
-
-       	]
-
-       });
-
-   });
-
+  var normalizeDate = function(dateString) {
+  var date = new Date(dateString);
+  var normalized = date.getFullYear() + '' + (("0" + (date.getMonth() + 1)).slice(-2)) + '' + ("0" + date.getDate()).slice(-2);
+  return normalized;
+}
 </script>
 
 @stop
@@ -60,6 +101,25 @@
 
 		<div class="panel-footer">
 
+      <table border="0" cellspacing="5" cellpadding="5">
+        <tbody>
+          <tr>
+            <td>Start Date: </td>
+            <td><input type="date" id="start" name="min" class="form-control"></td>
+          </tr>
+          <tr>
+              <td>End Date: </td>
+              <td><input type="date" id="end" name="max" class="form-control"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr>
+
+      <button id="filter" class="btn btn-success btn-sm">Filter</button>
+      <button id="clearFilter" class="btn btn-info btn-sm" class="btn btn-success">Clear Filter</button>
+      <hr>
+
       <table id="account-details" class="table table-striped table-bordered" style="width:100%">
 
             <thead>
@@ -70,15 +130,15 @@
 
                   <th>Client Name</th>
 
-                  <th>Program Name</th>
+                  <th>Type</th>
 
-                  <th>Step Name</th>
+                  <th>Description</th>
 
-                  <th>Recieved</th>
+                  <th>Paid</th>
 
                   <th>Bank Charge</th>
 
-                  <th>Amount after Charge</th>
+                  <th>Received</th>
 
                   <th>Balance</th>
 
@@ -96,15 +156,15 @@
 
                   <th>Client Name</th>
 
-                  <th>Program Name</th>
+                  <th>Type</th>
 
-                  <th>Step Name</th>
+                  <th>Description</th>
 
-                  <th>Recieved</th>
+                  <th>Paid</th>
 
                   <th>Bank Charge</th>
 
-                  <th>Amount after Charge</th>
+                  <th>Received</th>
 
                   <th>Balance</th>
 
@@ -115,21 +175,24 @@
             </tfoot>
 
             <tbody>
+              
               <?php $sum = 0; ?>
-              @foreach($payment_histories as $payment_history)
+              @foreach($payment_breakdowns as $key => $value)
+
+              
+
               <tr>
-                <td>{{ Carbon\Carbon::parse($payment_history->created_at)->format('d-m-y') }}</td>
-                <td>{{ $payment_history->payment->userInfo->name ?? 'Client Removed' }}</td>
-                <td>{{ $payment_history->payment->programInfo->program_name }}</td>
-                <td>{{ $payment_history->payment->stepInfo->step_name }}</td>
-                <td>{{ number_format($payment_history->amount_paid) }}</td>
-                <td>{{ $payment_history->bank_charge }} %</td>
-                <td>{{ number_format($payment_history->amount_received) }}</td>
-                <td>{{ number_format($sum = $sum + $payment_history->amount_received) }}</td>
-                <td>
-                  <a href="{{ route('payment.show', $payment_history->payment->id) }}" class="btn btn-info btn-sm btn-block button2">View Details</a>
-                </td>
+                <td>{{ Carbon\Carbon::parse($value['date'])->format('d-M-y') }}</td>
+                <td>{{ $value['client_name'] }}</td>
+                <td>{{ $value['type'] }}</td>
+                <td>{{ $value['description'] }}</td>
+                <td>{{ number_format(abs($value['paid'])) }}</td>
+                <td>{{ $value['bank_charge'] }}%</td>
+                <td>{{ number_format(abs($value['received'])) }}</td>
+                <td>{{ number_format($sum += $value['received']) }}</td>
+                <td></td>
               </tr>
+
               @endforeach
             </tbody>            
 
@@ -139,71 +202,19 @@
 
   </div>
 
-  <div class="panel">
-
-    <div class="panel-body">
-
-      <h2 class="text-center">Income and Expenses</h2>
-      
-    </div>
-
-    <div class="panel-footer">
-
-			<table id="incomes-expenses" class="table table-striped table-bordered" style="width:100%">
-
-            <thead>
-
-               <tr>
-
-                  <th>Date</th>
-
-                  <th>Type</th>
-
-                  <th>Description</th>
-
-                  <th>Amount</th>
-
-               </tr>
-
-            </thead>
-
-            <tfoot>
-
-               <tr>
-
-                  <th>Date</th>
-
-                  <th>Type</th>
-
-                  <th>Description</th>
-
-                  <th>Amount</th>
-
-               </tr>
-
-            </tfoot>
-
-            <tbody>
-              @foreach($incomes_and_expenses as $income_expense)
-            	<tr>
-                <td>{{ Carbon\Carbon::parse($income_expense->created_at)->format('d-M-y') }}</td>
-                <td>{{ ucfirst($income_expense->payment_type) }}</td>
-                <td>{{ $income_expense->description }}</td>
-                <td>{{ number_format(abs($income_expense->total_amount)) }}</td>
-            	</tr>
-              @endforeach
-            </tbody>            
-
-         </table>
-
-
-
-		</div>
-
-  </div>
-
 	</div>
 
 </div>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
 
 @endsection

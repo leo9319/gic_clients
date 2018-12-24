@@ -169,7 +169,7 @@ class HomeController extends Controller
     {
         $data['rms'] = User::where('user_role', 'rm')->get();
         $data['counselors'] = User::where('user_role', 'counselor')->get();
-        $data['programs'] = Program::all();
+        $data['programs'] = Program::latest('updated_at')->get();
 
         $last_entry = User::userRole('client')->where('client_code', 'like', 'CSM-%')->orderBy('client_code', 'desc')->first();
         
@@ -404,9 +404,9 @@ class HomeController extends Controller
         return response()->json($data);
     }
 
-    public function deletUser($user_id)
+    public function deletUser(Request $request)
     {
-        User::find($user_id)->delete();
+        User::find($request->user_id)->delete();
 
         return redirect()->back();
     }

@@ -91,4 +91,11 @@ class CounselorController extends Controller
     {
         //
     }
+
+    public function removeClient($counselor_client_id)
+    {
+        CounsellorClient::find($counselor_client_id)->delete();
+
+        return redirect()->back();
+    }
 }

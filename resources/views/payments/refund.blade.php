@@ -348,8 +348,8 @@
 
 	function myFunction() {
 		var form = document.getElementById('myForm');
-		var total_amount = document.getElementById('total-amount').value;
-		var refund = document.getElementById('amount').value;
+		var total_amount = parseInt(document.getElementById('total-amount').value);
+		var refund = parseInt(document.getElementById('amount').value);
 
 
 		if(total_amount >= refund) {

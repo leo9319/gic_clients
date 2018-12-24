@@ -48,6 +48,11 @@ class User extends Authenticatable
         return $this->hasMany('App\RmClient', 'client_id');
     }
 
+    public function getAssignedCounselors()
+    {
+        return $this->hasMany('App\CounsellorClient', 'client_id');
+    }
+
     public function totalAmount()
     {
         return $this->hasMany('App\Payment', 'client_id');

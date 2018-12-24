@@ -15,8 +15,16 @@ class TestController extends Controller
     //
     public function index()
     {
-        return view('invoice.test2');
+        $data = ['id' => 12];
+
+        Mail::send('mail.recheck',$data,function ($message) use ($data){
+            $message->from('gic.crm.123@gmail.com', 'GIC');
+            $message->to('leo_9319@yahoo.com');
+            $message->subject('Test');
+
+        });
     }
+
     public function sendMaiToClient($data_of_single_client){
         Mail::send('mail.client',$data_of_single_client,function ($message) use ($data_of_single_client){
             $message->from('s.simab@gmail.com', 'GIC');

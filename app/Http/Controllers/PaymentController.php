@@ -24,6 +24,7 @@ use Auth;
 use PDF;
 use URL;
 use DB;
+use Mail;
 
 
 class PaymentController extends Controller
@@ -456,6 +457,14 @@ class PaymentController extends Controller
         return redirect()->back();
     }
 
+    public function deletePayment(Request $request)
+    {
+
+        Payment::find($request->payment_id)->delete();
+
+        return redirect()->back();
+    }
+
     public function paymentHistory()
     {
         $data['previous'] = URL::to('/dashboard');
@@ -608,6 +617,187 @@ class PaymentController extends Controller
         return redirect()->back();
     }
 
+    public function recheckPaymentType($payment_type_id)
+    {
+        PaymentType::find($payment_type_id)->update(['recheck' => 1]);
+
+        $accountant_email = User::where('user_role', 'accountant')->first()->email;
+
+        $data = [
+            'id' => $payment_type_id,
+            'email' => $accountant_email,
+            'subject' => 'Recheck Payment'
+        ];
+
+        Mail::send('mail.recheck', $data, function($message) use ($data) {
+            $message->from('s.simab@gmail.com', 'Recheck Payment');
+            $message->to($data['email']);
+            $message->subject($data['subject']);
+        });
+
+        return redirect()->back();
+        
+    }
+
+    public function recheckPaymentTypeList()
+    {
+        $data['active_class'] = 'payments';
+        $data['payments_types'] = PaymentType::where('recheck', 1)->get();
+
+        return view('payments.recheck_payment_lists', $data);
+    }
+
+    public function editPaymentType($payment_type_id)
+    {
+        $data['active_class'] = 'payments';
+        $data['payment_type'] = PaymentType::find($payment_type_id);
+
+        return view('payments.edit_payment_type', $data);
+    }
+
+    public function deleteAndReissue(Request $request)
+    {
+
+        $charge = 0;
+        $cheque_verified = 1;
+        $after_charge = 0;
+        $id = Input::get('id');
+        $payment_id = Input::get('payment_id');
+        $payment_type = Input::get('payment_type');
+        $bank_deposited = Input::get('bank_name');
+      
+
+        if($payment_type == 'card') {
+
+            $POS_machine = Input::get('pos_machine_mod');
+            $city_bank = Input::get('city_bank');
+            $card_type = Input::get('card_type');
+
+
+            switch ($POS_machine) {
+
+                case 'city':
+
+                    $bank_deposited = 'scb';
+                    if($card_type == 'amex') {
+                        $charge = 2.5;
+                    } else {
+                        $charge = ($city_bank == 'yes') ? 1 : 2;
+                    }
+                    
+                    break;
+
+                case 'brac':
+
+                    $bank_deposited = 'brac';
+                    $charge = 1.4;
+                    break;
+
+                case 'ebl':
+                    
+                    $bank_deposited = 'ebl';
+                    $charge = 1.5;
+                    break;
+
+                case 'ucb':
+                    
+                    $bank_deposited = 'ucb';
+                    $charge = 1.5;
+                    break;
+
+                case 'dbbl':
+                    
+                    $bank_deposited = 'dbbl';
+                    $charge = 1.5;
+                    break;
+
+                default:
+                // Do nothing
+            }
+
+        } else if($payment_type == 'cheque') {
+
+            $cheque_verified = -1;
+
+        } else if($payment_type == 'bkash_corporate' || $payment_type == 'upay') {
+
+            $charge = 1.5;
+
+        } else if($payment_type == 'bkash_salman') {
+
+            $charge = 2;
+
+        } else {
+
+            // Do nothing
+        }
+
+        $amount_paid = Input::get('total_amount');
+
+        if($charge > 0) {
+            $after_charge = $amount_paid - (($charge / 100) * $amount_paid);
+        } else {
+            $after_charge = $amount_paid;
+        }  
+
+        PaymentType::find($id)->delete();
+ 
+        PaymentType::create([
+            'payment_id' => $payment_id,
+            'payment_type' => $payment_type,
+            'card_type' => Input::get('card_type'),
+            'name_on_card' => Input::get('name_on_card'),
+            'card_number' => Input::get('card_number'),
+            'expiry_date' => Input::get('expiry_date'),
+            'pos_machine' => Input::get('pos_machine_mod'),
+            'approval_code' => Input::get('approval_code'),
+            'phone_number' => Input::get('phone_number'),
+            'cheque_number' => Input::get('cheque_number'),
+            'bank_name' => $bank_deposited,
+            'cheque_verified' => $cheque_verified,
+            'deposit_date' => Input::get('deposit_date'),
+            'due_payment' => $request->due_payment,
+            'bank_charge' => $charge,
+            'amount_paid' => Input::get('total_amount'),
+            'amount_received' => $after_charge,
+        ]);
+
+        return redirect()->route('payment.client.recheck.types.list');
+
+
+    }
+
+    public function updatePaymentType(Request $request)
+    {
+        if($request->bank_charge > 0) {
+            $after_charge = $request->amount_paid - (($request->bank_charge / 100) * $request->amount_paid);
+        } else {
+            $after_charge = $request->amount_paid;
+        }
+
+        PaymentType::find($request->id)->update([
+                'payment_id' => $request->payment_id,
+                'payment_type' => $request->payment_type,
+                'card_type' => $request->card_type,
+                'name_on_card' => $request->name_on_card,
+                'card_number' => $request->card_number,
+                'expiry_date' => $request->expiry_date,
+                'pos_machine' => $request->pos_machine,
+                'approval_code' => $request->approval_code,
+                'phone_number' => $request->phone_number,
+                'cheque_number' => $request->cheque_number,
+                'deposit_date' => $request->deposit_date,
+                'bank_name' => $request->bank_name,
+                'amount_paid' => $request->amount_paid,
+                'amount_received' => $after_charge,
+                'recheck' => 0,
+            ]);
+
+        return redirect()->route('payment.client.recheck.types.list');
+
+        // return $request->all();
+    }
+
     public function bankAccount()
     {
         $data['active_class'] = 'payments';
@@ -615,7 +805,6 @@ class PaymentController extends Controller
         $bank_account_income_expenses = IncomeExpense::where('recheck', 0)->get();
         $bank_account_client = PaymentType::where([
             'cheque_verified' => 1,
-            'refund_payment' => 0,
         ])->get();
 
         $banks = [
@@ -646,12 +835,26 @@ class PaymentController extends Controller
             'kamran account' => 'Kamran Account'
          ];
 
-        foreach ($bank_account_client as $bac_key => $bac_value) {
+        // Calculating the amount without the refunds
+
+        foreach ($bank_account_client->where('refund_payment', '!=', 1) as $bac_key => $bac_value) {
 
             foreach ($banks as $key => $value) {
                 
                 if($bac_value['bank_name'] == $key) {
                     $banks[$key] += $bac_value['amount_received'];
+                }
+            }
+        }
+
+        // Calculating payment with the refunds
+
+        foreach ($bank_account_client->where('refund_payment', '=', 1) as $bac_key => $bac_value) {
+
+            foreach ($banks as $key => $value) {
+                
+                if($bac_value['bank_name'] == $key) {
+                    $banks[$key] -= $bac_value['amount_received'];
                 }
             }
         }
@@ -676,13 +879,51 @@ class PaymentController extends Controller
         $data['previous'] = URL::to('payment/bank/account');
         $data['account'] = $account;
 
-        $data['payment_histories'] = PaymentType::where('bank_name', $account)->where('cheque_verified', 1)->get();
-        $data['incomes_and_expenses'] = IncomeExpense::where([
+        $payment_histories = $data['payment_histories'] = PaymentType::where('bank_name', $account)->where('cheque_verified', 1)->get();
+        $incomes_and_expenses = $data['incomes_and_expenses'] = IncomeExpense::where([
             'bank_name' => $account,
             'recheck' => 0,
         ])->get();
 
-        $data['total_amount'] = $data['payment_histories']->sum('amount_received') + $data['incomes_and_expenses']->sum('total_amount');
+
+        $payment_breakdown = array();
+        $index = 0; 
+
+        foreach ($payment_histories as $key => $value) {
+            $payment_breakdowns[$index]['date'] = $value->created_at;
+            $payment_breakdowns[$index]['client_name'] = (isset($value->payment->userInfo->name)) ? $value->payment->userInfo->name : 'Client Removed';
+            $payment_breakdowns[$index]['type'] = (isset($value->payment->programInfo->program_name)) ? $value->payment->programInfo->program_name : 'Program Removed';
+            
+            if($value->refund_payment == 1) {
+                $payment_breakdowns[$index]['paid'] = -$value->amount_paid;
+                $payment_breakdowns[$index]['received'] = -$value->amount_received;
+                $payment_breakdowns[$index]['description'] = (isset($value->payment->stepInfo->step_name)) ? $value->payment->stepInfo->step_name . '(Refund)': 'Step Removed';
+            } else {
+                $payment_breakdowns[$index]['paid'] = $value->amount_paid;
+                $payment_breakdowns[$index]['received'] = $value->amount_received;
+                $payment_breakdowns[$index]['description'] = (isset($value->payment->stepInfo->step_name)) ? $value->payment->stepInfo->step_name : 'Step Removed';
+            }
+            $payment_breakdowns[$index]['bank_charge'] = $value->bank_charge;
+            
+            $index++;
+        }
+
+        foreach ($incomes_and_expenses as $key => $value) {
+            $payment_breakdowns[$index]['date'] = $value->created_at;
+            $payment_breakdowns[$index]['client_name'] = '';
+            $payment_breakdowns[$index]['type'] = $value->payment_type;
+            $payment_breakdowns[$index]['description'] = $value->description;
+            $payment_breakdowns[$index]['paid'] = $value->total_amount;
+            $payment_breakdowns[$index]['bank_charge'] = 0;
+            $payment_breakdowns[$index]['received'] = $value->total_amount;
+            $index++;
+        }
+
+        $this->array_sort_by_column($payment_breakdowns, 'date');
+
+        $data['payment_breakdowns'] = $payment_breakdowns;
+
+        $data['total_amount'] = $data['payment_histories']->where('refund_payment', '!=', 1)->sum('amount_received') - $data['payment_histories']->where('refund_payment', '=', 1)->sum('amount_received') + $data['incomes_and_expenses']->sum('total_amount');
 
         return view('payments.account_details', $data);
     }
@@ -1140,13 +1381,18 @@ class PaymentController extends Controller
                 'amount_paid' => Input::get('total_amount-' . $i),
                 'amount_received' => $after_charge,
             ]);
-
-            Payment::find($payment_id)->update([
-                'dues' => 0,
-                'due_cleared_date' => Carbon::now(),
-            ]);
             
         }
+
+        $total_amount_paid = Input::get('amount_paid_active');
+        $current_due = Payment::find($payment_id)->dues;
+
+        $updated_due = $current_due - $total_amount_paid;
+
+        Payment::find($payment_id)->update([
+                'dues' => $updated_due,
+                'due_cleared_date' => Carbon::now(),
+            ]);
 
         $payment = Payment::find($payment_id);
 
@@ -1177,40 +1423,51 @@ class PaymentController extends Controller
         // return $pdf->download($client->client_code.'-due-clearance-invoice.pdf');
 
         return redirect()->route('payment.acknowledgement');  
+
     }
 
     public function dueHistory()
     {
-        $data['previous'] = URL::to('/dashboard');
         $data['active_class'] = 'dues';
+        $due_payment_type_ids = PaymentType::select('payment_id')->groupBy('payment_id')->where('due_payment', 1)->pluck('payment_id');
 
         if(Auth::user()->user_role == 'counselor') {
 
             $counselor_id = Auth::user()->id;
             $client_ids = CounsellorClient::where('counsellor_id', $counselor_id)->pluck('client_id');
 
-            $data['due_payments'] = Payment::whereIn('client_id', $client_ids)->whereNotNull('due_cleared_date')->get();
+            $data['due_payments'] = Payment::whereIn('client_id', $client_ids)->orwhereIn('id', $due_payment_type_ids)->get();
 
         } else if(Auth::user()->user_role == 'rm') {
             
             $rm_id = Auth::user()->id;
             $client_ids = RmClient::where('rm_id', $rm_id)->pluck('client_id');
 
-            $data['due_payments'] = Payment::whereIn('client_id', $client_ids)->whereNotNull('due_cleared_date')->get();
+            $data['due_payments'] = Payment::whereIn('client_id', $client_ids)->orwhereIn('id', $due_payment_type_ids)->get();
 
 
         } else {
-            $data['due_payments'] = Payment::whereNotNull('due_cleared_date')->get();
+            $data['due_payments'] = Payment::whereIn('id', $due_payment_type_ids)->get();
         }
 
+        $data['due_payments'] = Payment::whereIn('id', $due_payment_type_ids)->get();
+
         return view('payments.due_payment_history', $data);
+    }
+
+    public function unverifiedCheques()
+    {
+        $data['active_class'] = 'payments';
+        $data['unverified_cheques'] = PaymentType::where('payment_type', 'cheque')->where('cheque_verified', 0)->get();
+
+        return view('payments.unverified_cheques', $data);
     }
 
     public function generateDuePDF($payment_id)
     {
         $due['payment'] = $payment = Payment::find($payment_id);
 
-        $client = User::find($payment->client_id);
+        $client = User::findOrFail($payment->client_id);
         $client_additional_info = ClientFileInfo::where('client_id', $payment->client_id)->first();
 
         $due['name'] = $client->name;
@@ -1247,14 +1504,42 @@ class PaymentController extends Controller
                             'step_id' => $request->step_id,]
                         )->first();
 
-        $data['amount_paid'] = PaymentType::where(
+        $amount_paid_without_refunds = PaymentType::where(
             'payment_id', '=', $payment->id)
         ->where('refund_payment', '!=', 1)
+        ->where('cheque_verified', '=', 1)
         ->sum('amount_paid');
+
+        $refunds = PaymentType::where(
+            'payment_id', '=', $payment->id)
+        ->where('refund_payment', '=', 1)
+        ->sum('amount_paid');
+
+        $data['amount_paid'] = $amount_paid_without_refunds - $refunds;
 
         $data['payment_id'] = $payment->id;
 
         return $data;
+    }
+
+    public function updateChequeInfo(Request $request)
+    {
+        PaymentType::find($request->payment_id)->update([
+            'cheque_number' => $request->cheque_number,
+            'bank_name' => $request->bank_name,
+            'deposit_date' => $request->deposit_date,
+            'cheque_verified' => 0,
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function getChequeInfo(Request $request)
+    {
+        $data = PaymentType::find($request->payment_id);
+        // $data['payment_info'] = PaymentType::find(237);
+
+        return response()->json($data);
     }
 
     public function findingTotalAmount($payment_id)
@@ -1269,6 +1554,16 @@ class PaymentController extends Controller
         $payment_types = PaymentType::where('payment_id', $payment_id)->where('cheque_verified', '!=', 0)->get();
 
         return $payment_types->sum('amount_paid');
+    }
+
+    public function array_sort_by_column(&$array, $column, $direction = SORT_ASC) {
+        $reference_array = array();
+
+        foreach($array as $key => $row) {
+            $reference_array[$key] = $row[$column];
+        }
+
+        array_multisort($reference_array, $direction, $array);
     }
 
 }

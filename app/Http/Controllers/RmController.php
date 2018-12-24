@@ -103,4 +103,11 @@ class RmController extends Controller
         return view('clients.myprograms', $data);
     }
 
+    public function removeClient($rm_client_id)
+    {
+        RmClient::find($rm_client_id)->delete();
+
+        return redirect()->back();
+    }
+
 }

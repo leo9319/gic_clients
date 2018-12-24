@@ -57,10 +57,13 @@ class ReportController extends Controller
 
     public function monthly(Request $request)
     {
-    	$month = $data['month'] = Carbon::parse($request->month)->month; 
+        $data['active_class'] = 'reports';
 
-    	$income_and_expenses =  IncomeExpense::whereMonth('created_at', '=', $month)->get();
-    	$client_payment =  Payment::whereMonth('created_at', '=', $month)->get();
+        $from = $request->start_date;
+        $to = $request->end_date;
+
+    	$income_and_expenses =  IncomeExpense::whereNotIn('payment_type', ['Cash Transfer In', 'Cash Transfer Out'])->whereBetween('created_at', [$from, $to])->get();
+    	$client_payment =  Payment::whereBetween('created_at', [$from, $to])->get();
     	$counter = 0;
     	$data['sum'] = 0;
 
@@ -90,6 +93,20 @@ class ReportController extends Controller
     	asort($reports);
     	$data['reports'] = $reports;
 
+        // return $reports;
+
     	return view('reports.monthly', $data);
+    }
+
+    public function ourCurrentClients(Request $request)
+    {
+        $data['active_class'] = 'reports'; 
+
+        $from = $request->start_date;
+        $to = $request->end_date;
+
+        $data['payments'] = Payment::whereBetween('created_at', [$from, $to])->get();
+
+        return view('reports.our_current_clients', $data);
     }
 }

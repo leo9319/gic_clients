@@ -29,32 +29,26 @@
 		      	<br>
 		      	<b>Address:</b><br>
 		      	<br>
-		      	<b>Country Interested in:</b><br>
 		      	<b>File Opened On:</b><br>
 		      	<br>
 		      	<b>RM:</b><br>
 		      	<b>Counselor:</b><br>
+		      	<br>
 		      	<br>
 		      </td>
 
 		      <td colspan="4" class="blank">
 		      	{{ $client->client_code }} <br>
 		      	{{ $client->name }} <br>
-		      	{{ $client->getAdditionalInfo->spouse_name }} <br>
+		      	{{ $client->getAdditionalInfo->spouse_name ?? 'N/A' }} <br>
 		      	{{ $client->mobile }} <br>
 		      	{{ $client->email }} <br>
 		      	<br>
-		      	{{ $client->getAdditionalInfo->address }} <br>
+		      	{{ $client->getAdditionalInfo->address ?? 'N/A'}} <br>
 		      	<br>
 
-		      	@forelse(json_decode($client->getAdditionalInfo->country_of_choice) as $country)
-		      		{{ ucfirst($country) }} 
-	      		@empty
-	      			N/A
-		      	@endforelse
-
 		      	<br>
-		      	{{ $client->created_at }} <br>
+		      	{{ Carbon\Carbon::parse($client->created_at)->format('jS F, Y') }} <br>
 		      	<br>
 
 		      	@forelse($rms as $rm)
@@ -67,7 +61,7 @@
 		      	@forelse($counselors as $counselor)
 		      		{{ App\User::find($counselor->counsellor_id) ? App\User::find($counselor->counsellor_id)->name : '' }},
 		      	@empty
-		      		No RM assigned
+		      		No Counselor assigned
 		      	@endforelse
 		      	<br>
 		      	<br>

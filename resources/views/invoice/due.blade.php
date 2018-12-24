@@ -196,7 +196,11 @@
             </tr>
             @foreach($payments as $payment)
             <tr id="hiderow">
-                <td>{{ ucfirst($payment->payment_type) }}</td>
+                @if($payment_method->payment_type == 'bkash_salman' || $payment_method->payment_type == 'bkash_corporate')
+                <td>bKash</td>
+                @else
+                <td>{{ ucfirst($payment_method->payment_type) }}</td>
+                @endif
                 <td>{{ number_format($payment->amount_paid) }}</td>
             </tr>
             @endforeach

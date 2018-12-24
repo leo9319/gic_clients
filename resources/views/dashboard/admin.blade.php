@@ -12,6 +12,8 @@
 
       <div class="panel-heading">
 
+         {{-- <span class="h3">Overview | </span><span>{{ Carbon\Carbon::now()->format('jS F, Y') }}</span> --}}
+
          <h3 class="panel-title">Overview</h3>
 
          <p class="panel-subtitle">{{ Carbon\Carbon::now()->format('jS F Y') }}</p>
@@ -97,7 +99,7 @@
 
    <div class="row">
 
-      <div class="col-md-6">
+      <div class="col-md-12">
 
          <div class="panel">
 
@@ -193,6 +195,12 @@
 
       </div>
 
+   </div>
+
+   <div class="row">
+
+      {{-- Recent File Opened --}}
+
       <div class="col-md-6">
 
          <div class="panel">
@@ -273,10 +281,6 @@
 
       </div>
 
-   </div>
-
-   <div class="row">
-
       <!-- Upcoming Appointments -->
 
       <div class="col-md-6">
@@ -335,7 +339,7 @@
 
       <!-- Number of Clients -->
 
-      <div class="col-md-6">
+      <div class="col-md-12">
 
          <div class="panel">
 

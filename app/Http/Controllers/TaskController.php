@@ -34,7 +34,7 @@ class TaskController extends Controller
     public function index()
     {
         $data['active_class'] = 'tasks'; 
-        $data['programs'] = Program::all();
+        $data['programs'] = Program::latest('updated_at')->get();
 
         $data['previous'] = URL::to('/dashboard');
 

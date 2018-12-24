@@ -91,13 +91,13 @@
 
 			<br>
 
-			<label>Embassy/Student fee:</label>
+			<label>Lawyer Fees/ Service Charges:</label>
 
 			<input type="number" id="embassy-student-fee" class="form-control" placeholder="Embassy/Student fee" onkeyup="sumOfTotal()" name="embassy_student_fee">
 
 			<br>
 
-			<label>Service / Solicitor Charge:</label>
+			<label>Government / Third party fees:</label>
 
 			<input type="number" id="service-solicitor-fee" class="form-control" placeholder="Service / Solicitor Charge" name="service_solicitor_fee" onkeyup="sumOfTotal()">
 
@@ -109,7 +109,7 @@
 
 			<br>
 
-			<label>Comment:</label>
+			<label>Notes:</label>
 			<textarea class="form-control" name="comments"></textarea>
 
 			<br>

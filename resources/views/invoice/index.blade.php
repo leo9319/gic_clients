@@ -181,9 +181,9 @@
                 <th>Programs</th>
                 <th>Step Name</th>
                 <th>Initial Assessment fee</th>
-                <th>Embassy/Student fee</th>
-                <th>Service / Solicitor Charge</th>
-                <th>Other fee</th>
+                <th>Lawyer Fees/ Service Charges</th>
+                <th>Government / Third party fees</th>
+                <th>Other Fees</th>
                 <th>Due</th>
                 <th>Amount Paid</th>
             </tr>
@@ -208,14 +208,19 @@
             </tr>
             @foreach($payment_methods as $payment_method)
             <tr id="hiderow">
+                @if($payment_method->payment_type == 'bkash_salman' || $payment_method->payment_type == 'bkash_corporate')
+                <td>bKash</td>
+                @else
                 <td>{{ ucfirst($payment_method->payment_type) }}</td>
+                @endif
+                
                 <td>{{ number_format($payment_method->amount_paid) }}</td>
             </tr>
             @endforeach
         </table>
 
         <div>
-            <h4>Comments:</h4>
+            <h4>Notes:</h4>
             <p>{{ $comments }}</p>
         </div>
 

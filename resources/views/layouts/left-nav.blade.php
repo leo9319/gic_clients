@@ -262,6 +262,17 @@
                            <span>Client Payment History</span></a>
                      </li>
 
+                     <li>
+                        <a href="{{ route('payment.client.unverified.cheques') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Unverified Cheques</span></a>
+                     </li>
+                     <li>
+                        <a href="{{ route('payment.client.recheck.types.list') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Recheck Payments</span></a>
+                     </li>
+
                      {{-- View only available to Counselor or RM --}}
 
                      @if(Auth::user()->user_role == 'accountant')

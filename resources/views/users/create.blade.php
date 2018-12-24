@@ -135,7 +135,7 @@
                             <div class="col-md-6">
                                 <div class="checkbox-group required">
                                     @foreach($programs as $program)
-                                        <div class="col-md-6">
+                                        <div class="col-md-6" style="font-size: 9pt">
                                             <input type="checkbox" name="programs[]" value="{{ $program->id }}"> {{ $program->program_name }}
                                         </div>
                                     @endforeach
@@ -144,7 +144,7 @@
                             
                         </div>
 
-                        <div class="form-group">
+                        {{-- <div class="form-group">
                             <label for="programs" class="col-md-3 control-label">Country of Choice</label>
 
                             <div class="col-md-6">
@@ -156,7 +156,7 @@
                                 </div>
                             </div>
                             
-                        </div>
+                        </div> --}}
 
                         <div class="form-group">
                             <label for="rm" class="col-md-3 control-label">Relation Manager</label>

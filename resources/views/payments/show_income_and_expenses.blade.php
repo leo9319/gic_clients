@@ -21,7 +21,34 @@ $(function() {
 
   var $tableSel = $('#example');
   $tableSel.dataTable({
-    "order": [[ 5, "asc" ]]
+    "order": [[ 5, "asc" ]],
+    dom: 'Bfrtip',
+        buttons: [
+            'csv',
+            'excel',
+            {
+                extend: 'print',
+                text: 'Print all (not just selected)',
+                exportOptions: {
+                    modifier: {
+                        selected: null
+                    }
+                }
+            },
+            {
+                text: 'Select all',
+                action: function () {
+                    this.rows().select();
+                }
+            },
+            {
+                text: 'Select none',
+                action: function () {
+                    this.rows().deselect();
+                }
+            }
+        ],
+        select: true
   });
   
   $('#filter').on('click', function(e){
@@ -384,5 +411,16 @@ var filterByDate = function(column, startDate, endDate) {
   }
 
 </script>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
 
 @endsection

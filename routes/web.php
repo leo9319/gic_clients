@@ -33,6 +33,11 @@ Route::resources([
 
 
 
+Route::get('/counselors/remove/client/{counselor_client_id}', 'CounselorController@removeClient')->name('remove.counselor.client');
+Route::get('/rms/remove/client/{rm_client_id}', 'RmController@removeClient')->name('remove.rm.client');
+
+
+
 
 
 Route::get('test', 'TestController@index')->name('test');
@@ -123,7 +128,7 @@ Route::post('users/{id}', 'HomeController@updateUserRole')->name('users.update.r
 Route::post('update-staff', 'HomeController@customStaffRegisterUpdate')->name('staff.update');
 Route::post('register-staff', 'HomeController@customStaffRegisterStore')->name('staff.store');
 Route::get('getUserInformation', 'HomeController@getUserInformation');
-Route::get('user/delete/{user_id}', 'HomeController@deletUser')->name('delete.user');
+Route::post('user/delete/', 'HomeController@deletUser')->name('delete.user');
 
 
 
@@ -251,8 +256,20 @@ Route::post('payment/client/dues/payment/store', 'PaymentController@storeDuePaym
 Route::get('payment/client/dues/history', 'PaymentController@dueHistory')->name('payment.client.dues.history');
 Route::get('payment/client/dues/pdf/{payment_id}', 'PaymentController@generateDuePDF')->name('payment.client.dues.pdf');
 Route::get('payment/client/payment/recheck/{payment_id}', 'PaymentController@recheckPayment')->name('payment.client.payment.recheck');
+Route::get('payment/client/unverified/cheque', 'PaymentController@unverifiedCheques')->name('payment.client.unverified.cheques');
+Route::get('payment/client/recheck/{payment_type_id}', 'PaymentController@recheckPaymentType')->name('payment.client.recheck.payment_type');
+Route::get('payment/client/recheck/types/list', 'PaymentController@recheckPaymentTypeList')->name('payment.client.recheck.types.list');
+
+Route::get('payment/client/edit/types/{payment_type_id}', 'PaymentController@editPaymentType')->name('payment.client.edit.types.list');
+Route::post('payment/client/update/types/', 'PaymentController@updatePaymentType')->name('payment.client.update.type');
+Route::post('payment/client/delete/reissue/', 'PaymentController@deleteAndReissue')->name('payment.client.delete.and.reissue');
+
+Route::post('payment/delete/payment', 'PaymentController@deletePayment')->name('payment.delete');
+
+Route::post('payment/update/cheque-info', 'PaymentController@updateChequeInfo')->name('payment.update.cheque.info');
 
 Route::get('getClientPaymentId', 'PaymentController@getClientPaymentId');
+Route::get('getChequeInfo', 'PaymentController@getChequeInfo');
 
 
 
@@ -287,6 +304,7 @@ Route::get('thank-you', function () {
 Route::get('reports', 'ReportController@index')->name('reports.index');
 Route::get('reports/profit/loss', 'ReportController@profitAndLoss')->name('reports.profit.loss');
 Route::post('reports/monthly', 'ReportController@monthly')->name('reports.monthly');
+Route::post('reports/our-current-clients', 'ReportController@ourCurrentClients')->name('reports.our_current_clients');
 
 
 

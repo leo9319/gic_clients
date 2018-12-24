@@ -1,53 +1,133 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Monthly Report</title>
-	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
-  <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.js"></script>
-</head>
-<body>
-<div class="container">
-	<div class="jumbotron">
-		<h1 class="text-center">{{ date("F",mktime(0,0,0,$month,1,2011)) }}</h1>
-	</div>
+@extends('layouts.master')
 
-	<div class="row">
-		<div class="col-md-12">
-			<h3 class="text-center">All Incomes and Expenses</h3>
-			<hr>
-			<table style="width:100%">
-			  <tr>
-			    <th>Date</th>
-			    <th>Description</th>
-			    <th>Type</th>
-			    <th>Bank</th>
-			    <th>Amount</th>
-			  </tr>
-			  @foreach($reports as $key => $value)
-			  <tr>
-			    <td>{{ $value['date'] }}</td>
-			    <td>{{ $value['description'] }}</td>
-			    <td>{{ $value['type'] }}</td>
-			    <td>{{ $value['bank'] }}</td>
-			    <td>{{ number_format($value['amount']) }}</td>
-			  </tr>
-			  @endforeach
-			  <tr>
-			  	<td></td>
-			  	<td></td>
-			  	<td></td>
-			  	<td></td>
-			  	<td><b>{{ number_format($sum) }}</b></td>
-			  </tr>
-			</table>
-			<hr>
+@section('title', 'Profit and Loss')
+
+@section('content')
+
+@section('header_scripts')
+
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+<script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+@stop
+
+<div class="container-fluid">
+
+	<div class="panel">
+
+		<div class="panel-body">
+
+			<h2>Profit and Loss Statement</h2>
+
 		</div>
+
+		<div class="panel-footer">
+
+			<table id="current_clients" class="table table-striped table-bordered" style="width:100%">
+
+            <thead>
+
+				<tr>
+
+					<th>Date</th>
+					<th>Description</th>
+					<th>Type</th>
+					<th>Bank</th>
+					<th>Amount</th>
+
+				</tr>
+
+            </thead>
+
+            <tbody>
+
+
+				@foreach($reports as $key => $value)
+				  <tr>
+				    <td>{{ $value['date'] }}</td>
+				    <td>{{ $value['description'] }}</td>
+				    <td>{{ $value['type'] }}</td>
+				    <td>{{ $value['bank'] }}</td>
+				    <td>{{ number_format($value['amount']) }}</td>
+				  </tr>
+			  @endforeach
+
+
+            </tbody>
+
+            <tfoot>
+
+               <tr>
+
+					<th>Date</th>
+					<th>Description</th>
+					<th>Type</th>
+					<th>Bank</th>
+					<th>Amount</th>
+
+               </tr>
+
+            </tfoot>
+
+         </table>
+
+		</div>
+
 	</div>
 
 </div>
-</body>
-</html>
+
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
+
+<script>
+
+   $(document).ready( function () {
+
+       var table = $('#current_clients').DataTable({
+
+       	dom: 'Bfrtip',
+        buttons: [
+            'csv',
+            'excel',
+            {
+                extend: 'print',
+                text: 'Print all (not just selected)',
+                exportOptions: {
+                    modifier: {
+                        selected: null
+                    }
+                }
+            },
+            {
+                text: 'Select all',
+                action: function () {
+                    table.rows().select();
+                }
+            },
+            {
+                text: 'Select none',
+                action: function () {
+                    table.rows().deselect();
+                }
+            }
+        ],
+        select: true
+    } );
+} );
+
+</script>
+
+
+
+@endsection
+

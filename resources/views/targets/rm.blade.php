@@ -44,7 +44,7 @@
                   <tr>
                      <th>{{ $index + 1 }}</th>
                      <th>{{ $rm->name }}</th>
-                     <th><a href="{{ route('set.target', $rm->id) }}"><button class="btn btn-primary button2">Set/View Targets</button></a></th>
+                     <th><a href="{{ route('set.target', $rm->id) }}"><button class="btn btn-primary btn-block button2">Set/View Targets</button></a></th>
                   </tr>
                @endforeach
             </tbody>

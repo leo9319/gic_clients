@@ -101,6 +101,7 @@ input[type="number"] {
 
 				<label>Amount Paid:</label>
 				<input type="text" name="amount_paid" id="amount-paid" class="form-control" value="0" disabled="disabled">
+				<input type="hidden" name="amount_paid_active" id="amount-paid-active">
 				
 			</div>
 
@@ -287,6 +288,7 @@ input[type="number"] {
 		}
 
 		document.getElementById('amount-paid').value = total;
+		document.getElementById('amount-paid-active').value = total;
 
 	}
 

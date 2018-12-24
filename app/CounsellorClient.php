@@ -11,7 +11,12 @@ class CounsellorClient extends Model
 	
     public function users()
     {
-    	return $this->hasMany('App\User', 'id', 'counsellor_id');
+        return $this->hasMany('App\User', 'id', 'counsellor_id');
+    }
+
+    public function user()
+    {
+        return $this->hasOne('App\User', 'id', 'counsellor_id');
     }
 
     public function clients()

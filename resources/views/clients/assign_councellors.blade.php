@@ -26,6 +26,7 @@
 			      <th scope="col">Name</th>
 			      <th scope="col">Mobile</th>
 			      <th scope="col">Email</th>
+			      <th scope="col">Action</th>
 			    </tr>
 			  </thead>
 			  <tbody>
@@ -36,6 +37,7 @@
 				      <td>{{ $user->name }}</td>
 				      <td>{{ $user->mobile }}</td>
 				      <td>{{ $user->email }}</td>
+				      <td><a href="{{ route('remove.counselor.client', $assigned_councelors->id) }}" class="btn btn-danger btn-sm button2">Remove</a></td>
 				    </tr>
 				    @endforeach
 			    @endforeach

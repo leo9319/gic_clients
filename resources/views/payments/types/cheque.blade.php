@@ -30,11 +30,15 @@
 
 <main>
 
-<h2 class="name">Card Information:</h2>
+<h2 class="name">Cheque Information:</h2>
 <hr>
 
 <table align="left">
   <tbody>
+    <tr>
+      <td>Deposit Date:</td>
+      <td>{{ Carbon\Carbon::parse($payment_info->deposit_date)->format('d-M-y') }}</td>
+    </tr>
     <tr>
       <td>Cheque Number:</td>
       <td>{{ strtoupper($payment_info->cheque_number) }}</td>

@@ -112,7 +112,9 @@ $(document).ready( function () {
 
               <button type="button" class="btn btn-secondary" id="{{ $user->id }}" onclick="editUser(this)"><span class="fa fa-edit fa-xs"></span></button>
 
-              <a href="{{ route('delete.user',  $user->id) }}" type="button" class="btn btn-danger"><span class="fa fa-trash fa-xs"></span></a>
+              {{-- <a href="{{ route('delete.user',  $user->id) }}" type="button" class="btn btn-danger"><span class="fa fa-trash fa-xs"></span></a> --}}
+
+              <button type="button" class="btn btn-danger btn-sm" id="{{ $user->id }}" onclick="deleteClient(this)"><span class="fa fa-trash fa-xs"></span></button>
 
             </td>
 
@@ -334,6 +336,32 @@ $(document).ready( function () {
 
 @section('footer_scripts')
 
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Warning!</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this user?</p>
+        {{ Form::open(['route' => 'delete.user']) }}
+
+          {{ Form::hidden('user_id', null, ['id'=>'user-id']) }}
+        
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-default">Yes</button>
+        {{ Form::close() }}
+        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
 <script type="text/javascript">
   
   function editUser(elem) {
@@ -368,6 +396,11 @@ $(document).ready( function () {
 
     $("#editUserModal").modal();
 
+  }
+
+  function deleteClient(elem){
+    document.getElementById('user-id').value = elem.id
+    $('#myModal').modal();
   }
 
 </script>

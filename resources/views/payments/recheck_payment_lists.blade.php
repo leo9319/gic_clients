@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Due Payment History')
+@section('title', 'Recheck Payments')
 
 @section('content')
 
@@ -13,7 +13,7 @@
 
    $(document).ready( function () {
 
-       var table = $('#due-payment-history').DataTable({
+       $('#recheck-payments').DataTable({
 
        	dom: 'Bfrtip',
         buttons: [
@@ -31,13 +31,13 @@
             {
                 text: 'Select all',
                 action: function () {
-                    table.rows().select();
+                    this.rows().select();
                 }
             },
             {
                 text: 'Select none',
                 action: function () {
-                    table.rows().deselect();
+                    this.rows().deselect();
                 }
             }
         ],
@@ -57,73 +57,68 @@
 
 		<div class="panel-body">
 
-			<h2>Due Payment History</h2>
+			<h2>Recheck Payments</h2>
 
 		</div>
 
 		<div class="panel-footer">
 
-			<table id="due-payment-history" class="table table-striped table-bordered" style="width:100%">
+			<table id="recheck-payments" class="table table-striped table-bordered" style="width:100%">
 
             <thead>
 
                <tr>
-
-                  <th>Date</th>
-
-                  <th>Client Code.</th>
-
-                  <th>Client Name</th>
-
-                  <th>Program</th>
-
-                  <th>Step</th>
-
-                  <th>Due Paid</th>
-
-                  <th>Remaining Due</th>
-
-                  <th>Generate Invoice</th>
-
+                <th>ID</th>
+               	<th>Date</th>
+               	<th>Client Code</th>
+               	<th>Client Name</th>
+               	<th>Payment Type</th>
+               	<th>Deposited To</th>
+               	<th>Amount Paid</th>
+               	<th>Bank Charge</th>
+               	<th>Amount Received</th>
+               	<th>Action</th>
                </tr>
 
             </thead>
 
             <tbody>
-              @foreach($due_payments as $due_payment)
-              <tr>
-                <td>{{ Carbon\Carbon::parse($due_payment->due_cleared_date)->format('d-M-y') }}</td>
-                <td>{{ $due_payment->userInfo->client_code ?? 'Client Removed' }}</td>
-                <td>{{ $due_payment->userInfo->name ?? 'Client Removed' }}</td>
-                <td>{{ $due_payment->programInfo->program_name }}</td>
-                <td>{{ $due_payment->stepInfo->step_name }}</td>
-                <td>{{ number_format($due_payment->totalPayment->where('due_payment', 1)->sum('amount_paid')) }}</td>
-                <td>{{ number_format($due_payment->dues) }}</td>
-                <td><a href="{{ route('payment.client.dues.pdf', $due_payment->id) }}" class="btn btn-primary btn-sm button button2">Generate Invoice</a></td>
-              </tr>
-              @endforeach
+
+            	@foreach($payments_types as $payments_type)
+
+            	<tr>
+                <td>{{ $payments_type->id }}</td>
+            		<td>{{ Carbon\Carbon::parse($payments_type->created_at)->format('d-M-y') }}</td>
+            		<td>{{ $payments_type->payment->userInfo->client_code ?? 'Client Removed' }}</td>
+            		<td>{{ $payments_type->payment->userInfo->name ?? 'Client Removed' }}</td>
+            		<td>{{ ucfirst($payments_type->payment_type) }}</td>
+            		<td>{{ strtoupper($payments_type->bank_name) }}</td>
+            		<td>{{ number_format($payments_type->amount_paid) }}</td>
+            		<td>{{ $payments_type->bank_charge }}%</td>
+            		<td>{{ number_format($payments_type->amount_paid) }}</td>
+            		<td>
+            			<a href="{{ route('payment.client.edit.types.list', $payments_type->id) }}"><i class="fa fa-edit"></i></a>
+            			<a href="{{ route('payment.structure.client', [$payments_type->id, $payments_type->payment_type]) }}"><i class="fa fa-search-plus"></i></a>
+            		</td>
+            	</tr>
+
+            	@endforeach
+
             </tbody>
 
             <tfoot>
 
                <tr>
-
-                  <th>Date</th>
-
-                  <th>Client Code.</th>
-
-                  <th>Client Name</th>
-
-                  <th>Program</th>
-
-                  <th>Step</th>
-
-                  <th>Due Paid</th>
-
-                  <th>Remaining Due</th>
-
-                  <th>Generate Invoice</th>
-
+                <th>ID</th>
+               	<th>Date</th>
+               	<th>Client Code</th>
+               	<th>Client Name</th>
+               	<th>Payment Type</th>
+               	<th>Deposited To</th>
+               	<th>Amount Paid</th>
+               	<th>Bank Charge</th>
+               	<th>Amount Received</th>
+               	<th>Action</th>
                </tr>
 
             </tfoot>
