@@ -22,9 +22,9 @@ class Payment extends Model
 
     public function stepInfo()
     {
-    	return $this->hasOne('App\Step', 'id', 'step_id');
+        return $this->hasOne('App\Step', 'id', 'step_id');
     }
-
+    
     public function totalPayment()
     {
     	return $this->hasMany('App\PaymentType');

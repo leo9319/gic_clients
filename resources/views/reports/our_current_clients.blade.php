@@ -108,16 +108,17 @@
 
                <tr>
 
-                  <th>Name</th>
-				  <th>Phone</th>
-				  <th>Program</th>
-				  <th>Step</th>
-				  <th>Amount</th>
-				  <th>Step Payment Date</th>
-				  <th>Due</th>
-				  <th>Due Clear Date</th>
-				  <th>Counselor</th>
-				  <th>Rm</th>
+                    <th>Date</th>
+					<th>Name</th>
+					<th>Phone</th>
+					<th>Program</th>
+					<th>Step</th>
+					<th>Amount</th>
+					<th>Step Payment Date</th>
+					<th>Due</th>
+					<th>Due Clear Date</th>
+					<th>Counselor</th>
+					<th>Rm</th>
 
                </tr>
 

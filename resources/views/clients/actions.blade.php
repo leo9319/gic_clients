@@ -22,6 +22,11 @@
 		background-color: #FFD828;
 		color: black;
 	}
+
+	.btn-majenta {
+		background-color: #FF384A;
+		color: black;
+	}
 </style>
 
 @section('content')
@@ -72,6 +77,10 @@
 				</div>
 
 				@endif
+
+				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px">
+					<a href="#" class="btn btn-majenta btn-block button2">Payment Notes</a>
+				</div>
 			</div>
 		</div>
 	</div>

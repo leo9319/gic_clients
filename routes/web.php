@@ -128,7 +128,7 @@ Route::post('users/{id}', 'HomeController@updateUserRole')->name('users.update.r
 Route::post('update-staff', 'HomeController@customStaffRegisterUpdate')->name('staff.update');
 Route::post('register-staff', 'HomeController@customStaffRegisterStore')->name('staff.store');
 Route::get('getUserInformation', 'HomeController@getUserInformation');
-Route::post('user/delete/', 'HomeController@deletUser')->name('delete.user');
+Route::post('user/delete', 'HomeController@deletUser')->name('delete.user');
 
 
 

@@ -19,7 +19,9 @@
 $(function() {
 
   var $tableSel = $('#payment-history');
-  $tableSel.dataTable();
+  $tableSel.dataTable({
+    "ordering": false
+  });
   
   $('#filter').on('click', function(e){
     e.preventDefault();

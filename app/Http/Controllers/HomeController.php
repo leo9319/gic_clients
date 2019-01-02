@@ -135,7 +135,7 @@ class HomeController extends Controller
             $data['recent_clients'] = Payment::orderBy('created_at', 'desc')->limit(5)->get();
             $data['appointments'] = Appointment::limit(5)->where('app_date', '>', Carbon::now())->get();
             $data['targets'] = Target::limit(5)->orderBy('month_year', 'asc')->get();
-            $data['payments'] = Payment::limit(5)->get();
+            $data['payments'] = Payment::latest('created_at')->limit(5)->get();
 
             return view('dashboard.admin', $data);
         }
@@ -177,7 +177,7 @@ class HomeController extends Controller
         if($last_entry != NULL) {
 
             $last_code = preg_replace("/[^0-9\.]/", '', $last_entry->client_code);
-            $data['client_code'] = 'CSM-' . ($last_code + 1);
+            $data['client_code'] = 'CSM-' . sprintf('%06d', ($last_code + 1));
         }
         else {
             $data['client_code'] = 'CSM-000001'; 

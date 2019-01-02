@@ -459,6 +459,7 @@ class PaymentController extends Controller
 
     public function deletePayment(Request $request)
     {
+        PaymentType::where('payment_id', $request->payment_id)->delete();
 
         Payment::find($request->payment_id)->delete();
 
@@ -1458,7 +1459,7 @@ class PaymentController extends Controller
     public function unverifiedCheques()
     {
         $data['active_class'] = 'payments';
-        $data['unverified_cheques'] = PaymentType::where('payment_type', 'cheque')->where('cheque_verified', 0)->get();
+        $data['unverified_cheques'] = PaymentType::where('payment_type', 'cheque')->where('cheque_verified', '!=', '1')->get();
 
         return view('payments.unverified_cheques', $data);
     }

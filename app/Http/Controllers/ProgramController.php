@@ -106,6 +106,7 @@ class ProgramController extends Controller
     {
         $data = DB::table('client_programs AS CP')
                 ->join('programs AS P', 'P.id', '=', 'CP.program_id')
+                ->where('P.program_name', 'like', '%latest%')
                 ->select('P.program_name AS program_name', DB::raw('COUNT(CP.program_id) AS total'))
                 ->groupBy('CP.program_id', 'P.program_name')
                 ->get();

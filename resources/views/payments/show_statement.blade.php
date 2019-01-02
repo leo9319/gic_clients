@@ -27,7 +27,8 @@
 		      	<b>Mobile:</b><br>
 		      	<b>Email:</b><br>
 		      	<br>
-		      	<b>Address:</b><br>
+		      	<b>Address:</b>
+		      	<br>
 		      	<br>
 		      	<b>File Opened On:</b><br>
 		      	<br>
@@ -46,8 +47,6 @@
 		      	<br>
 		      	{{ $client->getAdditionalInfo->address ?? 'N/A'}} <br>
 		      	<br>
-
-		      	<br>
 		      	{{ Carbon\Carbon::parse($client->created_at)->format('jS F, Y') }} <br>
 		      	<br>
 
@@ -63,6 +62,7 @@
 		      	@empty
 		      		No Counselor assigned
 		      	@endforelse
+		      	<br>
 		      	<br>
 		      	<br>
 		      </td>

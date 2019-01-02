@@ -138,7 +138,7 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Bank Charge</th>
 
-                  <th>Received</th>
+                  <th>Amount</th>
 
                   <th>Balance</th>
 
@@ -164,7 +164,7 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Bank Charge</th>
 
-                  <th>Received</th>
+                  <th>Amount</th>
 
                   <th>Balance</th>
 

@@ -84,7 +84,12 @@ class ReportController extends Controller
     		$reports[$counter]['description'] = Program::find($cp_value['program_id'])->program_name;
     		$reports[$counter]['type'] = Step::find($cp_value['step_id'])->step_name;
     		$reports[$counter]['bank'] = 'N/A';
-    		$reports[$counter]['amount'] = PaymentType::where('payment_id', $cp_value['id'])->sum('amount_received');
+            $without_refunds = PaymentType::where('payment_id', $cp_value['id'])->where('cheque_verified', 1)->where('refund_payment', 0)->sum('amount_received');
+    		$with_refunds = PaymentType::where('payment_id', $cp_value['id'])->where('cheque_verified', 1)->where('refund_payment', 1)->sum('amount_received');
+
+            $reports[$counter]['amount'] = $without_refunds - $with_refunds;
+
+
     		$data['sum'] += PaymentType::where('payment_id', $cp_value['id'])->sum('amount_received');;
 
     		$counter++;

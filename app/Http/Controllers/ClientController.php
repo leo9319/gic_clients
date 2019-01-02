@@ -570,6 +570,7 @@ class ClientController extends Controller
 
     public function clientUpdate(Request $request)
     {
+        $client_id = User::where('client_code', $request->client_code)->first()->id;
 
         User::where('client_code', $request->client_code)->update([
             'name' => $request->name,
@@ -578,18 +579,16 @@ class ClientController extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect()->back();
+        DB::table('client_file_infos')->where('client_id', $client_id)->update([
+            'spouse_name' => $request->spouse_name,
+            'address' => $request->address,
+        ]);
+
+        return redirect()->back()->with('message', 'Client details has been updated!');
     }
 
     public function getClientName(Request $request)
     {
-        // $data = DB::table('users AS U')
-        //         ->join('client_programs AS CP', 'CP.client_id', '=', 'U.id')
-        //         ->join('programs AS P', 'P.id', '=', 'CP.program_id')
-        //         ->select('CP.program_id', 'P.program_name', 'U.name', 'U.id')
-        //         ->where('U.id', $request->client_id)
-        //         ->get();
-
         $data = User::find($request->client_id);
 
         return response()->json($data);
