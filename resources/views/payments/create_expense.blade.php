@@ -67,7 +67,15 @@
 
 				{!! Form::label('Description:') !!}
 			
-				{!! Form::textarea('description', null, ['class' => 'form-control']) !!}
+				{!! Form::textarea('description', null, ['class' => 'form-control', 'rows'=>3]) !!}
+
+			</div>
+
+			<div class="form-group">
+
+				{!! Form::label('Location:') !!}
+			
+				{!! Form::select('location', ['dhaka' => 'Dhaka', 'chittagong' => 'Chittagong'], null, ['class' => 'form-control']) !!}
 
 			</div>
 

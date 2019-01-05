@@ -19,6 +19,7 @@ class CreateIncomeExpensesTable extends Migration
             $table->string('payment_type');
             $table->integer('total_amount');
             $table->string('bank_name');
+            $table->string('location')->nullable();
             $table->tinyInteger('recheck');
             $table->text('description');
             $table->integer('created_by');

@@ -156,7 +156,9 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Description</th>
 
-                  <th>Desosited to</th>
+                  <th>Deposited to</th>
+
+                  <th>Location</th>
 
                   @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
 
@@ -194,6 +196,7 @@ var filterByDate = function(column, startDate, endDate) {
                       <td>{{ number_format(abs($transaction->total_amount)) }}</td>
                       <td>{{ $transaction->description }}</td>
                       <td>{{ strtoupper($transaction->bank_name) }}</td>
+                      <td>{{ ucfirst($transaction->location) }}</td>
 
                       @if(Auth::user()->user_role == 'admin')
 
@@ -268,7 +271,9 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Description</th>
 
-                  <th>Desosited to</th>
+                  <th>Deposited to</th>
+
+                  <th>Location</th>
 
                   @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
 

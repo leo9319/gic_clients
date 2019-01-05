@@ -106,7 +106,7 @@ $(function() {
     var startDate = $('#start').val(),
         endDate = $('#end').val();
     
-    filterByDate(1, startDate, endDate); // We call our filter function
+    filterByDate(0, startDate, endDate); // We call our filter function
     
     $tableSel.dataTable().fnDraw(); // Manually redraw the table after filtering
   });

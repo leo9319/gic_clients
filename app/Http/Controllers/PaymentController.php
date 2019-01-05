@@ -995,6 +995,7 @@ class PaymentController extends Controller
             'payment_type' => $request->type,
             'total_amount' => $amount,
             'bank_name' => $request->bank_name,
+            'location' => $request->location,
             'recheck' => 1,
             'description' => $request->description,
             'created_by' => Auth::user()->id,
