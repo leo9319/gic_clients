@@ -234,7 +234,7 @@
 
             @endif
 
-            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'backend')
 
             <li>
                <a href="#subPayments" data-toggle="collapse" class="collapsed {{ $active_class == 'payments' ? 'active' : '' }}"><i class="fa fa-credit-card"></i> <span>Payments</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
@@ -242,7 +242,7 @@
                <div id="subPayments" class="collapse ">
                   <ul class="nav">
 
-                     @if(Auth::user()->user_role == 'admin')
+                     @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
                      <li>
                         <a href="{{ route('payment.bank.account') }}" class="">
                            <i class="fa fa-credit-card"></i>
@@ -255,6 +255,8 @@
                            <i class="fa fa-credit-card"></i>
                            <span>Statement of Accounts</span></a>
                      </li>
+
+                     @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
 
                      <li>
                         <a href="{{ route('payment.history') }}" class="">
@@ -275,6 +277,8 @@
 
                      {{-- View only available to Counselor or RM --}}
 
+                     @endif
+
                      @if(Auth::user()->user_role == 'accountant')
 
                      <li>
@@ -291,7 +295,7 @@
 
             @endif
 
-            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'backend')
 
             <li>
                <a href="#subDues" data-toggle="collapse" class="collapsed {{ $active_class == 'dues' ? 'active' : '' }}"><i class="fa fa-credit-card"></i> <span>Dues and Refund</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
@@ -342,18 +346,23 @@
 
             @endif
 
-            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'backend')
+            @if (Auth::user()->user_role == 'admin')
+
                <li>
                   <a href="{{ route('client.index') }}" class="{{ $active_class == 'clients' ? 'active' : '' }}">
                      <i class="fa fa-users"></i> 
-                     <span>All Clients</span></a>
+                     <span>All Clients</span>
+                  </a>
                </li>
-            @endif
             
-            @if(Auth::user()->user_role == 'admin')
-               <li><a href="{{ route('users') }}" class="{{ $active_class == 'users' ? 'active' : '' }}"><i class="fa fa-user-circle"></i></i> <span>GIC Staffs</span></a></li>
-            @endif
+               <li>
+                  <a href="{{ route('users') }}" class="{{ $active_class == 'users' ? 'active' : '' }}">
+                     <i class="fa fa-user-circle"></i>
+                     <span>GIC Staffs</span>
+                  </a>
+               </li>
 
+            @endif
 
          </ul>
       </nav>

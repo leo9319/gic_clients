@@ -60,6 +60,8 @@
 
     </h2>
 
+    <p>Date : {{  Carbon\Carbon::parse($payment->created_at)->format('jS M, Y') }}</p>
+
   </div>
 </div>
 

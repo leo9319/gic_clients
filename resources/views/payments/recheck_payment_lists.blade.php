@@ -9,13 +9,14 @@
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 
+
 <script>
+$(function() {
 
-   $(document).ready( function () {
-
-       $('#recheck-payments').DataTable({
-
-       	dom: 'Bfrtip',
+  var $tableSel = $('#recheck-payments');
+  $tableSel.dataTable({
+    "ordering": false,
+     dom: 'Bfrtip',
         buttons: [
             'csv',
             'excel',
@@ -42,11 +43,56 @@
             }
         ],
         select: true
+  });
+  
+  $('#filter').on('click', function(e){
+    e.preventDefault();
+    var startDate = $('#start').val(),
+        endDate = $('#end').val();
+    
+    filterByDate(1, startDate, endDate); // We call our filter function
+    
+    $tableSel.dataTable().fnDraw(); // Manually redraw the table after filtering
+  });
+  
+  // Clear the filter. Unlike normal filters in Datatables,
+  // custom filters need to be removed from the afnFiltering array.
+  $('#clearFilter').on('click', function(e){
+    e.preventDefault();
+    $.fn.dataTableExt.afnFiltering.length = 0;
+    $tableSel.dataTable().fnDraw();
+  });
+  
+});
 
-       });
+var filterByDate = function(column, startDate, endDate) {
+  // Custom filter syntax requires pushing the new filter to the global filter array
+    $.fn.dataTableExt.afnFiltering.push(
+        function( oSettings, aData, iDataIndex ) {
+          var rowDate = normalizeDate(aData[column]),
+              start = normalizeDate(startDate),
+              end = normalizeDate(endDate);
 
-   });
+          
+          // If our date from the row is between the start and end
+          if (start <= rowDate && rowDate <= end) {
+            return true;
+          } else if (rowDate >= start && end === '' && start !== ''){
+            return true;
+          } else if (rowDate <= end && start === '' && end !== ''){
+            return true;
+          } else {
+            return false;
+          }
+        }
+    );
+  };
 
+  var normalizeDate = function(dateString) {
+  var date = new Date(dateString);
+  var normalized = date.getFullYear() + '' + (("0" + (date.getMonth() + 1)).slice(-2)) + '' + ("0" + date.getDate()).slice(-2);
+  return normalized;
+}
 </script>
 
 @stop
@@ -62,6 +108,25 @@
 		</div>
 
 		<div class="panel-footer">
+
+      <table border="0" cellspacing="5" cellpadding="5">
+        <tbody>
+          <tr>
+            <td>Start Date: </td>
+            <td><input type="date" id="start" name="min" class="form-control"></td>
+          </tr>
+          <tr>
+              <td>End Date: </td>
+              <td><input type="date" id="end" name="max" class="form-control"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr>
+
+      <button id="filter" class="btn btn-success btn-sm">Filter</button>
+      <button id="clearFilter" class="btn btn-info btn-sm" class="btn btn-success">Clear Filter</button>
+      <hr>
 
 			<table id="recheck-payments" class="table table-striped table-bordered" style="width:100%">
 

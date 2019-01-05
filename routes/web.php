@@ -229,6 +229,7 @@ Route::get('payment/create/expenses', 'PaymentController@createExpense')->name('
 Route::get('payment/incomes/expenses', 'PaymentController@showIncomesAndExpenses')->name('payment.show.income.and.expenses');
 
 Route::post('payment/update/incomes/expenses', 'PaymentController@updateIncomesAndExpenses')->name('payment.update.income.and.expenses');
+Route::get('payment/delete/incomes/expenses/{income_and_expenses_id}', 'PaymentController@deleteIncomeAndExpenses')->name('payment.delete.income.and.expenses');
 Route::get('payment/clear/due/{payment}', 'PaymentController@clearDue')->name('payment.clear.due');
 
 Route::post('payment/types', 'PaymentController@types')->name('payment.types');
@@ -268,8 +269,14 @@ Route::post('payment/delete/payment', 'PaymentController@deletePayment')->name('
 
 Route::post('payment/update/cheque-info', 'PaymentController@updateChequeInfo')->name('payment.update.cheque.info');
 
+Route::get('payment/notes/{client_id}', 'PaymentController@paymentNotes')->name('payment.notes');
+Route::post('payment/store/notes', 'PaymentController@storePaymentNotes')->name('payment.store.notes');
+Route::post('payment/delete/note', 'PaymentController@deletePaymentNote')->name('payment.delete.note');
+Route::post('payment/edit/note', 'PaymentController@editPaymentNote')->name('payment.edit.note');
+
 Route::get('getClientPaymentId', 'PaymentController@getClientPaymentId');
 Route::get('getChequeInfo', 'PaymentController@getChequeInfo');
+Route::get('findNoteInfo', 'PaymentController@findNoteInfo');
 
 
 

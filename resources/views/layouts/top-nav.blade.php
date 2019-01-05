@@ -43,11 +43,26 @@
             <li><a href="{{ route('user.create') }}"><i class="fa fa-user"></i> <span>Register a Client</span></a></li>
             @endif
             <li class="dropdown">
-               <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="{{ asset('img/user.png') }}" class="img-circle" alt="Avatar"> <span>{{ Auth::user()->name }} ({{ Auth::user()->user_role }})</span> <i class="icon-submenu lnr lnr-chevron-down"></i></a>
+
+               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <img src="{{ asset('img/user.png') }}" class="img-circle" alt="Avatar"> 
+
+                  @if(Auth::user()->id == 60 || Auth::user()->id == 31 || Auth::user()->id == 6)
+
+                  <span>{{ Auth::user()->name }} (operation)</span>
+
+                  @else 
+
+                  <span>{{ Auth::user()->name }} ({{ Auth::user()->user_role }})</span> 
+
+                  @endif
+
+
+                  <i class="icon-submenu lnr lnr-chevron-down"></i>
+               </a>
+
                <ul class="dropdown-menu">
                   <li><a href="{{ route('client.profile', Auth::user()->id) }}"><i class="lnr lnr-user"></i> <span>My Profile</span></a></li>
-                  <!-- <li><a href="#"><i class="lnr lnr-envelope"></i> <span>Message</span></a></li>
-                  <li><a href="#"><i class="lnr lnr-cog"></i> <span>Settings</span></a></li> -->
                   <li>
                      <a href="{{ route('logout') }}"
                         onclick="event.preventDefault();

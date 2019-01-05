@@ -64,7 +64,10 @@
             		<td>{{ $client->name }}</td>
             		<td>{{ number_format($client->getTotalAmountPaid()) }}</td>
             		<td>{{ number_format($client->payments->sum('dues')) }}</td>
-            		<td><a href="{{ route('payment.show.statement', $client->id) }}" class="btn btn-info button2">View Statement</a></td>
+            		<td>
+                     <a href="{{ route('payment.show.statement', $client->id) }}" class="btn btn-info button2">View Statement</a>
+                     <a href="{{ route('payment.notes', $client->id) }}" class="btn btn-success button2">Payment Notes</a>
+                  </td>
             	</tr>
             	@endforeach
             </tbody>

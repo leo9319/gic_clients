@@ -17,6 +17,7 @@ use App\Task;
 use App\ClientTask;
 use App\SpouseTask;
 use App\PaymentType;
+use App\PaymentNote;
 use App\IncomeExpense;
 use Carbon\Carbon;
 use Redirect;
@@ -37,7 +38,7 @@ class PaymentController extends Controller
     public function __construct() 
     {
         $this->middleware('auth');
-        $this->middleware('role:admin')->only('bankAccount', 'accountDetails', 'recheck');
+        $this->middleware('role:admin,accountant')->only('bankAccount', 'accountDetails', 'recheck');
     }
 
 
@@ -872,6 +873,7 @@ class PaymentController extends Controller
         $data['banks'] = $banks; 
 
         return view('payments.bank_account', $data);
+        
     }
 
     public function accountDetails($account)
@@ -938,6 +940,7 @@ class PaymentController extends Controller
             'bank_name' => $request->to_account,
             'total_amount' => $request->amount,
             'recheck' => 0,
+            'description' => $request->description,
             'created_by' => Auth::user()->id,
             'created_at' => $date_timestamp, 
         ]);
@@ -947,6 +950,7 @@ class PaymentController extends Controller
             'bank_name' => $request->from_account,
             'total_amount' => -1 * $request->amount,
             'recheck' => 0,
+            'description' => $request->description,
             'created_by' => Auth::user()->id,
             'created_at' => $date_timestamp, 
         ]);
@@ -1064,6 +1068,13 @@ class PaymentController extends Controller
             'description' => $request->description,
             'created_at' => $date_timestamp,
         ]);
+
+        return redirect()->back();
+    }
+
+    public function deleteIncomeAndExpenses($incomes_and_expenses_id)
+    {
+        IncomeExpense::find($incomes_and_expenses_id)->delete();
 
         return redirect()->back();
     }
@@ -1277,13 +1288,47 @@ class PaymentController extends Controller
         return view('payments.due_payment', $data);
     }
 
+    public function paymentNotes($client_id)
+    {
+        $data['active_class'] = 'payments';
+        $data['client'] = User::find($client_id);
+        $data['notes'] = PaymentNote::where('client_id', $client_id)->get();
+
+        return view('payments.payment_notes', $data);
+    }
+
+    public function storePaymentNotes(Request $request)
+    {
+        PaymentNote::create($request->all());
+
+        return redirect()->back();
+    }
+
+    public function deletePaymentNote(Request $request)
+    {
+        PaymentNote::find($request->note_id)->delete();
+
+        return redirect()->back();
+    }
+
+    public function editPaymentNote(Request $request)
+    {
+        PaymentNote::find($request->note_id)->update([
+            'date' => $request->date,
+            'description' => $request->description,
+            'amount' => $request->amount
+        ]);
+
+        return redirect()->back();
+    }
+
     public function storeDuePayment(Request $request)
     {
         $counter = 0;
         $counter = $request->counter;
         $payment_id = Input::get('payment_id');
 
-        for ($i=0; $i < $counter + 1; $i++) { 
+        for ($i=0; $i < $counter + 1; $i++) {
             $charge = 0;
             $cheque_verified = 1;
             $payment_type = Input::get('payment_type-' . $i);
@@ -1538,7 +1583,13 @@ class PaymentController extends Controller
     public function getChequeInfo(Request $request)
     {
         $data = PaymentType::find($request->payment_id);
-        // $data['payment_info'] = PaymentType::find(237);
+
+        return response()->json($data);
+    }
+
+    public function findNoteInfo(Request $request)
+    {
+        $data = PaymentNote::find($request->note_id);
 
         return response()->json($data);
     }

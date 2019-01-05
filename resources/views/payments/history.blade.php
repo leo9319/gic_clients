@@ -8,17 +8,10 @@
 <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 
 {{-- <script>
-
-   $(document).ready( function () {
-       $('#payment-history').DataTable();
-   });
-
-</script> --}}
-
-<script>
 $(function() {
 
   var $tableSel = $('#payment-history');
+  
   $tableSel.dataTable({
     "ordering": false
   });
@@ -29,6 +22,91 @@ $(function() {
         endDate = $('#end').val();
     
     filterByDate(0, startDate, endDate); // We call our filter function
+    
+    $tableSel.dataTable().fnDraw(); // Manually redraw the table after filtering
+  });
+  
+  // Clear the filter. Unlike normal filters in Datatables,
+  // custom filters need to be removed from the afnFiltering array.
+  $('#clearFilter').on('click', function(e){
+    e.preventDefault();
+    $.fn.dataTableExt.afnFiltering.length = 0;
+    $tableSel.dataTable().fnDraw();
+  });
+  
+});
+
+var filterByDate = function(column, startDate, endDate) {
+  // Custom filter syntax requires pushing the new filter to the global filter array
+    $.fn.dataTableExt.afnFiltering.push(
+        function( oSettings, aData, iDataIndex ) {
+          var rowDate = normalizeDate(aData[column]),
+              start = normalizeDate(startDate),
+              end = normalizeDate(endDate);
+
+          
+          // If our date from the row is between the start and end
+          if (start <= rowDate && rowDate <= end) {
+            return true;
+          } else if (rowDate >= start && end === '' && start !== ''){
+            return true;
+          } else if (rowDate <= end && start === '' && end !== ''){
+            return true;
+          } else {
+            return false;
+          }
+        }
+    );
+  };
+
+  var normalizeDate = function(dateString) {
+  var date = new Date(dateString);
+  var normalized = date.getFullYear() + '' + (("0" + (date.getMonth() + 1)).slice(-2)) + '' + ("0" + date.getDate()).slice(-2);
+  return normalized;
+}
+</script> --}}
+
+<script>
+$(function() {
+
+  var $tableSel = $('#payment-history');
+  $tableSel.dataTable({
+    "ordering": false,
+     dom: 'Bfrtip',
+        buttons: [
+            'csv',
+            'excel',
+            {
+                extend: 'print',
+                text: 'Print all (not just selected)',
+                exportOptions: {
+                    modifier: {
+                        selected: null
+                    }
+                }
+            },
+            {
+                text: 'Select all',
+                action: function () {
+                    this.rows().select();
+                }
+            },
+            {
+                text: 'Select none',
+                action: function () {
+                    this.rows().deselect();
+                }
+            }
+        ],
+        select: true
+  });
+  
+  $('#filter').on('click', function(e){
+    e.preventDefault();
+    var startDate = $('#start').val(),
+        endDate = $('#end').val();
+    
+    filterByDate(1, startDate, endDate); // We call our filter function
     
     $tableSel.dataTable().fnDraw(); // Manually redraw the table after filtering
   });
@@ -269,6 +347,18 @@ var filterByDate = function(column, startDate, endDate) {
 </div>
 
 @section('footer_scripts')
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
+
 <script type="text/javascript">
 
   function deletePayment(elem){

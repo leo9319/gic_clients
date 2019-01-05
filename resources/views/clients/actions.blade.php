@@ -72,14 +72,14 @@
 
 				@if($client->hasSpouse)
 
-				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px; margin-bottom: 20px">
+				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px;">
 					<a href="{{ route('spouse.myprograms', $client->id) }}" class="btn btn-danger btn-block button2">Spouse Programs and Tasks</a>
 				</div>
 
 				@endif
 
-				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px">
-					<a href="#" class="btn btn-majenta btn-block button2">Payment Notes</a>
+				<div class="col-md-offset-2 col-md-8" style="margin-top: 20px; margin-bottom: 20px">
+					<a href="{{ route('payment.notes', $client->id) }}" class="btn btn-majenta btn-block button2">Payment Notes</a>
 				</div>
 			</div>
 		</div>

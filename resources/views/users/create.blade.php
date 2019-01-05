@@ -32,7 +32,7 @@
                             <label for="client_code" class="col-md-3 control-label">Client ID</label>
 
                             <div class="col-md-6">
-                                <input id="client_code" type="text" class="form-control" name="client_code" value="{{ $client_code }}" required autofocus readonly>
+                                <input id="client_code" type="text" class="form-control" name="client_code" value="{{ $client_code }}" required autofocus>
                             </div>
                         </div>
 
@@ -96,7 +96,7 @@
                             <label for="address" class="col-md-3 control-label">Address</label>
 
                             <div class="col-md-6">
-                                <textarea id="address" class="form-control" name="address" value="{{ old('address') }}" required></textarea>
+                                <textarea id="address" class="form-control" name="address" required>{{ old('address') }}</textarea>
 
 
                                 @if ($errors->has('address'))
@@ -201,22 +201,6 @@
                                 <button type="button" onclick="addCounsellor()" class="btn btn-sm btn-success">+ Add More</button>
                             </div>
                         </div>
-
-                        <!-- <div id="counselor-container"></div>
-
-                        <div class="form-group{{ $errors->has('amount_paid') ? ' has-error' : '' }}">
-                            <label for="name" class="col-md-3 control-label">Amount Paid</label>
-
-                            <div class="col-md-6">
-                                <input id="name" type="number" class="form-control" name="amount_paid" value="{{ old('amount_paid') }}" required autofocus>
-
-                                @if ($errors->has('amount_paid'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('amount_paid') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div> -->
 
                         <div class="form-group">
                             <div class="col-md-6 col-md-offset-3">

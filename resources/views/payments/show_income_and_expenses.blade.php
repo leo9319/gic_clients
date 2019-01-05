@@ -162,9 +162,11 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Verification</th>
 
+                  <th>Action</th>
+
                   @endif
 
-                  @if(Auth::user()->user_role == 'accountant')
+                  @if(Auth::user()->user_role == 'admin')
 
                   <th>Action</th>
 
@@ -233,9 +235,17 @@ var filterByDate = function(column, startDate, endDate) {
 
                       @endif
 
-                      @if(Auth::user()->user_role == 'accountant')
+                      @if(Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'admin')
 
                         <td><a href="#" name="{{$transaction->id}}" onclick="editTransaction(this)"><i class="fa fa-edit"></i> Edit</a></td>
+
+                      @endif
+
+                      @if(Auth::user()->user_role == 'admin')
+
+                      <td>
+                        <a href="{{ route('payment.delete.income.and.expenses', $transaction->id) }}" class="btn btn-danger btn-sm button2">Delete</a>
+                      </td>
 
                       @endif
 
@@ -264,9 +274,11 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Verification</th>
 
+                  <th>Action</th>
+
                   @endif
 
-                  @if(Auth::user()->user_role == 'accountant')
+                  @if(Auth::user()->user_role == 'admin')
 
                   <th>Action</th>
 

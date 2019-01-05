@@ -44,13 +44,19 @@
 		<div class="panel-body">
 
 			<h2>Bank Account</h2>
+      @if(Auth::user()->user_role == 'admin')
       <h5>Total Balance: {{ number_format(array_sum($banks)) }}</h5>
+      @endif
 
 		</div>
 
 		<div class="panel-footer">
 
+      @if(Auth::user()->user_role == 'admin')
+
       <a href="#" data-toggle="modal" data-target="#transferAmount" class="btn btn-success pull-right button2" style="margin: 10px">Transfer from Account</a>
+
+      @endif
 
 			<table id="bank-account" class="table table-striped table-bordered" style="width:100%">
 
@@ -87,6 +93,20 @@
             </tfoot>
 
             <tbody>
+
+              @if(Auth::user()->user_role == 'accountant')
+
+              <tr>
+                <td>1</td>
+                <td>Cash</td>
+                <td>{{ number_format($banks['cash']) }}</td>
+                <td>
+                  <a href="{{ route('payment.account.detials', 'cash') }}" class="btn btn-info btn-sm button2 btn-block">View Details</a>
+                </td>
+              </tr>
+
+              @else
+
               <?php $index = 1 ?>
             	@foreach($banks as $key => $value)
             	<tr>
@@ -99,6 +119,9 @@
                 <?php $index++ ?>
             	</tr>
             	@endforeach
+
+              @endif
+
             </tbody>            
 
          </table>
@@ -138,6 +161,13 @@
 
             {{ Form::label('Amount:') }}
             {{ Form::number('amount', null, ['class'=>'form-control', 'required']) }}
+            
+          </div>
+
+          <div class="form-group">
+
+            {{ Form::label('Description:') }}
+            {{ Form::textarea('description', null, ['class'=>'form-control', 'rows'=> 3, 'required']) }}
             
           </div>
 

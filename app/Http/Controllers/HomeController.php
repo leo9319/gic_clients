@@ -189,6 +189,7 @@ class HomeController extends Controller
     public function storeUser(Request $request)
     {
         $validatedData = $request->validate([
+            'client_code' => 'required|unique:users',
             'email' => 'required|unique:users',
             'programs' => 'required',
         ]);

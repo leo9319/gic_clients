@@ -10,11 +10,12 @@
 <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 
 <script>
+$(function() {
 
-   $(document).ready( function () {
-
-       var table = $('#unverified-cheques').DataTable({
-        dom: 'Bfrtip',
+  var $tableSel = $('#unverified-cheques');
+  $tableSel.dataTable({
+    "ordering": false,
+     dom: 'Bfrtip',
         buttons: [
             'csv',
             'excel',
@@ -30,21 +31,67 @@
             {
                 text: 'Select all',
                 action: function () {
-                    table.rows().select();
+                    this.rows().select();
                 }
             },
             {
                 text: 'Select none',
                 action: function () {
-                    table.rows().deselect();
+                    this.rows().deselect();
                 }
             }
         ],
         select: true
-      });
+  });
+  
+  $('#filter').on('click', function(e){
+    e.preventDefault();
+    var startDate = $('#start').val(),
+        endDate = $('#end').val();
+    
+    filterByDate(0, startDate, endDate); // We call our filter function
+    
+    $tableSel.dataTable().fnDraw(); // Manually redraw the table after filtering
+  });
+  
+  // Clear the filter. Unlike normal filters in Datatables,
+  // custom filters need to be removed from the afnFiltering array.
+  $('#clearFilter').on('click', function(e){
+    e.preventDefault();
+    $.fn.dataTableExt.afnFiltering.length = 0;
+    $tableSel.dataTable().fnDraw();
+  });
+  
+});
 
-   });
+var filterByDate = function(column, startDate, endDate) {
+  // Custom filter syntax requires pushing the new filter to the global filter array
+    $.fn.dataTableExt.afnFiltering.push(
+        function( oSettings, aData, iDataIndex ) {
+          var rowDate = normalizeDate(aData[column]),
+              start = normalizeDate(startDate),
+              end = normalizeDate(endDate);
 
+          
+          // If our date from the row is between the start and end
+          if (start <= rowDate && rowDate <= end) {
+            return true;
+          } else if (rowDate >= start && end === '' && start !== ''){
+            return true;
+          } else if (rowDate <= end && start === '' && end !== ''){
+            return true;
+          } else {
+            return false;
+          }
+        }
+    );
+  };
+
+  var normalizeDate = function(dateString) {
+  var date = new Date(dateString);
+  var normalized = date.getFullYear() + '' + (("0" + (date.getMonth() + 1)).slice(-2)) + '' + ("0" + date.getDate()).slice(-2);
+  return normalized;
+}
 </script>
 
 @stop
@@ -61,19 +108,39 @@
 
 		<div class="panel-footer">
 
+      <table border="0" cellspacing="5" cellpadding="5">
+        <tbody>
+          <tr>
+            <td>Start Date: </td>
+            <td><input type="date" id="start" name="min" class="form-control"></td>
+          </tr>
+          <tr>
+              <td>End Date: </td>
+              <td><input type="date" id="end" name="max" class="form-control"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <hr>
+
+      <button id="filter" class="btn btn-success btn-sm">Filter</button>
+      <button id="clearFilter" class="btn btn-info btn-sm" class="btn btn-success">Clear Filter</button>
+      <hr>
+
 			<table id="unverified-cheques" class="table table-striped table-bordered" style="width:100%">
 
             <thead>
 
                <tr>
+                  <th>Deposit Date</th>
                   <th>Client Code</th>
                   <th>Client Name</th>
                   <th>Program Name</th>
                   <th>Step Name</th>
                   <th>Cheque Number</th>
                   <th>Deposited To</th>
-                  <th>Deposit Date</th>
                   <th>Status</th>
+                  <th>Amount</th>
                   <th>Edit</th>
                </tr>
 
@@ -84,13 +151,13 @@
             	@foreach($unverified_cheques as $unverified_cheque)
 
                   	<tr>
+                      <td>{{ Carbon\Carbon::parse($unverified_cheque->deposit_date)->format('d-M-y') }}</td>
                       <td>{{ $unverified_cheque->payment->userInfo->client_code ?? 'Client Removed' }}</td>
                       <td>{{ $unverified_cheque->payment->userInfo->name ?? 'Client Removed' }}</td>
                       <td>{{ $unverified_cheque->payment->programInfo->program_name ?? 'N/A' }}</td>
                       <td>{{ $unverified_cheque->payment->stepInfo->step_name ?? 'N/A' }}</td>
                       <td>{{ $unverified_cheque->cheque_number }}</td>
                       <td>{{ strtoupper($unverified_cheque->bank_name) }}</td>
-                      <td>{{ Carbon\Carbon::parse($unverified_cheque->deposit_date)->format('d-M-y') }}</td>
                       <td>
                         @if($unverified_cheque->cheque_verified == -1)
                         <a href="{{ route('payment.cheque.verification', [$unverified_cheque->id, 1]) }}" class="label label-success">Verify</a>
@@ -101,6 +168,8 @@
                         <p class="text-danger text-weight-bold">Unverified</p>
                         @endif
                       </td>
+
+                      <td>{{ number_format($unverified_cheque->amount_paid) }}</td>
 
                       <td>
                         
@@ -118,14 +187,15 @@
             <tfoot>
 
                <tr>
+                  <th>Deposit Date</th>
                   <th>Client Code</th>
                   <th>Client Name</th>
                   <th>Program Name</th>
                   <th>Step Name</th>
                   <th>Cheque Number</th>
                   <th>Deposited To</th>
-                  <th>Deposit Date</th>
-                  <th>Action</th>
+                  <th>Status</th>
+                  <th>Amount</th>
                   <th>Edit</th>
                </tr>
 
