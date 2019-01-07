@@ -256,19 +256,26 @@
                            <span>Statement of Accounts</span></a>
                      </li>
 
-                     @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
-
                      <li>
                         <a href="{{ route('payment.history') }}" class="">
                            <i class="fa fa-credit-card"></i>
                            <span>Client Payment History</span></a>
                      </li>
 
+                     @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
+
                      <li>
                         <a href="{{ route('payment.client.unverified.cheques') }}" class="">
                            <i class="fa fa-credit-card"></i>
                            <span>Unverified Cheques</span></a>
                      </li>
+
+                     <li>
+                        <a href="{{ route('payment.client.online.payments') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Online Payments</span></a>
+                     </li>
+
                      <li>
                         <a href="{{ route('payment.client.recheck.types.list') }}" class="">
                            <i class="fa fa-credit-card"></i>

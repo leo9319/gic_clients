@@ -38,7 +38,7 @@ class PaymentController extends Controller
     public function __construct() 
     {
         $this->middleware('auth');
-        $this->middleware('role:admin,accountant')->only('bankAccount', 'accountDetails', 'recheck');
+        $this->middleware('role:admin,accountant')->only('bankAccount', 'accountDetails', 'recheck', 'clientRefund');
     }
 
 
@@ -89,6 +89,7 @@ class PaymentController extends Controller
             ],
             [
                 'receipt_id' => $receipt_id,
+                'location' => $request->location,
                 'opening_fee' => $request->opening_fee,
                 'embassy_student_fee' => $request->embassy_student_fee,
                 'service_solicitor_fee' => $request->service_solicitor_fee,
@@ -130,6 +131,7 @@ class PaymentController extends Controller
         for ($i=0; $i < $counter + 1; $i++) { 
             $charge = 0;
             $cheque_verified = 1;
+            $online_verified = 1;
             $payment_type = Input::get('payment_type-' . $i);
             $bank_deposited = Input::get('bank_name-' . $i);
             $after_charge = 0;
@@ -187,6 +189,10 @@ class PaymentController extends Controller
 
                 $cheque_verified = -1;
 
+            } else if($payment_type == 'online') {
+
+                $online_verified = -1;
+
             } else if($payment_type == 'bkash_corporate' || $payment_type == 'upay') {
 
                 $charge = 1.5;
@@ -221,6 +227,7 @@ class PaymentController extends Controller
                 'cheque_number' => Input::get('cheque_number-' . $i),
                 'bank_name' => $bank_deposited,
                 'cheque_verified' => $cheque_verified,
+                'online_verified' => $online_verified,
                 'bank_charge' => $charge,
                 'amount_paid' => Input::get('total_amount-' . $i),
                 'amount_received' => $after_charge,
@@ -334,7 +341,11 @@ class PaymentController extends Controller
 
         $data['total_amount'] = $payment->opening_fee + $payment->embassy_student_fee + $payment->service_solicitor_fee + $payment->other;
 
-        $data['payment_types'] = PaymentType::where('payment_id', $payment->id)->where('cheque_verified', '!=', 0)->where('refund_payment', '!=', 1)->get();
+        $data['payment_types'] = PaymentType::where('payment_id', $payment->id)
+                                 ->where('cheque_verified', '!=', 0)
+                                 ->where('online_verified', '!=', 0)
+                                 ->where('refund_payment', '!=', 1)
+                                 ->get();
 
         return view('payments.show', $data);
     }
@@ -358,7 +369,10 @@ class PaymentController extends Controller
 
         $data['steps'] = Step::getProgramAllStep($payment->program_id);
 
-        $data['payment_types'] = PaymentType::where('payment_id', $payment->id)->where('due_payment', 0)->get();
+        $data['payment_types'] = PaymentType::where('payment_id', $payment->id)
+                                  ->where('due_payment', 0)
+                                  ->where('refund_payment', 0)
+                                  ->get();
 
         return view('payments.edit', $data);
     }
@@ -387,6 +401,7 @@ class PaymentController extends Controller
 
 
         Payment::find($payment->id)->update([
+            'location' => $request->location,
             'opening_fee' => $request->opening_fee,
             'embassy_student_fee' => $request->embassy_student_fee,
             'service_solicitor_fee' => $request->service_solicitor_fee,
@@ -461,7 +476,6 @@ class PaymentController extends Controller
     public function deletePayment(Request $request)
     {
         PaymentType::where('payment_id', $request->payment_id)->delete();
-
         Payment::find($request->payment_id)->delete();
 
         return redirect()->back();
@@ -471,22 +485,27 @@ class PaymentController extends Controller
     {
         $data['previous'] = URL::to('/dashboard');
         $data['active_class'] = 'payments';
+        $user_role = Auth::user()->user_role;
 
-        if(Auth::user()->user_role == 'rm') {
-
+        if($user_role == 'rm') {
 
             $rm_id = Auth::user()->id;
             $client_ids = RmClient::where('rm_id', $rm_id)->pluck('client_id');
             $data['payments'] = Payment::whereIn('client_id', $client_ids)->orderBy('created_at', 'desc')->get();
 
-        } else if(Auth::user()->user_role == 'counselor'){
+        } else if($user_role == 'counselor'){
 
             $counselor_id = Auth::user()->id;
             $client_ids = CounsellorClient::where('counsellor_id', $counselor_id)->pluck('client_id');
             $data['payments'] = Payment::whereIn('client_id', $client_ids)->orderBy('created_at', 'desc')->get();
 
         } else {
+
             $data['payments'] = Payment::orderBy('created_at', 'desc')->get();
+        }
+
+        if($user_role == 'accountant') {
+            return view('payments.accountant.history', $data);
         }
 
         return view('payments.history', $data);
@@ -504,6 +523,23 @@ class PaymentController extends Controller
         PaymentType::find($payment_type->id)->update(['cheque_verified' => $status]);
 
         // if the cheque is dissapproved then the due will increase
+        if(!$status) {
+            $payment_id = $payment_type->payment_id;
+            $total_amount = $this->findingTotalAmount($payment_id);
+            $total_amount_paid = $this->findingTotalPaidAmount($payment_id);
+            $dues = $total_amount - $total_amount_paid;
+
+            Payment::find($payment_id)->update(['dues' => $dues]);
+        }
+
+        return redirect()->back();
+    }
+
+    public function onlineVerification(PaymentType $payment_type, $status)
+    {
+        PaymentType::find($payment_type->id)->update(['online_verified' => $status]);
+
+        // if the online payment is dissapproved then the due will increase
         if(!$status) {
             $payment_id = $payment_type->payment_id;
             $total_amount = $this->findingTotalAmount($payment_id);
@@ -540,7 +576,11 @@ class PaymentController extends Controller
         $data['due_date'] = $payment->due_date;
         $data['comments'] = $payment->comments;
 
-        $data['payment_methods'] = PaymentType::where('payment_id', $payment->id)->where('cheque_verified', '!=', 0)->where('refund_payment', '!=', 1)->get();
+        $data['payment_methods'] = PaymentType::where('payment_id', $payment->id)
+                                    ->where('cheque_verified', '!=', 0)
+                                    ->where('online_verified', '!=', 0)
+                                    ->where('refund_payment', '!=', 1)
+                                    ->get();
 
         $created_by = User::find($payment->created_by);
         $data['created_by'] = $created_by ? $created_by->name : '';
@@ -662,6 +702,7 @@ class PaymentController extends Controller
 
         $charge = 0;
         $cheque_verified = 1;
+        $online_verified = 1;
         $after_charge = 0;
         $id = Input::get('id');
         $payment_id = Input::get('payment_id');
@@ -721,6 +762,10 @@ class PaymentController extends Controller
 
             $cheque_verified = -1;
 
+        } else if($payment_type == 'online') {
+
+            $online_verified = -1;
+
         } else if($payment_type == 'bkash_corporate' || $payment_type == 'upay') {
 
             $charge = 1.5;
@@ -757,6 +802,7 @@ class PaymentController extends Controller
             'cheque_number' => Input::get('cheque_number'),
             'bank_name' => $bank_deposited,
             'cheque_verified' => $cheque_verified,
+            'online_verified' => $online_verified,
             'deposit_date' => Input::get('deposit_date'),
             'due_payment' => $request->due_payment,
             'bank_charge' => $charge,
@@ -807,6 +853,7 @@ class PaymentController extends Controller
         $bank_account_income_expenses = IncomeExpense::where('recheck', 0)->get();
         $bank_account_client = PaymentType::where([
             'cheque_verified' => 1,
+            'online_verified' => 1,
         ])->get();
 
         $banks = [
@@ -882,7 +929,11 @@ class PaymentController extends Controller
         $data['previous'] = URL::to('payment/bank/account');
         $data['account'] = $account;
 
-        $payment_histories = $data['payment_histories'] = PaymentType::where('bank_name', $account)->where('cheque_verified', 1)->get();
+        $payment_histories = $data['payment_histories'] = PaymentType::where('bank_name', $account)
+                             ->where('cheque_verified', 1)
+                             ->where('online_verified', 1)
+                             ->get();
+
         $incomes_and_expenses = $data['incomes_and_expenses'] = IncomeExpense::where([
             'bank_name' => $account,
             'recheck' => 0,
@@ -1274,7 +1325,11 @@ class PaymentController extends Controller
 
         $data['program_fee'] = $payment_id->opening_fee + $payment_id->embassy_student_fee + $payment_id->service_solicitor_fee + $payment_id->other;
 
-        $data['payment_types'] = PaymentType::where('payment_id', $payment_id->id)->where('cheque_verified', '!=', 0)->where('refund_payment', '!=', 1)->get();
+        $data['payment_types'] = PaymentType::where('payment_id', $payment_id->id)
+                                 ->where('cheque_verified', '!=', 0)
+                                 ->where('online_verified', '!=', 0)
+                                 ->where('refund_payment', '!=', 1)
+                                 ->get();
 
         return view('payments.due_details', $data);
     }
@@ -1332,6 +1387,7 @@ class PaymentController extends Controller
         for ($i=0; $i < $counter + 1; $i++) {
             $charge = 0;
             $cheque_verified = 1;
+            $online_verified = 1;
             $payment_type = Input::get('payment_type-' . $i);
             $bank_deposited = Input::get('bank_name-' . $i);
             $after_charge = 0;
@@ -1389,6 +1445,10 @@ class PaymentController extends Controller
 
                 $cheque_verified = -1;
 
+            } else if($payment_type == 'online') {
+
+                $online_verified = -1;
+
             } else if($payment_type == 'bkash_corporate') {
 
                 $charge = 1.5;
@@ -1423,6 +1483,7 @@ class PaymentController extends Controller
                 'cheque_number' => Input::get('cheque_number-' . $i),
                 'bank_name' => $bank_deposited,
                 'cheque_verified' => $cheque_verified,
+                'online_verified' => $online_verified,
                 'due_payment' => 1,
                 'bank_charge' => $charge,
                 'amount_paid' => Input::get('total_amount-' . $i),
@@ -1510,6 +1571,14 @@ class PaymentController extends Controller
         return view('payments.unverified_cheques', $data);
     }
 
+    public function onlinePayments()
+    {
+        $data['active_class'] = 'payments';
+        $data['online_payments'] = PaymentType::where('payment_type', 'online')->where('online_verified', '!=', '1')->get();
+
+        return view('payments.online_payments', $data);
+    }
+
     public function generateDuePDF($payment_id)
     {
         $due['payment'] = $payment = Payment::find($payment_id);
@@ -1534,7 +1603,11 @@ class PaymentController extends Controller
 
         // finding the previously paid amount:
 
-        $due['payments'] = PaymentType::where('payment_id', $payment_id)->where('cheque_verified', '!=', 0)->where('refund_payment', '!=', 1)->get();
+        $due['payments'] = PaymentType::where('payment_id', $payment_id)
+                            ->where('cheque_verified', '!=', 0)
+                            ->where('online_verified', '!=', 0)
+                            ->where('refund_payment', '!=', 1)
+                            ->get();
 
         $created_by = User::find($payment->created_by);
         $due['created_by'] = $created_by ? $created_by->name : '';
@@ -1555,6 +1628,7 @@ class PaymentController extends Controller
             'payment_id', '=', $payment->id)
         ->where('refund_payment', '!=', 1)
         ->where('cheque_verified', '=', 1)
+        ->where('online_verified', '=', 1)
         ->sum('amount_paid');
 
         $refunds = PaymentType::where(
@@ -1581,7 +1655,24 @@ class PaymentController extends Controller
         return redirect()->back();
     }
 
+    public function updateOnlineInfo(Request $request)
+    {
+        PaymentType::find($request->payment_id)->update([
+            'bank_name' => $request->bank_name,
+            'deposit_date' => $request->deposit_date
+        ]);
+
+        return redirect()->back();
+    }
+
     public function getChequeInfo(Request $request)
+    {
+        $data = PaymentType::find($request->payment_id);
+
+        return response()->json($data);
+    }
+
+    public function getOnlineInfo(Request $request)
     {
         $data = PaymentType::find($request->payment_id);
 
@@ -1604,7 +1695,20 @@ class PaymentController extends Controller
 
     public function findingTotalPaidAmount($payment_id)
     {
-        $payment_types = PaymentType::where('payment_id', $payment_id)->where('cheque_verified', '!=', 0)->get();
+        $payment_types = PaymentType::where('payment_id', $payment_id)
+                          ->where('cheque_verified', '!=', 0)
+                          ->where('online_verified', '!=', 0)
+                          ->get();
+
+        return $payment_types->sum('amount_paid');
+    }
+
+    public function findingTotalPaidAmountForOnline($payment_id)
+    {
+        $payment_types = PaymentType::where('payment_id', $payment_id)
+                          ->where('cheque_verified', '!=', 0)
+                          ->where('online_verified', '!=', 0)
+                          ->get();
 
         return $payment_types->sum('amount_paid');
     }

@@ -62,7 +62,12 @@ class User extends Authenticatable
     {
 
         $payment_ids = Payment::where('client_id', $this->id)->pluck('id');
-        $amount_received = PaymentType::whereIn('payment_id', $payment_ids)->where('refund_payment', '!=', 1)->sum('amount_paid');
+        $amount_received = PaymentType::whereIn('payment_id', $payment_ids)
+                            ->where('cheque_verified', '!=', 0)
+                            ->where('online_verified', '!=', 0)
+                            ->where('refund_payment', '!=', 1)
+                            ->sum('amount_paid');
+                            
         $refund = PaymentType::whereIn('payment_id', $payment_ids)->where('refund_payment', '=', 1)->sum('amount_paid');
 
         return $amount_received - $refund;

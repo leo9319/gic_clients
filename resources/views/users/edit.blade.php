@@ -4,6 +4,17 @@
 <div class="container">
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
+
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             @if(session()->has('message'))
             <div class="alert alert-success alert-dismissible">
                 
@@ -11,6 +22,7 @@
                 
             </div>
             @endif
+            
             <div class="panel panel-default">
                 <div class="panel-heading">Register Client</div>
 
@@ -18,11 +30,17 @@
                     <form class="form-horizontal" method="POST" action="{{ route('client.update.ind') }}">
                         {{ csrf_field() }}
 
+                        {{-- Hidden fields --}}
+
+                        <input type="hidden" name="client_id" value="{{ $client->id }}">
+
+                        {{--  --}}
+
                         <div class="form-group">
                             <label for="client_code" class="col-md-3 control-label">Client ID</label>
 
                             <div class="col-md-6">
-                                <input id="client_code" type="text" class="form-control" name="client_code" value="{{ $client->client_code }}" required autofocus readonly>
+                                <input id="client_code" type="text" class="form-control" name="client_code" value="{{ $client->client_code }}" required autofocus>
                             </div>
                         </div>
 

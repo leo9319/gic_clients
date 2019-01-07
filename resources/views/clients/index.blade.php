@@ -46,8 +46,6 @@
 
                     <a href="{{ route('client.edit.ind', $client->id) }}" type="button" class="btn btn-secondary btn-sm"><span class="fa fa-edit fa-xs"></span></a>
 
-                    {{-- <a href="{{ route('client.destroy', $client->id) }}" type="button" class="btn btn-danger btn-sm"><span class="fa fa-trash fa-xs"></span></a> --}}
-
                     <button type="button" class="btn btn-danger btn-sm" id="{{ $client->id }}" onclick="deleteClient(this)"><span class="fa fa-trash fa-xs"></span></button>
 
                   </td>

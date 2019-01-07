@@ -30,6 +30,14 @@ class Payment extends Model
     	return $this->hasMany('App\PaymentType');
     }
 
+    public function totalVerifiedPayment()
+    {
+        return $this->hasMany('App\PaymentType')
+                    ->where('cheque_verified', '!=', 0)
+                    ->where('online_verified', '!=', 0);
+                    
+    }
+
     public function totalAmount()
     {
         return $this->opening_fee + $this->embassy_student_fee + $this->service_solicitor_fee + $this->other;

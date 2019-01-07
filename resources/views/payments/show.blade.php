@@ -21,10 +21,11 @@
 
     <h2 class="name">Global Immigration Consultants Ltd.</h2>
 
-    <div>56B (1st Floor, Rd 132, Dhaka 1212</div>
+    <div>Plot 56B, Road 132, (1st Floor), Gulshan 1, Dhaka 1212</div>
     <div>09678744223</div>
     <div><a href="{{ url('http://gicbd.com') }}">http://gicbd.com</a></div>
   </div>
+
 </header>
 
 <main>
@@ -202,6 +203,13 @@
 </table>
 
 <hr>
+
+<h2 class="name">Notes:</h2>
+<p>{{ $payment->comments }}</p>
+
+<hr>
+
+
 
 
 {{-- @if(Auth::user()->user_role == 'admin')

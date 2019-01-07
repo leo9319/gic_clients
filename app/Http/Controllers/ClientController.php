@@ -570,9 +570,17 @@ class ClientController extends Controller
 
     public function clientUpdate(Request $request)
     {
-        $client_id = User::where('client_code', $request->client_code)->first()->id;
+        $client_id = $request->client_id;
 
-        User::where('client_code', $request->client_code)->update([
+        $validatedData = $request->validate([
+            'client_code' => 'required|unique:users',
+            'email' => 'unique:users,email,'.$client_id
+        ]);
+
+        
+
+        User::find($client_id)->update([
+            'client_code' => $request->client_code,
             'name' => $request->name,
             'mobile' => $request->mobile,
             'email' => $request->email,

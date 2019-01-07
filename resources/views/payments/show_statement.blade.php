@@ -86,11 +86,19 @@
 		      </td>
 		      <td colspan="2" class="blank">
 		      	{{ number_format($payable) }}<br>
-		      	{{ number_format($payment_methods->where('cheque_verified', '!=', 0)->where('refund_payment', 0)->sum('amount_paid')) }}<br>
+		      	{{ number_format($payment_methods
+		      		->where('cheque_verified', '!=', 0)
+		      		->where('online_verified', '!=', 0)
+		      		->where('refund_payment', 0)
+		      		->sum('amount_paid')) }}<br>
 		      	{{ number_format($dues) }}<br>
 		      	<br>
 		      	{{ number_format($refunds->sum('amount_paid')) }}<br>
-		      	{{ number_format($payment_methods->where('cheque_verified', '!=', 0)->where('refund_payment', 0)->sum('amount_paid') - $refunds->sum('amount_paid')) }}<br>
+		      	{{ number_format($payment_methods
+		      		->where('cheque_verified', '!=', 0)
+		      		->where('online_verified', '!=', 0)
+		      		->where('refund_payment', 0)
+		      		->sum('amount_paid') - $refunds->sum('amount_paid')) }}<br>
 		      	<br>
 		      	<br>
 		      	<br>
@@ -127,7 +135,13 @@
 		      <td>{{ $payment_history->stepInfo->step_name }}</td>
 		      <td>{{ Carbon\Carbon::parse($payment_history->created_at)->format('d-m-y') }}</td>
 		      <td>{{ number_format($payment_history->totalAmount()) }}</td>
-		      <td>{{ number_format($payment_history->totalPayment->where('refund_payment', 0)->sum('amount_paid')) }}</td>
+		      <td>
+		      	{{ number_format($payment_history->totalPayment
+		      		->where('cheque_verified', '!=', 0)
+                    ->where('online_verified', '!=', 0)
+		      		->where('refund_payment', 0)
+		      		->sum('amount_paid')) }}
+		      </td>
 		      <td>{{ number_format($payment_history->dues) }}</td>
 
 		  </tr>

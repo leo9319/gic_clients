@@ -210,6 +210,7 @@ Route::get('payment/verification/{payment}', 'PaymentController@verification')->
 Route::get('payment/disapprove/{payment}', 'PaymentController@disapprove')->name('payment.disapprove');
 
 Route::get('payment/cheque/verification/{payment_type}/{status}', 'PaymentController@chequeVerification')->name('payment.cheque.verification');
+Route::get('payment/online/verification/{payment_type}/{status}', 'PaymentController@onlineVerification')->name('payment.online.verification');
 Route::get('payment/generate-invoice/{payment}', 'PaymentController@generateInvoice')->name('payment.generate.invoice');
 
 Route::get('payment/statement/account', 'PaymentController@statement')->name('payment.statement');
@@ -258,6 +259,7 @@ Route::get('payment/client/dues/history', 'PaymentController@dueHistory')->name(
 Route::get('payment/client/dues/pdf/{payment_id}', 'PaymentController@generateDuePDF')->name('payment.client.dues.pdf');
 Route::get('payment/client/payment/recheck/{payment_id}', 'PaymentController@recheckPayment')->name('payment.client.payment.recheck');
 Route::get('payment/client/unverified/cheque', 'PaymentController@unverifiedCheques')->name('payment.client.unverified.cheques');
+Route::get('payment/client/online/payments', 'PaymentController@onlinePayments')->name('payment.client.online.payments');
 Route::get('payment/client/recheck/{payment_type_id}', 'PaymentController@recheckPaymentType')->name('payment.client.recheck.payment_type');
 Route::get('payment/client/recheck/types/list', 'PaymentController@recheckPaymentTypeList')->name('payment.client.recheck.types.list');
 
@@ -268,6 +270,7 @@ Route::post('payment/client/delete/reissue/', 'PaymentController@deleteAndReissu
 Route::post('payment/delete/payment', 'PaymentController@deletePayment')->name('payment.delete');
 
 Route::post('payment/update/cheque-info', 'PaymentController@updateChequeInfo')->name('payment.update.cheque.info');
+Route::post('payment/update/online-info', 'PaymentController@updateOnlineInfo')->name('payment.update.online.info');
 
 Route::get('payment/notes/{client_id}', 'PaymentController@paymentNotes')->name('payment.notes');
 Route::post('payment/store/notes', 'PaymentController@storePaymentNotes')->name('payment.store.notes');
@@ -276,6 +279,7 @@ Route::post('payment/edit/note', 'PaymentController@editPaymentNote')->name('pay
 
 Route::get('getClientPaymentId', 'PaymentController@getClientPaymentId');
 Route::get('getChequeInfo', 'PaymentController@getChequeInfo');
+Route::get('getOnlineInfo', 'PaymentController@getOnlineInfo');
 Route::get('findNoteInfo', 'PaymentController@findNoteInfo');
 
 

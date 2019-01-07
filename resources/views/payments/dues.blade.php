@@ -228,7 +228,15 @@ var filterByDate = function(column, startDate, endDate) {
                   {{ number_format($all_due->opening_fee + $all_due->embassy_student_fee + $all_due->service_solicitor_fee + $all_due->other) }}
                 </td>
 
-                <td>{{ number_format($all_due->totalPayment->where('cheque_verified', '!=', 0)->where('refund_payment', '!=', 1)->sum('amount_paid')) }}</td>
+                <td>
+                  {{ 
+                    number_format($all_due->totalPayment
+                    ->where('cheque_verified', '!=', 0)
+                    ->where('online_verified', '!=', 0)
+                    ->where('refund_payment', '!=', 1)
+                    ->sum('amount_paid')) 
+                  }}
+                </td>
 
                 <td>{{ number_format($all_due->dues) }}</td>
 

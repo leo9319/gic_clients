@@ -12,6 +12,12 @@ use App\Program;
 
 class ReportController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('role:admin')->only('index');
+    }
+    
     public function index()
     {
     	$data['active_class'] = 'reports';

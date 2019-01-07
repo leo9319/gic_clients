@@ -43,6 +43,15 @@
 
 			<br>
 
+			<label>Location:</label>
+			<select name="location" class="form-control">
+				<option value="dhaka">Dhaka</option>
+				<option value="chittagong">Chittagong</option>
+			</select>
+
+			<br>
+			
+
 			<label>Client ID:</label>
 
 			<select class="select2 form-control" name="client_code" onchange="checkClientInfo(this)">

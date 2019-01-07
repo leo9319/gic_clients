@@ -2,7 +2,7 @@
 
 @section('url', $previous)
 
-@section('title', 'Edit Payment')
+@section('title', 'Edit Payments')
 
 @section('content')
 
@@ -51,6 +51,14 @@
 			{{ Form::model($payment, ['route' => ['payment.update', $payment->id], 'autocomplete'=>'off']) }}
 
 				{{ method_field('PUT') }}
+
+				<div class="form-group">
+
+					{{ Form::label('Location:') }}
+
+					{{ Form::select('location', ['dhaka'=>'Dhaka', 'chittagong'=>'Chittagong'], null,['class'=>'form-control']) }}
+					
+				</div>
 
 				<div class="form-group">
 

@@ -1,7 +1,9 @@
 @extends('layouts.master')
-@section('url', $previous)
-@section('title', 'Payment History')
+
+@section('title', 'Online Payments')
+
 @section('content')
+
 @section('header_scripts')
 
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
@@ -10,7 +12,7 @@
 <script>
 $(function() {
 
-  var $tableSel = $('#payment-history');
+  var $tableSel = $('#online-payments');
   $tableSel.dataTable({
     "ordering": false,
      dom: 'Bfrtip',
@@ -95,9 +97,13 @@ var filterByDate = function(column, startDate, endDate) {
 @stop
 
 <div class="container-fluid">
+
 	<div class="panel">
+
 		<div class="panel-body">
-			<h2>Payment History</h2>
+
+			<h2>Online Payments</h2>
+
 		</div>
 
 		<div class="panel-footer">
@@ -121,78 +127,54 @@ var filterByDate = function(column, startDate, endDate) {
       <button id="clearFilter" class="btn btn-info btn-sm" class="btn btn-success">Clear Filter</button>
       <hr>
 
-			<table id="payment-history" class="table table-striped table-bordered" style="width:100%">
+			<table id="online-payments" class="table table-striped table-bordered" style="width:100%">
 
             <thead>
 
-                  <th>Date</th>
-                  <th>Location</th>
-                  <th>Receipt ID</th>
-                  <th>Client Code.</th>
-                  <th>Name</th>
-                  <th>Program</th>
-                  <th>Step</th>
-                  <th>Invoice Amount</th>
-                  <th>Total Paid</th>
-                  <th>Due Amount</th>
-                  <th>Action</th>
-                  <th>View Details</th>
-
-                  @if(Auth::user()->user_role == 'admin')
+               <tr>
+                  <th>Deposit Date</th>
+                  <th>Client Code</th>
+                  <th>Client Name</th>
+                  <th>Program Name</th>
+                  <th>Step Name</th>
+                  <th>Deposited To</th>
+                  <th>Status</th>
+                  <th>Amount</th>
                   <th>Edit</th>
-                  <th>Delete</th>
-                  @endif
+               </tr>
 
             </thead>
 
             <tbody>
 
-            	@foreach($payments as $payment)
+            	@foreach($online_payments as $online_payment)
 
-              @if($payment)
-
-              <?php $class = ($payment->recheck == 1 ? 'text-danger' : '') ?>
-
-                  	<tr class="{{ $class }}">
-
-                      <td>{{ Carbon\Carbon::parse($payment->created_at)->format('d-M-y') }}</td>
-                      <td>{{ ucfirst($payment->location) }}</td>
-                      <td>{{ $payment->receipt_id }}</td>
-                      
-                  		<td>
-                  			<a href="{{ route('client.profile', $payment->client_id) }}">
-                  				{{ $payment->userInfo->client_code ?? 'Client Removed'}}
-                  			</a>   
-                  		</td>
-                      
-                  		<td>{{ $payment->userInfo->name ?? 'Client Removed'}}</td>  
-                  		<td>{{ $payment->programInfo->program_name ?? 'Program Removed'}}</td> 
-                  		<td>{{ $payment->stepInfo->step_name ?? 'Step Removed' }}</td>                  
-                      <td>{{ number_format($payment->totalAmount()) }}</td>
-                      <td>{{ number_format($payment->totalVerifiedPayment->sum('amount_paid')) }}</td>
-                      <td>{{ number_format($payment->dues) }}</td>
-
+                  	<tr>
+                      <td>{{ Carbon\Carbon::parse($online_payment->deposit_date)->format('d-M-y') }}</td>
+                      <td>{{ $online_payment->payment->userInfo->client_code ?? 'Client Removed' }}</td>
+                      <td>{{ $online_payment->payment->userInfo->name ?? 'Client Removed' }}</td>
+                      <td>{{ $online_payment->payment->programInfo->program_name ?? 'N/A' }}</td>
+                      <td>{{ $online_payment->payment->stepInfo->step_name ?? 'N/A' }}</td>
+                      <td>{{ strtoupper($online_payment->bank_name) }}</td>
                       <td>
-                        <a href="{{ route('payment.generate.invoice', $payment->id) }}" class="btn btn-info btn-sm button2">Generate Invoice</a>
+                        @if($online_payment->online_verified == -1)
+                        <a href="{{ route('payment.online.verification', [$online_payment->id, 1]) }}" class="label label-success">Verify</a>
+                        <a href="{{ route('payment.online.verification', [$online_payment->id, 0]) }}" class="label label-danger">Reject</a>
+                        @elseif($online_payment->online_verified == 1)
+                        <p class="text-success text-weight-bold">Verified</p>
+                        @elseif($online_payment->online_verified == 0)
+                        <p class="text-danger text-weight-bold">Unverified</p>
+                        @endif
                       </td>
 
-                      <td><a href="{{ route('payment.show', $payment->id) }}" class="btn btn-defualt btn-sm button2">View Payment</a></td>
-
-                      @if(Auth::user()->user_role == 'admin')
+                      <td>{{ number_format($online_payment->amount_paid) }}</td>
 
                       <td>
-                        <a href="{{ route('payment.edit', $payment->id) }}"><i class="fa fa-edit"></i></a>
+
+                        <button class="btn btn-info button2 btn-sm" onclick="editOnline(this)" id="{{ $online_payment->id }}">Edit</button>
+
                       </td>
-
-                      <td>
-                        <button type="button" class="btn btn-danger btn-sm" id="{{ $payment->id }}" onclick="deletePayment(this)"><span class="fa fa-trash fa-xs"></span></button>
-                      </td>
-
-                      @endif
-
-                  	</tr>
-
-              @endif
+                    </tr>
 
             	@endforeach
 
@@ -201,58 +183,85 @@ var filterByDate = function(column, startDate, endDate) {
             <tfoot>
 
                <tr>
-
-                  <th>Date</th>
-                  <th>Location</th>
-                  <th>Receipt ID</th>
-                  <th>Client Code.</th>
-                  <th>Name</th>
-                  <th>Program</th>
-                  <th>Step</th>
-                  <th>Invoice Amount</th>
-                  <th>Total Paid</th>
-                  <th>Due Amount</th>
-                  <th>Action</th>
-                  <th>View Details</th>
-
-                  @if(Auth::user()->user_role == 'admin')
+                  <th>Deposit Date</th>
+                  <th>Client Code</th>
+                  <th>Client Name</th>
+                  <th>Program Name</th>
+                  <th>Step Name</th>
+                  <th>Deposited To</th>
+                  <th>Status</th>
+                  <th>Amount</th>
                   <th>Edit</th>
-                  <th>Delete</th>
-
-                  @endif
-
                </tr>
 
             </tfoot>
 
          </table>
+
 		</div>
+
 	</div>
+
 </div>
+
 
 <div id="myModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
+
+    <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Warning!</h4>
+        <h4 class="modal-title">Online Payment Information</h4>
       </div>
       <div class="modal-body">
-        <p>Are you sure you want to delete this payment?</p>
-        {{ Form::open(['route' => 'payment.delete']) }}
+        {{ Form::open(['route'=>'payment.update.online.info']) }}
 
-          {{ Form::hidden('payment_id', null, ['id'=>'payment-id']) }}
+        {{-- Hidden Fields --}}
+
+        {{ Form::hidden('payment_id', null, ['id'=>'payment-id']) }}
+
+        {{--  --}}
+
+        <div class="form-group">
+
+          {{ Form::label('Deposited To') }}
+          {{ Form::select('bank_name', $data['bank_accounts'] = [
+            'cash' => 'CASH',
+            'scb' => 'SCB',
+            'city' => 'CITY',
+            'dbbl' => 'DBBL',
+            'ebl' => 'EBL',
+            'ucb' => 'UCB',
+            'brac' => 'BRAC',
+            'agrani' => 'AGRANI',
+            'icb' => 'ICB',
+            'salman account' => 'Salman Account',
+            'kamran account' => 'Kamran Account'
+         ], null, ['class'=>'form-control', 'id'=>'bank-name']) }}
+          
+        </div>
+
+        <div class="form-group">
+
+          {{ Form::label('Deposite Date') }}
+          {{ Form::date('deposit_date', null, ['class'=>'form-control', 'id'=>'deposit-date']) }}
+          
+        </div>
         
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-default">Yes</button>
-        {{ Form::close() }}
-        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+        <button type="submit" class="btn btn-info">Update</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
 
+    {{ Form::close() }}
+
   </div>
 </div>
+
+@endsection
 
 @section('footer_scripts')
 
@@ -269,11 +278,30 @@ var filterByDate = function(column, startDate, endDate) {
 
 <script type="text/javascript">
 
-  function deletePayment(elem){
-    document.getElementById('payment-id').value = elem.id
-    $('#myModal').modal();
-  }
-</script>
-@endsection
+  function editOnline(elem){
 
+    var payment_id = elem.id;
+
+    $.ajax({
+      type: 'get',
+      url: '{!! URL::to('getOnlineInfo') !!}',
+      data: {'payment_id':payment_id},
+      success:function(data) {
+        document.getElementById('bank-name').value = data.bank_name;
+        document.getElementById('deposit-date').value = data.deposit_date;
+        document.getElementById('payment-id').value = data.id;
+      },
+      error:function(){
+
+      }
+
+    });
+
+
+    $('#myModal').modal();
+
+  }
+
+  
+</script>
 @endsection

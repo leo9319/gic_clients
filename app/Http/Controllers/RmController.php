@@ -14,6 +14,12 @@ class RmController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('role:admin')->only('index');
+    }
+
     public function index()
     {
         $data['previous'] = url()->previous();
