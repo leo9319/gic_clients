@@ -136,6 +136,7 @@ class HomeController extends Controller
             $data['appointments'] = Appointment::limit(5)->where('app_date', '>', Carbon::now())->get();
             $data['targets'] = Target::limit(5)->orderBy('month_year', 'asc')->get();
             $data['payments'] = Payment::latest('created_at')->limit(5)->get();
+            $data['registered_today'] = User::whereDate('created_at', Carbon::today())->count();
 
             return view('dashboard.admin', $data);
         }

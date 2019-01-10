@@ -137,6 +137,7 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Invoice Amount</th>
                   <th>Total Paid</th>
                   <th>Due Amount</th>
+                  <th>Note</th>
                   <th>View Details</th>
                   <th>View Payment</th>
                   <th>Edit</th>
@@ -171,6 +172,7 @@ var filterByDate = function(column, startDate, endDate) {
                       <td>{{ number_format($payment->totalAmount()) }}</td>
                       <td>{{ number_format($payment->totalVerifiedPayment->sum('amount_paid')) }}</td>
                       <td>{{ number_format($payment->dues) }}</td>                 
+                      <td>{{ $payment->comments }}</td>                
 
                       <td>
                         <a href="{{ route('payment.generate.invoice', $payment->id) }}" class="btn btn-info btn-sm button2">Generate Invoice</a>
@@ -206,6 +208,7 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Invoice Amount</th>
                   <th>Total Paid</th>
                   <th>Due Amount</th>
+                  <th>Note</th>
                   <th>View Details</th>
                   <th>View Payment</th>
                   <th>Edit</th>

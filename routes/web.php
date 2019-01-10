@@ -230,7 +230,7 @@ Route::get('payment/create/expenses', 'PaymentController@createExpense')->name('
 Route::get('payment/incomes/expenses', 'PaymentController@showIncomesAndExpenses')->name('payment.show.income.and.expenses');
 
 Route::post('payment/update/incomes/expenses', 'PaymentController@updateIncomesAndExpenses')->name('payment.update.income.and.expenses');
-Route::get('payment/delete/incomes/expenses/{income_and_expenses_id}', 'PaymentController@deleteIncomeAndExpenses')->name('payment.delete.income.and.expenses');
+Route::post('payment/delete/incomes/expenses/', 'PaymentController@deleteIncomeAndExpenses')->name('payment.delete.income.and.expenses');
 Route::get('payment/clear/due/{payment}', 'PaymentController@clearDue')->name('payment.clear.due');
 
 Route::post('payment/types', 'PaymentController@types')->name('payment.types');

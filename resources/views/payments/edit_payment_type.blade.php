@@ -25,11 +25,6 @@
 			<span class="h2">Edit Payment Type</span>
 
 			<span><button type="button" class="btn btn-danger btn-sm button2 pull-right" data-toggle="modal" data-target="#myModal">Delete and Reissue</button></span>
-
-			{{-- <span>
-				<a href="#" id="{{  }}" class="btn btn-danger btn-sm button2 pull-right" onclick="deleteAndReissue(this)">Delete and Reissue</a>
-			</span> --}}
-
 			
 
 		</div>

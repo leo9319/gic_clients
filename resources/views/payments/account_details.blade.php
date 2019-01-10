@@ -31,6 +31,18 @@ $(function() {
                     }
                 }
             },
+            {
+                text: 'Select all',
+                action: function () {
+                    this.rows().select();
+                }
+            },
+            {
+                text: 'Select none',
+                action: function () {
+                    this.rows().deselect();
+                }
+            }
         ],
         select: true
   });
@@ -128,6 +140,8 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Date</th>
 
+                  <th>Location</th>
+
                   <th>Client Name</th>
 
                   <th>Type</th>
@@ -153,6 +167,8 @@ var filterByDate = function(column, startDate, endDate) {
                <tr>
 
                   <th>Date</th>
+
+                  <th>Location</th>
 
                   <th>Client Name</th>
 
@@ -183,10 +199,11 @@ var filterByDate = function(column, startDate, endDate) {
 
               <tr>
                 <td>{{ Carbon\Carbon::parse($value['date'])->format('d-M-y') }}</td>
+                <td>{{ ucfirst($value['location']) }}</td>
                 <td>{{ $value['client_name'] }}</td>
                 <td>{{ $value['type'] }}</td>
                 <td>{{ $value['description'] }}</td>
-                <td>{{ number_format(abs($value['paid'])) }}</td>
+                <td>{{ number_format($value['paid']) }}</td>
                 <td>{{ $value['bank_charge'] }}%</td>
                 <td>{{ number_format(abs($value['received'])) }}</td>
                 <td>{{ number_format($sum += $value['received']) }}</td>

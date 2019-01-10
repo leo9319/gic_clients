@@ -8,6 +8,11 @@
 
 @section('header_scripts')
 
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
@@ -51,7 +56,8 @@
 
 				{!! Form::label('Date:') !!}
 			
-				{!! Form::date('date', date('Y-m-d'), ['class' => 'form-control']) !!}
+				{{-- {!! Form::date('date', date('Y-m-d'), ['class' => 'form-control']) !!} --}}
+				<input type="text" placeholder="Date" name="date" id="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}">
 
 			</div>
 
@@ -100,5 +106,22 @@
 	</div>
 
 </div>
+
+@endsection
+
+@section('footer_scripts')
+
+<script type="text/javascript">
+	
+	$( function() {
+		var today = new Date();
+
+	    $("#date").datepicker({
+	    	dateFormat: 'yy-mm-dd',
+		    maxDate: '0',
+		});
+	});
+	
+</script>
 
 @endsection

@@ -32,7 +32,7 @@
 
                   <p>
 
-                     <span class="number">{{ $number_of_clients }}</span>
+                     <span class="number">{{ $number_of_clients }} <small>({{ $registered_today }} new)</small></span>
                      <span class="title">Clients</span>
 
                   </p>
@@ -283,7 +283,7 @@
 
       <!-- Upcoming Appointments -->
 
-      <div class="col-md-6">
+      {{-- <div class="col-md-6">
 
          <div class="panel panel-scrolling">
 
@@ -335,7 +335,110 @@
 
          </div>
 
+      </div> --}}
+
+      {{-- Targets --}}
+
+      <div class="col-md-6">
+
+         <div class="panel">
+
+            <div class="panel-heading">
+
+               <h3 class="panel-title">Targets</h3>
+
+               <div class="right">
+
+                  <button type="button" class="btn-toggle-collapse">
+
+                     <i class="lnr lnr-chevron-up"></i>
+
+                  </button>
+
+                  <button type="button" class="btn-remove">
+
+                     <i class="lnr lnr-cross"></i>
+
+                  </button>
+
+               </div>
+
+            </div>
+
+            <div class="panel-body no-padding">
+
+               <table class="table table-striped">
+
+                  <thead>
+
+                     <tr>
+
+                        <th>Employee Name</th>
+                        <th>Role</th>
+                        <th>Target</th>
+                        <th>Achieved</th>
+                        <th>Month</th>
+                        
+                     </tr>
+
+                  </thead>
+
+                  <tbody>
+
+                     @foreach($targets as $index => $target)
+
+                        @foreach($target->userInfo as $user)
+
+                        <tr>
+
+                           <td>{{ $user->name }}</td>
+                           <td>{{ ucfirst($user->user_role) }}</td>
+                           <td>{{ $target->target }}</td>
+                           <td>{{ $target->achieved }}</td>
+                           <td>{{ Carbon\Carbon::parse($target->month_year)->format('F') }}</td>
+
+                        </tr>
+
+                        @endforeach
+
+                     @endforeach
+
+                  </tbody>
+
+               </table>
+
+            </div>
+
+            <div class="panel-footer">
+
+               <div class="row">
+
+                  <div class="col-md-6">
+
+                     <span class="panel-note">
+
+                     <i class="fa fa-clock-o">
+                     
+                     </i> Latest 5</span>
+
+                  </div>
+
+                  <div class="col-md-6 text-right">
+
+                     <a href="{{ route('target.rm') }}" class="btn btn-info btn-xs">View All RMs</a>
+                     <a href="{{ route('target.counselor') }}" class="btn btn-info btn-xs">View All Counselors</a>
+
+                  </div>
+
+               </div>
+
+            </div>
+
+         </div>
+
       </div>
+
+
 
       <!-- Number of Clients -->
 
@@ -368,7 +471,7 @@
 
    </div>
 
-   <div class="row">
+   {{-- <div class="row">
 
       <div class="col-md-12">
 
@@ -470,7 +573,7 @@
       </div>
 
    </div>
-      
+       --}}
 </div>
 
 @section('footer_scripts')

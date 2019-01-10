@@ -21,7 +21,7 @@ $(function() {
 
   var $tableSel = $('#example');
   $tableSel.dataTable({
-    "order": [[ 5, "asc" ]],
+    "order": [[ 6, "asc" ]],
     dom: 'Bfrtip',
         buttons: [
             'csv',
@@ -150,6 +150,8 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Date</th>
 
+                  <th>Location</th>
+
                   <th>Type</th>
 
                   <th>Amount</th>
@@ -185,6 +187,7 @@ var filterByDate = function(column, startDate, endDate) {
                     <tr>
 
                       <td>{{ Carbon\Carbon::parse($transaction->created_at)->format('d-M-Y') }}</td>
+                      <td>{{ ucfirst($transaction->location) }}</td>
 
                       <td>
 
@@ -247,8 +250,16 @@ var filterByDate = function(column, startDate, endDate) {
                       @if(Auth::user()->user_role == 'admin')
 
                       <td>
-                        <a href="{{ route('payment.delete.income.and.expenses', $transaction->id) }}" class="btn btn-danger btn-sm button2">Delete</a>
+                        {{-- <a href="{{ route('payment.delete.income.and.expenses', $transaction->id) }}" class="btn btn-danger btn-sm button2">Delete</a> --}}
+
+                        <a href="#" onclick="deleteTransaction(this)" id="{{ $transaction->id }}" class="btn btn-danger btn-sm button2">Delete</a>
+
+                        {{-- <button type="button" id class="btn btn-danger btn-sm button2" onclick="deleteEntry(this)">Delete</button> --}}
+
+
                       </td>
+
+
 
                       @endif
 
@@ -264,6 +275,8 @@ var filterByDate = function(column, startDate, endDate) {
                <tr>
 
                   <th>Date</th>
+
+                  <th>Location</th>
 
                   <th>Type</th>
 
@@ -288,7 +301,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Action</th>
 
                   @endif
-
 
                </tr>
 
@@ -357,6 +369,14 @@ var filterByDate = function(column, startDate, endDate) {
 
         </div>
 
+        <div class="form-group">
+
+          {!! Form::label('Location:') !!}
+        
+          {!! Form::select('location', ['dhaka'=>'Dhaka', 'chittagong'=>'Chittagong'], null, ['id' => 'location', 'class' => 'form-control']) !!}
+
+        </div>
+
         </div>
 
       <div class="modal-footer">
@@ -372,6 +392,34 @@ var filterByDate = function(column, startDate, endDate) {
 
   </div>
 
+</div>
+
+<div id="delete-transaction" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Warning!</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this entry?</p>
+      </div>
+      <div class="modal-footer">
+        {{ Form::open(['route'=>'payment.delete.income.and.expenses']) }}
+
+          {{ Form::hidden('id', null, ['id'=>'income-expense-id']) }}
+
+          {{ Form::submit('Yes', ['class'=>'btn btn-danger']) }}   
+        
+        <button type="button" class="btn btn-success" data-dismiss="modal">No</button>
+        {{ Form::close() }}
+
+      </div>
+    </div>
+
+  </div>
 </div>
 
 @endsection
@@ -410,6 +458,7 @@ var filterByDate = function(column, startDate, endDate) {
           document.getElementById("amount").value = Math.abs(data.total_amount);
           document.getElementById("description").innerHTML = data.description;
           document.getElementById("bank_name").value = data.bank_name;
+          document.getElementById("location").value = data.location;
         },
 
         error:function(){
@@ -420,6 +469,15 @@ var filterByDate = function(column, startDate, endDate) {
 
 
     $("#editTransaction").modal();
+
+  }
+
+  function deleteTransaction(elem) {
+    var transaction_id = elem.id;
+
+    document.getElementById('income-expense-id').value = transaction_id;
+
+    $("#delete-transaction").modal();
 
   }
 

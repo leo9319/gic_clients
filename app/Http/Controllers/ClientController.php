@@ -573,7 +573,7 @@ class ClientController extends Controller
         $client_id = $request->client_id;
 
         $validatedData = $request->validate([
-            'client_code' => 'required|unique:users',
+            'client_code' => 'required|unique:users,client_code,'.$client_id,
             'email' => 'unique:users,email,'.$client_id
         ]);
 

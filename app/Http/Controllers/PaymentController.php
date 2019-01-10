@@ -77,8 +77,6 @@ class PaymentController extends Controller
         $data['active_class'] = 'payments';
         $data['date'] = Carbon::parse($request->date)->toDateTimeString();
 
-        // Generating receipt_id
-
         $receipt_id = 'GIC-' . $request->client_id . $request->program_id . $request->step_id;
 
         $payment = Payment::updateOrCreate(
@@ -399,6 +397,7 @@ class PaymentController extends Controller
 
         $due = $total_amount - $total_amount_paid;
 
+        $date = Carbon::parse($request->date)->toDateTimeString();
 
         Payment::find($payment->id)->update([
             'location' => $request->location,
@@ -406,7 +405,9 @@ class PaymentController extends Controller
             'embassy_student_fee' => $request->embassy_student_fee,
             'service_solicitor_fee' => $request->service_solicitor_fee,
             'other' => $request->other,
-            'dues' => $due
+            'dues' => $due,
+            'comments' => $request->comments,
+            'created_at' => $date,
         ]);
 
 
@@ -817,6 +818,8 @@ class PaymentController extends Controller
 
     public function updatePaymentType(Request $request)
     {
+        $payment_id = $request->payment_id;
+
         if($request->bank_charge > 0) {
             $after_charge = $request->amount_paid - (($request->bank_charge / 100) * $request->amount_paid);
         } else {
@@ -824,7 +827,7 @@ class PaymentController extends Controller
         }
 
         PaymentType::find($request->id)->update([
-                'payment_id' => $request->payment_id,
+                'payment_id' => $payment_id,
                 'payment_type' => $request->payment_type,
                 'card_type' => $request->card_type,
                 'name_on_card' => $request->name_on_card,
@@ -841,8 +844,15 @@ class PaymentController extends Controller
                 'recheck' => 0,
             ]);
 
+        $total_amount = Payment::find($payment_id)->totalAmount();
+        $amount_paid = PaymentType::where('payment_id', $payment_id)->sum('amount_paid');
+        $dues = $total_amount - $amount_paid;
+
+        Payment::find($payment_id)->update(['dues'=>$dues]);
+
         return redirect()->route('payment.client.recheck.types.list');
 
+        
         // return $request->all();
     }
 
@@ -945,6 +955,7 @@ class PaymentController extends Controller
 
         foreach ($payment_histories as $key => $value) {
             $payment_breakdowns[$index]['date'] = $value->created_at;
+            $payment_breakdowns[$index]['location'] = $value->payment->location;
             $payment_breakdowns[$index]['client_name'] = (isset($value->payment->userInfo->name)) ? $value->payment->userInfo->name : 'Client Removed';
             $payment_breakdowns[$index]['type'] = (isset($value->payment->programInfo->program_name)) ? $value->payment->programInfo->program_name : 'Program Removed';
             
@@ -964,6 +975,7 @@ class PaymentController extends Controller
 
         foreach ($incomes_and_expenses as $key => $value) {
             $payment_breakdowns[$index]['date'] = $value->created_at;
+            $payment_breakdowns[$index]['location'] = $value->location;
             $payment_breakdowns[$index]['client_name'] = '';
             $payment_breakdowns[$index]['type'] = $value->payment_type;
             $payment_breakdowns[$index]['description'] = $value->description;
@@ -1115,6 +1127,7 @@ class PaymentController extends Controller
 
         IncomeExpense::find($request->payment_id)->update([
             'bank_name' => $request->bank_name,
+            'location' => $request->location,
             'total_amount' => $amount,
             'recheck' => 1,
             'description' => $request->description,
@@ -1124,9 +1137,9 @@ class PaymentController extends Controller
         return redirect()->back();
     }
 
-    public function deleteIncomeAndExpenses($incomes_and_expenses_id)
+    public function deleteIncomeAndExpenses(Request $request)
     {
-        IncomeExpense::find($incomes_and_expenses_id)->delete();
+        IncomeExpense::find($request->id)->delete();
 
         return redirect()->back();
     }
@@ -1649,7 +1662,6 @@ class PaymentController extends Controller
             'cheque_number' => $request->cheque_number,
             'bank_name' => $request->bank_name,
             'deposit_date' => $request->deposit_date,
-            'cheque_verified' => 0,
         ]);
 
         return redirect()->back();
@@ -1659,7 +1671,7 @@ class PaymentController extends Controller
     {
         PaymentType::find($request->payment_id)->update([
             'bank_name' => $request->bank_name,
-            'deposit_date' => $request->deposit_date
+            'deposit_date' => $request->deposit_date,
         ]);
 
         return redirect()->back();

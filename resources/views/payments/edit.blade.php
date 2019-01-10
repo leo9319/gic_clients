@@ -54,6 +54,14 @@
 
 				<div class="form-group">
 
+					{{ Form::label('Date:') }}
+
+					{{ Form::date('date', $payment->created_at, ['class'=>'form-control']) }}
+					
+				</div>
+
+				<div class="form-group">
+
 					{{ Form::label('Location:') }}
 
 					{{ Form::select('location', ['dhaka'=>'Dhaka', 'chittagong'=>'Chittagong'], null,['class'=>'form-control']) }}
@@ -138,6 +146,14 @@
 
 					<label>Due Clearance Date:</label>
 					<input type="text" placeholder="Due Date" name="due_date" id="due-date" class="form-control" value="{{ $payment->due_date }}">
+
+				</div>
+
+				<div class="form-group">
+
+					<label>Note:</label>
+
+					{{ Form::textarea('comments', null, ['class'=>'form-control', 'rows'=>3]) }}
 
 				</div>
 
