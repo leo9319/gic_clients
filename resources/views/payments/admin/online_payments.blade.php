@@ -1,6 +1,8 @@
+{{-- Admin --}}
+
 @extends('layouts.master')
 
-@section('title', 'Unverified Cheques')
+@section('title', 'Online Payments')
 
 @section('content')
 
@@ -12,7 +14,7 @@
 <script>
 $(function() {
 
-  var $tableSel = $('#unverified-cheques');
+  var $tableSel = $('#online-payments');
   $tableSel.dataTable({
     "ordering": false,
      dom: 'Bfrtip',
@@ -102,7 +104,7 @@ var filterByDate = function(column, startDate, endDate) {
 
 		<div class="panel-body">
 
-			<h2>Unverified Cheques</h2>
+			<h2>Online Payments</h2>
 
 		</div>
 
@@ -127,7 +129,7 @@ var filterByDate = function(column, startDate, endDate) {
       <button id="clearFilter" class="btn btn-info btn-sm" class="btn btn-success">Clear Filter</button>
       <hr>
 
-			<table id="unverified-cheques" class="table table-striped table-bordered" style="width:100%">
+			<table id="online-payments" class="table table-striped table-bordered" style="width:100%">
 
             <thead>
 
@@ -137,7 +139,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Client Name</th>
                   <th>Program Name</th>
                   <th>Step Name</th>
-                  <th>Cheque Number</th>
                   <th>Deposited To</th>
                   <th>Status</th>
                   <th>Amount</th>
@@ -148,31 +149,31 @@ var filterByDate = function(column, startDate, endDate) {
 
             <tbody>
 
-            	@foreach($unverified_cheques as $unverified_cheque)
+            	@foreach($online_payments as $online_payment)
 
                   	<tr>
-                      <td>{{ Carbon\Carbon::parse($unverified_cheque->created_at)->format('d-M-y') }}</td>
-                      <td>{{ $unverified_cheque->payment->userInfo->client_code ?? 'Client Removed' }}</td>
-                      <td>{{ $unverified_cheque->payment->userInfo->name ?? 'Client Removed' }}</td>
-                      <td>{{ $unverified_cheque->payment->programInfo->program_name ?? 'N/A' }}</td>
-                      <td>{{ $unverified_cheque->payment->stepInfo->step_name ?? 'N/A' }}</td>
-                      <td>{{ $unverified_cheque->cheque_number }}</td>
-                      <td>{{ strtoupper($unverified_cheque->bank_name) }}</td>
+                      <td>{{ Carbon\Carbon::parse($online_payment->created_at)->format('d-M-y') }}</td>
+                      <td>{{ $online_payment->payment->userInfo->client_code ?? 'Client Removed' }}</td>
+                      <td>{{ $online_payment->payment->userInfo->name ?? 'Client Removed' }}</td>
+                      <td>{{ $online_payment->payment->programInfo->program_name ?? 'N/A' }}</td>
+                      <td>{{ $online_payment->payment->stepInfo->step_name ?? 'N/A' }}</td>
+                      <td>{{ strtoupper($online_payment->bank_name) }}</td>
                       <td>
-                        @if($unverified_cheque->cheque_verified == -1)
-                        <p class="text-warning text-weight-bold">pending</p>
-                        @elseif($unverified_cheque->cheque_verified == 1)
+                        @if($online_payment->online_verified == -1)
+                        <a href="{{ route('payment.online.verification', [$online_payment->id, 1]) }}" class="label label-success">Verify</a>
+                        <a href="{{ route('payment.online.verification', [$online_payment->id, 0]) }}" class="label label-danger">Reject</a>
+                        @elseif($online_payment->online_verified == 1)
                         <p class="text-success text-weight-bold">Verified</p>
-                        @elseif($unverified_cheque->cheque_verified == 0)
+                        @elseif($online_payment->online_verified == 0)
                         <p class="text-danger text-weight-bold">Unverified</p>
                         @endif
                       </td>
 
-                      <td>{{ number_format($unverified_cheque->amount_paid) }}</td>
+                      <td>{{ number_format($online_payment->amount_paid) }}</td>
 
                       <td>
 
-                        <button class="btn btn-info button2 btn-sm" onclick="editCheque(this)" id="{{ $unverified_cheque->id }}">Edit</button>
+                        <button class="btn btn-info button2 btn-sm" onclick="editOnline(this)" id="{{ $online_payment->id }}">Edit</button>
 
                       </td>
                     </tr>
@@ -189,7 +190,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Client Name</th>
                   <th>Program Name</th>
                   <th>Step Name</th>
-                  <th>Cheque Number</th>
                   <th>Deposited To</th>
                   <th>Status</th>
                   <th>Amount</th>
@@ -214,23 +214,16 @@ var filterByDate = function(column, startDate, endDate) {
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Cheque Information</h4>
+        <h4 class="modal-title">Online Payment Information</h4>
       </div>
       <div class="modal-body">
-        {{ Form::open(['route'=>'payment.update.cheque.info']) }}
+        {{ Form::open(['route'=>'payment.update.online.info']) }}
 
         {{-- Hidden Fields --}}
 
         {{ Form::hidden('payment_id', null, ['id'=>'payment-id']) }}
 
         {{--  --}}
-
-        <div class="form-group">
-
-          {{ Form::label('Cheque_Number') }}
-          {{ Form::text('cheque_number', null, ['class'=>'form-control', 'id'=>'cheque-number']) }}
-          
-        </div>
 
         <div class="form-group">
 
@@ -287,17 +280,15 @@ var filterByDate = function(column, startDate, endDate) {
 
 <script type="text/javascript">
 
-  function editCheque(elem){
+  function editOnline(elem){
 
     var payment_id = elem.id;
 
     $.ajax({
       type: 'get',
-      url: '{!! URL::to('getChequeInfo') !!}',
+      url: '{!! URL::to('getOnlineInfo') !!}',
       data: {'payment_id':payment_id},
       success:function(data) {
-
-        document.getElementById('cheque-number').value = data.cheque_number;
         document.getElementById('bank-name').value = data.bank_name;
         document.getElementById('deposit-date').value = data.deposit_date;
         document.getElementById('payment-id').value = data.id;

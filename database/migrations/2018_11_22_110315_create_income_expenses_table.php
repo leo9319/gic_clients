@@ -22,6 +22,9 @@ class CreateIncomeExpensesTable extends Migration
             $table->string('location')->nullable();
             $table->tinyInteger('recheck');
             $table->text('description');
+            $table->string('advance_payment');
+            $table->integer('cleared_amount')->default(0);
+            $table->enum('advance_payment', ['yes', 'no']);
             $table->integer('created_by');
             $table->timestamps();
         });

@@ -28,6 +28,14 @@
     </div>
 @endif
 
+@if (\Session::has('warning'))
+    <div class="alert alert-danger">
+        <ul>
+            <li>{!! \Session::get('warning') !!}</li>
+        </ul>
+    </div>
+@endif
+
 <div class="container-fluid">
 
 	<div class="panel">
@@ -45,7 +53,6 @@
 
 			<label>Date:</label>
 			<input type="text" placeholder="Date" name="date" id="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}">
-			{{-- <input type="date" class="form-control" name="date" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> --}}
 
 			<br>
 

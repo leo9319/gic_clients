@@ -5,17 +5,21 @@
     <title>Customer Invoice</title>
 
     <style>
+        body {
+          font-size: 12px;
+        }
+
         #page-wrap{
             padding: 1em;
         }
 
         #address{
-            line-height: 1.9em;
+            line-height: 1.4em;
 
         }
         #address .font{
             font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
-            line-height: 1.6em;
+            line-height: 1.3em;
             color: grey;
         }
 
@@ -47,9 +51,9 @@
             clear: both;
         }
         .table-personal-info .tr{
-            margin-top: 2em;
+            margin-top: 1em;
             font-weight: bold;
-            line-height: 1.3em;
+            line-height: 1.0em;
         }
         .table-personal-info{
             margin-top: 1.5em;
@@ -112,53 +116,49 @@
 
             </div>
 
-
-
-                <div >
-                    <table class="table-personal-info">
-                        <tr>
-                            <td class="tr">Full Name:</td>
-                            <td>{{ $name }}</td>
-                        </tr>
-                        <tr>
-                            <td class="tr">Present Address:</td>
-                            <td>{{ $address }}</td>
-                        </tr>
-                        <tr>
-                            <td class="tr">Phone Number:</td>
-                            <td>{{ $mobile }}</td>
-                        </tr>
-                        <tr>
-                            <td class="tr">Email Address:</td>
-                            <td>{{ $email }}</td>
-                        </tr>
-                    </table>
-                </div>
+            <div>
+                <table class="table-personal-info">
+                    <tr>
+                        <td class="tr">Client ID</td>
+                        <td>: {{$client_code}}</td>
+                    </tr>
+                    <tr>
+                        <td class="tr">Full Name</td>
+                        <td>: {{ $name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="tr">Phone Number</td>
+                        <td>: {{ $mobile }}</td>
+                    </tr>
+                    <tr>
+                        <td class="tr">Email Address</td>
+                        <td>: {{ $email }}</td>
+                    </tr>
+                    <tr>
+                        <td class="tr">Present Address</td>
+                        <td>: {{ $address }}</td>
+                    </tr>
+                </table>
+            </div>
 
         </div>
-
-
 
         <div id="logo">
 
                 <div id="" >
                     <img style="margin-left: 4em" src="http://gicbd.com/wp-content/uploads/2017/04/logo.png" alt="logo" height="70" width="190"/>
                 </div>
-                <table id="meta" >
+                <table id="meta">
                     <tr>
                         <td class="back">Receipt ID</td>
-                        <td > {{ $receipt_id }}</td>
+                        <td> {{ $receipt_id }}</td>
                     </tr>
                     <tr>
                         <td class="back">Date</td>
-                        <td > {{ $date }}</td>
+                        <td> {{ $date }}</td>
                     </tr>
                     <tr>
-                        <td class="back">Client Code</td>
-                        <td>{{$client_code}}</td>
-                    </tr>
-                    <tr>
-                        <td class="back">Invoice created by</td>
+                        <td class="back">Created by</td>
                         <td>{{ $created_by }}</td>
                     </tr>
                     @if(isset($due_date))
@@ -171,15 +171,26 @@
             </div>
 
     </div>
-    <div class="clear">
 
-    </div>
+    <div class="clear"></div>
+    <br>
+
+    <table id="meta">
+        <tr>
+            <td><b>Program</b></td>
+            <td>: {{ $program }}</td>
+        </tr>
+        <tr>
+            <td><b>Step</b></td>
+            <td>: {{ $step ? $step->step_name : 'N/A' }}</td>
+        </tr>
+    </table>
+
+    
 
     <div >
         <table  width="100%" id="details" border="1">
             <tr>
-                <th>Programs</th>
-                <th>Step Name</th>
                 <th>Initial Assessment fee</th>
                 <th>Lawyer Fees/ Service Charges</th>
                 <th>Government / Third party fees</th>
@@ -188,8 +199,6 @@
                 <th>Amount Paid</th>
             </tr>
             <tr id="hiderow">
-                <td>{{ $program }}</td>
-                <td>{{ $step ? $step->step_name : 'N/A' }}</td>
                 <td>{{ number_format($opening_fee) }}</td>
                 <td>{{ number_format($embassy_student_fee) }}</td>
                 <td>{{ number_format($service_solicitor_fee) }}</td>
@@ -199,7 +208,7 @@
             </tr>
         </table>
 
-        <h3>Payment Methods:</h3>
+        <h4>Payment Methods:</h4>
 
         <table  width="100%" id="details" border="1">
             <tr>

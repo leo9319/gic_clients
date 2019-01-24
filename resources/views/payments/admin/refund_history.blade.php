@@ -1,17 +1,10 @@
 @extends('layouts.master')
 
-@section('url', $previous)
-
-@section('title', 'Payment History')
+@section('title', 'Refund History')
 
 @section('content')
 
 @section('header_scripts')
-
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<link rel="stylesheet" href="/resources/demos/style.css">
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
@@ -19,10 +12,10 @@
 <script>
 $(function() {
 
-  var $tableSel = $('#example');
+  var $tableSel = $('#refund-history');
   $tableSel.dataTable({
-    "order": [[ 6, "desc" ]],
-    dom: 'Bfrtip',
+    "ordering": false,
+     dom: 'Bfrtip',
         buttons: [
             'csv',
             'excel',
@@ -101,7 +94,6 @@ var filterByDate = function(column, startDate, endDate) {
 }
 </script>
 
-
 @stop
 
 <div class="container-fluid">
@@ -110,138 +102,80 @@ var filterByDate = function(column, startDate, endDate) {
 
 		<div class="panel-body">
 
-			<h2>Income/Expense History</h2>
-
-      <div class="pull-right">
-        <a href="{{ route('payment.income.pdf') }}" class="btn btn-success btn-sm">View All Incomes</a>
-        <a href="{{ route('payment.expense.pdf') }}" class="btn btn-danger btn-sm">View All Expenses</a>
-
-        <a href="{{ route('payment.income.expense.pdf') }}" class="btn btn-info btn-sm">View Summary</a>
-      </div>
+			<h2>Refund History</h2>
 
 		</div>
 
 		<div class="panel-footer">
 
-      <table border="0" cellspacing="5" cellpadding="5">
-        <tbody>
-          <tr>
-            <td>Start Date: </td>
-            <td><input type="date" id="start" name="min" class="form-control"></td>
-          </tr>
-          <tr>
-              <td>End Date: </td>
-              <td><input type="date" id="end" name="max" class="form-control"></td>
-          </tr>
-      </tbody>
-    </table>
+			<table border="0" cellspacing="5" cellpadding="5">
+	        <tbody>
+	          <tr>
+	            <td>Start Date: </td>
+	            <td><input type="date" id="start" name="min" class="form-control"></td>
+	          </tr>
+	          <tr>
+	              <td>End Date: </td>
+	              <td><input type="date" id="end" name="max" class="form-control"></td>
+	          </tr>
+	        </tbody>
+	      </table>
 
-  <hr>
+	      <hr>
 
-  <button id="filter" class="btn btn-success btn-sm">Filter</button>
-  <button id="clearFilter" class="btn btn-info btn-sm" class="btn btn-success">Clear Filter</button>
-  <hr>
+	      <button id="filter" class="btn btn-success btn-sm">Filter</button>
+	      <button id="clearFilter" class="btn btn-info btn-sm" class="btn btn-success">Clear Filter</button>
+	      <hr>
 
-			<table id="example" class="table table-striped table-bordered" style="width:100%">
+			<table id="refund-history" class="table table-striped table-bordered" style="width:100%">
 
             <thead>
-
-               <tr>
-
-                  <th>Date</th>
-
-                  <th>Type</th>
-
-                  <th>Amount</th>
-
-                  <th>Description</th>
-
-                  <th>Deposited to</th>
-
-                  <th>Location</th>
-
-                  @if(Auth::user()->user_role == 'accountant')
-
-                  <th>Verification</th>
-
-                  @endif
-
-
-               </tr>
-
+				<tr>
+					<th>Date</th>
+					<th>Client Name</th>
+					<th>Program Name</th>
+					<th>Step Name</th>
+					<th>Payment Type</th>
+					<th>Refunded From</th>
+					<th>Cheque Number</th>
+					<th>Amount Refunded</th>
+					<th>Action</th>
+				</tr>
             </thead>
 
             <tbody>
-
-                  @foreach($transactions as $transaction)
-
-                    <tr>
-
-                      <td>{{ Carbon\Carbon::parse($transaction->created_at)->format('d-M-Y') }}</td>
-
-                      <td>
-
-                        {{ ucfirst($transaction->payment_type) }}
-
-                      </td>
-
-
-                      <td>{{ number_format(abs($transaction->total_amount)) }}</td>
-                      <td>{{ $transaction->description }}</td>
-                      <td>{{ strtoupper($transaction->bank_name) }}</td>
-                      <td>{{ ucfirst($transaction->location) }}</td>
-
-                      @if(Auth::user()->user_role == 'accountant')
-
-                        @if($transaction->recheck == 0)
-
-                          <td><p class="text-success"><b>Approved</b></p></td>
-
-                        @elseif($transaction->recheck == -1)
-
-                          <td><p class="text-danger"><b>Disapproved</b></p></td>
-
-                        @else
-
-                          <td><p class="text-warning"><b>Pending</b></p></td>
-
-                        @endif
-
-                      @endif
-
-
-                    </tr>
-
-                  @endforeach
-
-            </tbody>
+            	@foreach($refunds as $refund)
+            	<tr>
+            		<td>{{ Carbon\Carbon::parse($refund->created_at)->format('d-M-y') }}</td>
+            		<td>{{ $refund->payment->userInfo->name ?? 'Client Removed' }}</td>
+            		<td>{{ $refund->payment->programInfo->program_name ?? 'Program Removeds' }}</td>
+            		<td>{{ $refund->payment->stepInfo->step_name ?? 'Steps Removed' }}</td>
+            		<td>{{ ucfirst($refund->payment_type) }}</td>
+            		<td>{{ strtoupper($refund->bank_name) }}</td>
+            		<td>{{ $refund->cheque_number }}</td>
+            		<td>{{ number_format($refund->amount_paid) }}</td>
+            		
+      					<td>
+      						<a href="{{ route('payment.client.refund.delete', $refund->id) }}" class="btn btn-danger btn-sm button2">Delete</a>
+      					</td>
+					
+              	</tr>
+              	@endforeach
+              </tbody>
 
             <tfoot>
-
-               <tr>
-
-                  <th>Date</th>
-
-                  <th>Type</th>
-
-                  <th>Amount</th>
-
-                  <th>Description</th>
-
-                  <th>Deposited to</th>
-
-                  <th>Location</th>
-
-                  @if(Auth::user()->user_role == 'accountant')
-
-                  <th>Verification</th>
-
-                  @endif
-
-               </tr>
-
+            	<tr>
+					<th>Date</th>
+					<th>Client Name</th>
+					<th>Program Name</th>
+					<th>Step Name</th>
+					<th>Payment Type</th>
+					<th>Refunded From</th>
+					<th>Cheque Number</th>
+					<th>Amount Refunded</th>
+					<th>Action</th>
+				</tr>
             </tfoot>
-
          </table>
 
 		</div>
@@ -249,28 +183,6 @@ var filterByDate = function(column, startDate, endDate) {
 	</div>
 
 </div>
-
-
-@endsection
-
-@section('footer_scripts')
-
-<script type="text/javascript">
-
-  function formatDate(date) {
-      var d = new Date(date),
-          month = '' + (d.getMonth() + 1),
-          day = '' + d.getDate(),
-          year = d.getFullYear();
-
-      if (month.length < 2) month = '0' + month;
-      if (day.length < 2) day = '0' + day;
-
-      return [year, month, day].join('-');
-  }
-  
-
-</script>
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>

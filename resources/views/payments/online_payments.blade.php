@@ -132,7 +132,7 @@ var filterByDate = function(column, startDate, endDate) {
             <thead>
 
                <tr>
-                  <th>Deposit Date</th>
+                  <th>Date</th>
                   <th>Client Code</th>
                   <th>Client Name</th>
                   <th>Program Name</th>
@@ -150,7 +150,7 @@ var filterByDate = function(column, startDate, endDate) {
             	@foreach($online_payments as $online_payment)
 
                   	<tr>
-                      <td>{{ Carbon\Carbon::parse($online_payment->deposit_date)->format('d-M-y') }}</td>
+                      <td>{{ Carbon\Carbon::parse($online_payment->created_at)->format('d-M-y') }}</td>
                       <td>{{ $online_payment->payment->userInfo->client_code ?? 'Client Removed' }}</td>
                       <td>{{ $online_payment->payment->userInfo->name ?? 'Client Removed' }}</td>
                       <td>{{ $online_payment->payment->programInfo->program_name ?? 'N/A' }}</td>
@@ -158,8 +158,7 @@ var filterByDate = function(column, startDate, endDate) {
                       <td>{{ strtoupper($online_payment->bank_name) }}</td>
                       <td>
                         @if($online_payment->online_verified == -1)
-                        <a href="{{ route('payment.online.verification', [$online_payment->id, 1]) }}" class="label label-success">Verify</a>
-                        <a href="{{ route('payment.online.verification', [$online_payment->id, 0]) }}" class="label label-danger">Reject</a>
+                        <p class="text-warning text-weight-bold">Verified</p>
                         @elseif($online_payment->online_verified == 1)
                         <p class="text-success text-weight-bold">Verified</p>
                         @elseif($online_payment->online_verified == 0)
@@ -183,7 +182,7 @@ var filterByDate = function(column, startDate, endDate) {
             <tfoot>
 
                <tr>
-                  <th>Deposit Date</th>
+                  <th>Date</th>
                   <th>Client Code</th>
                   <th>Client Name</th>
                   <th>Program Name</th>

@@ -229,12 +229,17 @@ Route::get('payment/create/expenses', 'PaymentController@createExpense')->name('
 
 Route::get('payment/incomes/expenses', 'PaymentController@showIncomesAndExpenses')->name('payment.show.income.and.expenses');
 
+Route::get('payment/advance/incomes', 'PaymentController@showAdvanceIncomes')->name('payment.show.advance.incomes');
+
+Route::post('update/advance/income/expense', 'PaymentController@updateAdvanceIncomeExpense')->name('payment.update.advance.income.expense');
+
+Route::get('payment/advance/expenses', 'PaymentController@showAdvanceExpenses')->name('payment.show.advance.expenses');
+
 Route::post('payment/update/incomes/expenses', 'PaymentController@updateIncomesAndExpenses')->name('payment.update.income.and.expenses');
 Route::post('payment/delete/incomes/expenses/', 'PaymentController@deleteIncomeAndExpenses')->name('payment.delete.income.and.expenses');
 Route::get('payment/clear/due/{payment}', 'PaymentController@clearDue')->name('payment.clear.due');
 
 Route::post('payment/types', 'PaymentController@types')->name('payment.types');
-Route::get('findIncomeAndExpenses', 'PaymentController@findIncomeAndExpenses');
 Route::get('payment/acknowledgement/thank-you', function() {
 	return view('payments.acknowledgement');
 })->name('payment.acknowledgement');
@@ -281,9 +286,7 @@ Route::get('getClientPaymentId', 'PaymentController@getClientPaymentId');
 Route::get('getChequeInfo', 'PaymentController@getChequeInfo');
 Route::get('getOnlineInfo', 'PaymentController@getOnlineInfo');
 Route::get('findNoteInfo', 'PaymentController@findNoteInfo');
-
-
-
+Route::get('findIncomeAndExpenses', 'PaymentController@findIncomeAndExpenses');
 
 
 

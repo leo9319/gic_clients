@@ -68,7 +68,7 @@
                             <label for="mobile" class="col-md-3 control-label">Mobile (Primary)</label>
 
                             <div class="col-md-6">
-                                <input id="mobile" type="number" class="form-control" name="mobile" value="" required autofocus>
+                                <input id="mobile" type="number" class="form-control" name="mobile" value="{{ old('mobile') }}" required autofocus>
                             </div>
 
                             <div class="col-md-1">

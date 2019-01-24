@@ -61,6 +61,14 @@ input[type="number"] {
 
 			<div class="form-group">
 
+				<label>Date:</label>
+
+				<input type="date" name="date" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}" class="form-control">
+				
+			</div>
+
+			<div class="form-group">
+
 				<label class="text-success">Payment Type:</label>
 
 				<select id="0" class="form-control" name="payment_type-0" onchange="addPaymentOptions(this)" required="">

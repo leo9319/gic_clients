@@ -1,17 +1,9 @@
+{{-- Admin  --}}
+
 @extends('layouts.master')
-
-@section('url', $previous)
-
 @section('title', 'Payment History')
-
 @section('content')
-
 @section('header_scripts')
-
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<link rel="stylesheet" href="/resources/demos/style.css">
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
@@ -19,10 +11,10 @@
 <script>
 $(function() {
 
-  var $tableSel = $('#example');
+  var $tableSel = $('#payment-history');
   $tableSel.dataTable({
-    "order": [[ 6, "desc" ]],
-    dom: 'Bfrtip',
+    "order": [[ 0, "desc" ]],
+     dom: 'Bfrtip',
         buttons: [
             'csv',
             'excel',
@@ -101,24 +93,12 @@ var filterByDate = function(column, startDate, endDate) {
 }
 </script>
 
-
 @stop
 
 <div class="container-fluid">
-
 	<div class="panel">
-
 		<div class="panel-body">
-
-			<h2>Income/Expense History</h2>
-
-      <div class="pull-right">
-        <a href="{{ route('payment.income.pdf') }}" class="btn btn-success btn-sm">View All Incomes</a>
-        <a href="{{ route('payment.expense.pdf') }}" class="btn btn-danger btn-sm">View All Expenses</a>
-
-        <a href="{{ route('payment.income.expense.pdf') }}" class="btn btn-info btn-sm">View Summary</a>
-      </div>
-
+			<h2>Payment History</h2>
 		</div>
 
 		<div class="panel-footer">
@@ -133,86 +113,91 @@ var filterByDate = function(column, startDate, endDate) {
               <td>End Date: </td>
               <td><input type="date" id="end" name="max" class="form-control"></td>
           </tr>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
 
-  <hr>
+      <hr>
 
-  <button id="filter" class="btn btn-success btn-sm">Filter</button>
-  <button id="clearFilter" class="btn btn-info btn-sm" class="btn btn-success">Clear Filter</button>
-  <hr>
+      <button id="filter" class="btn btn-success btn-sm">Filter</button>
+      <button id="clearFilter" class="btn btn-info btn-sm" class="btn btn-success">Clear Filter</button>
+      <hr>
 
-			<table id="example" class="table table-striped table-bordered" style="width:100%">
+			<table id="payment-history" class="table table-striped table-bordered" style="width:100%">
 
             <thead>
 
-               <tr>
-
                   <th>Date</th>
-
-                  <th>Type</th>
-
-                  <th>Amount</th>
-
-                  <th>Description</th>
-
-                  <th>Deposited to</th>
-
                   <th>Location</th>
+                  <th>Receipt ID</th>
+                  <th>Client Code.</th>
+                  <th>Name</th>
+                  <th>Program</th>
+                  <th>Step</th>
+                  <th>Invoice Amount</th>
+                  <th>Total Paid</th>
+                  <th>Due Amount</th>
+                  <th>Note</th>
+                  <th>Action</th>
+                  <th>View Details</th>
 
-                  @if(Auth::user()->user_role == 'accountant')
-
-                  <th>Verification</th>
-
+                  @if(Auth::user()->user_role == 'admin')
+                  <th>Edit</th>
+                  <th>Delete</th>
                   @endif
-
-
-               </tr>
 
             </thead>
 
             <tbody>
 
-                  @foreach($transactions as $transaction)
+            	@foreach($payments as $payment)
 
-                    <tr>
+              @if($payment)
 
-                      <td>{{ Carbon\Carbon::parse($transaction->created_at)->format('d-M-Y') }}</td>
+              <?php $class = ($payment->recheck == 1 ? 'text-danger' : '') ?>
+
+                  	<tr class="{{ $class }}">
+
+                      <td>{{ Carbon\Carbon::parse($payment->created_at)->format('d-M-y') }}</td>
+                      <td>{{ ucfirst($payment->location) }}</td>
+                      <td>{{ $payment->receipt_id }}</td>
+                      
+                  		<td>
+                  			<a href="{{ route('client.profile', $payment->client_id) }}">
+                  				{{ $payment->userInfo->client_code ?? 'Client Removed'}}
+                  			</a>   
+                  		</td>
+                      
+                  		<td>{{ $payment->userInfo->name ?? 'Client Removed'}}</td>  
+                  		<td>{{ $payment->programInfo->program_name ?? 'Program Removed'}}</td> 
+                  		<td>{{ $payment->stepInfo->step_name ?? 'Step Removed' }}</td>                  
+                      <td>{{ number_format($payment->totalAmount()) }}</td>
+                      <td>{{ number_format($payment->totalVerifiedPayment->sum('amount_paid')) }}</td>
+                      <td>{{ number_format($payment->dues) }}</td>
+                      <td>{{ $payment->comments }}</td>
 
                       <td>
-
-                        {{ ucfirst($transaction->payment_type) }}
-
+                        <a href="{{ route('payment.generate.invoice', $payment->id) }}" class="btn btn-info btn-sm button2">Generate Invoice</a>
                       </td>
 
+                      <td><a href="{{ route('payment.show', $payment->id) }}" class="btn btn-defualt btn-sm button2">View Payment</a></td>
 
-                      <td>{{ number_format(abs($transaction->total_amount)) }}</td>
-                      <td>{{ $transaction->description }}</td>
-                      <td>{{ strtoupper($transaction->bank_name) }}</td>
-                      <td>{{ ucfirst($transaction->location) }}</td>
+                      @if(Auth::user()->user_role == 'admin')
 
-                      @if(Auth::user()->user_role == 'accountant')
+                      <td>
+                        <a href="{{ route('payment.edit', $payment->id) }}"><i class="fa fa-edit"></i></a>
+                      </td>
 
-                        @if($transaction->recheck == 0)
-
-                          <td><p class="text-success"><b>Approved</b></p></td>
-
-                        @elseif($transaction->recheck == -1)
-
-                          <td><p class="text-danger"><b>Disapproved</b></p></td>
-
-                        @else
-
-                          <td><p class="text-warning"><b>Pending</b></p></td>
-
-                        @endif
+                      <td>
+                        <button type="button" class="btn btn-danger btn-sm" id="{{ $payment->id }}" onclick="deletePayment(this)"><span class="fa fa-trash fa-xs"></span></button>
+                      </td>
 
                       @endif
 
+                  	</tr>
 
-                    </tr>
+              @endif
 
-                  @endforeach
+            	@endforeach
 
             </tbody>
 
@@ -221,20 +206,22 @@ var filterByDate = function(column, startDate, endDate) {
                <tr>
 
                   <th>Date</th>
-
-                  <th>Type</th>
-
-                  <th>Amount</th>
-
-                  <th>Description</th>
-
-                  <th>Deposited to</th>
-
                   <th>Location</th>
+                  <th>Receipt ID</th>
+                  <th>Client Code.</th>
+                  <th>Name</th>
+                  <th>Program</th>
+                  <th>Step</th>
+                  <th>Invoice Amount</th>
+                  <th>Total Paid</th>
+                  <th>Due Amount</th>
+                  <th>Note</th>
+                  <th>Action</th>
+                  <th>View Details</th>
 
-                  @if(Auth::user()->user_role == 'accountant')
-
-                  <th>Verification</th>
+                  @if(Auth::user()->user_role == 'admin')
+                  <th>Edit</th>
+                  <th>Delete</th>
 
                   @endif
 
@@ -243,34 +230,35 @@ var filterByDate = function(column, startDate, endDate) {
             </tfoot>
 
          </table>
-
 		</div>
-
 	</div>
-
 </div>
 
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Warning!</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this payment?</p>
+        {{ Form::open(['route' => 'payment.delete']) }}
 
-@endsection
+          {{ Form::hidden('payment_id', null, ['id'=>'payment-id']) }}
+        
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-default">Yes</button>
+        {{ Form::close() }}
+        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 @section('footer_scripts')
-
-<script type="text/javascript">
-
-  function formatDate(date) {
-      var d = new Date(date),
-          month = '' + (d.getMonth() + 1),
-          day = '' + d.getDate(),
-          year = d.getFullYear();
-
-      if (month.length < 2) month = '0' + month;
-      if (day.length < 2) day = '0' + day;
-
-      return [year, month, day].join('-');
-  }
-  
-
-</script>
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
@@ -282,5 +270,14 @@ var filterByDate = function(column, startDate, endDate) {
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
+
+<script type="text/javascript">
+
+  function deletePayment(elem){
+    document.getElementById('payment-id').value = elem.id
+    $('#myModal').modal();
+  }
+</script>
+@endsection
 
 @endsection

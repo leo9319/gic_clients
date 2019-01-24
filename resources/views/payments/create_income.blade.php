@@ -93,6 +93,20 @@
 
 			</div>
 
+			<div class="form-group">
+
+				{!! Form::label('advance_payment:') !!}
+
+				<br>
+			
+				{!! Form::radio('advance_payment', 'yes', true) !!} Yes
+
+				<br>
+
+				{!! Form::radio('advance_payment', 'no', true) !!} No
+
+			</div>
+
 			<br>
 
 			<div class="form-group">

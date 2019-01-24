@@ -139,11 +139,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Action</th>
                   <th>View Details</th>
 
-                  @if(Auth::user()->user_role == 'admin')
-                  <th>Edit</th>
-                  <th>Delete</th>
-                  @endif
-
             </thead>
 
             <tbody>
@@ -180,18 +175,6 @@ var filterByDate = function(column, startDate, endDate) {
 
                       <td><a href="{{ route('payment.show', $payment->id) }}" class="btn btn-defualt btn-sm button2">View Payment</a></td>
 
-                      @if(Auth::user()->user_role == 'admin')
-
-                      <td>
-                        <a href="{{ route('payment.edit', $payment->id) }}"><i class="fa fa-edit"></i></a>
-                      </td>
-
-                      <td>
-                        <button type="button" class="btn btn-danger btn-sm" id="{{ $payment->id }}" onclick="deletePayment(this)"><span class="fa fa-trash fa-xs"></span></button>
-                      </td>
-
-                      @endif
-
                   	</tr>
 
               @endif
@@ -218,12 +201,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Action</th>
                   <th>View Details</th>
 
-                  @if(Auth::user()->user_role == 'admin')
-                  <th>Edit</th>
-                  <th>Delete</th>
-
-                  @endif
-
                </tr>
 
             </tfoot>
@@ -231,30 +208,6 @@ var filterByDate = function(column, startDate, endDate) {
          </table>
 		</div>
 	</div>
-</div>
-
-<div id="myModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Warning!</h4>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to delete this payment?</p>
-        {{ Form::open(['route' => 'payment.delete']) }}
-
-          {{ Form::hidden('payment_id', null, ['id'=>'payment-id']) }}
-        
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-default">Yes</button>
-        {{ Form::close() }}
-        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-      </div>
-    </div>
-
-  </div>
 </div>
 
 @section('footer_scripts')
@@ -270,13 +223,6 @@ var filterByDate = function(column, startDate, endDate) {
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
 
-<script type="text/javascript">
-
-  function deletePayment(elem){
-    document.getElementById('payment-id').value = elem.id
-    $('#myModal').modal();
-  }
-</script>
 @endsection
 
 @endsection

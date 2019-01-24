@@ -140,7 +140,7 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Note</th>
                   <th>View Details</th>
                   <th>View Payment</th>
-                  <th>Edit</th>
+                  {{-- <th>Edit</th> --}}
 
                </tr>
 
@@ -182,9 +182,9 @@ var filterByDate = function(column, startDate, endDate) {
                         <a href="{{ route('payment.show', $payment->id) }}" class="btn btn-defualt btn-sm button2">View Payment</a>
                       </td>
 
-                      <td>
+                      {{-- <td>
                         <a href="{{ route('payment.edit', $payment->id) }}"><i class="fa fa-edit"></i></a>
-                      </td>
+                      </td> --}}
 
                   	</tr>
 
@@ -211,7 +211,7 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Note</th>
                   <th>View Details</th>
                   <th>View Payment</th>
-                  <th>Edit</th>
+                  {{-- <th>Edit</th> --}}
 
                </tr>
 

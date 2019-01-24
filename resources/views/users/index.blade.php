@@ -98,7 +98,6 @@ $(document).ready( function () {
               '3' => 'Accountant',
               '4' => 'Backend',
               '5' => 'Counsellor',
-              '6' => 'Client',
               ], null, ['class' => 'form-control'])
               !!}
 

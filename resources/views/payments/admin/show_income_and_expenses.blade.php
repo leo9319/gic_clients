@@ -1,8 +1,8 @@
+{{-- Admin --}}
+
 @extends('layouts.master')
 
-@section('url', $previous)
-
-@section('title', 'Payment History')
+@section('title', 'Income and Expense')
 
 @section('content')
 
@@ -21,7 +21,7 @@ $(function() {
 
   var $tableSel = $('#example');
   $tableSel.dataTable({
-    "order": [[ 6, "desc" ]],
+    "order": [[ 6, "asc" ]],
     dom: 'Bfrtip',
         buttons: [
             'csv',
@@ -160,12 +160,19 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Location</th>
 
-                  @if(Auth::user()->user_role == 'accountant')
+                  @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
 
                   <th>Verification</th>
 
+                  <th>Action</th>
+
                   @endif
 
+                  @if(Auth::user()->user_role == 'admin')
+
+                  <th>Action</th>
+
+                  @endif
 
                </tr>
 
@@ -191,6 +198,28 @@ var filterByDate = function(column, startDate, endDate) {
                       <td>{{ strtoupper($transaction->bank_name) }}</td>
                       <td>{{ ucfirst($transaction->location) }}</td>
 
+                      @if(Auth::user()->user_role == 'admin')
+
+                        @if($transaction->recheck == 0)
+
+                          <td><p class="text-success"><b>Approved</b></p></td>
+
+                        @elseif($transaction->recheck == -1)
+
+                          <td><p class="text-danger"><b>Disapproved</b></p></td>
+
+                        @else
+
+                        <td>
+                          <a href="{{ route('payment.recheck', [$transaction->id, 0]) }}" class="label label-success">Approve</a>
+
+                          <a href="{{ route('payment.recheck', [$transaction->id, -1]) }}" class="label label-danger">Disapprove</a>
+                        </td>
+
+                        @endif
+
+                      @endif
+
                       @if(Auth::user()->user_role == 'accountant')
 
                         @if($transaction->recheck == 0)
@@ -206,6 +235,28 @@ var filterByDate = function(column, startDate, endDate) {
                           <td><p class="text-warning"><b>Pending</b></p></td>
 
                         @endif
+
+                      @endif
+
+                      @if(Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'admin')
+
+                        <td><a href="#" name="{{$transaction->id}}" onclick="editTransaction(this)"><i class="fa fa-edit"></i> Edit</a></td>
+
+                      @endif
+
+                      @if(Auth::user()->user_role == 'admin')
+
+                      <td>
+                        {{-- <a href="{{ route('payment.delete.income.and.expenses', $transaction->id) }}" class="btn btn-danger btn-sm button2">Delete</a> --}}
+
+                        <a href="#" onclick="deleteTransaction(this)" id="{{ $transaction->id }}" class="btn btn-danger btn-sm button2">Delete</a>
+
+                        {{-- <button type="button" id class="btn btn-danger btn-sm button2" onclick="deleteEntry(this)">Delete</button> --}}
+
+
+                      </td>
+
+
 
                       @endif
 
@@ -232,9 +283,17 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Location</th>
 
-                  @if(Auth::user()->user_role == 'accountant')
+                  @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
 
                   <th>Verification</th>
+
+                  <th>Action</th>
+
+                  @endif
+
+                  @if(Auth::user()->user_role == 'admin')
+
+                  <th>Action</th>
 
                   @endif
 
@@ -250,6 +309,113 @@ var filterByDate = function(column, startDate, endDate) {
 
 </div>
 
+<!-- Modal -->
+<div id="editTransaction" class="modal fade" role="dialog">
+
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+        <h4 class="modal-title">Edit Transaction</h4>
+
+      </div>
+
+      <div class="modal-body">
+
+        {{ Form::open(['route' => 'payment.update.income.and.expenses']) }}
+
+        {!! Form::hidden('type', null, ['id' => 'type']) !!}
+        {!! Form::hidden('payment_id', null, ['id' => 'payment-id']) !!}
+
+        <div class="form-group">
+
+          {!! Form::label('Date:') !!}
+        
+          {!! Form::date('date', date('Y-m-d'), ['id' => 'date', 'class' => 'form-control']) !!}
+
+        </div>
+
+        <div class="form-group">
+
+          {!! Form::label('Amount:') !!}
+        
+          {!! Form::number('amount', null, ['Placeholder'=>'Amount', 'id' => 'amount', 'class' => 'form-control', 'required']) !!}
+
+        </div>
+
+        <div class="form-group">
+
+          {!! Form::label('Description:') !!}
+        
+          {!! Form::textarea('description', null, ['id' => 'description', 'class' => 'form-control']) !!}
+
+        </div>
+
+        <div class="form-group">
+
+          {!! Form::label('Account Name:') !!}
+        
+          {!! Form::select('bank_name', $bank_accounts, null, ['id' => 'bank_name', 'class' => 'form-control']) !!}
+
+        </div>
+
+        <div class="form-group">
+
+          {!! Form::label('Location:') !!}
+        
+          {!! Form::select('location', ['dhaka'=>'Dhaka', 'chittagong'=>'Chittagong'], null, ['id' => 'location', 'class' => 'form-control']) !!}
+
+        </div>
+
+        </div>
+
+      <div class="modal-footer">
+
+        <button type="submit" class="btn btn-info">Update</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+        {{ Form::close() }}
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div id="delete-transaction" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Warning!</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this entry?</p>
+      </div>
+      <div class="modal-footer">
+        {{ Form::open(['route'=>'payment.delete.income.and.expenses']) }}
+
+          {{ Form::hidden('id', null, ['id'=>'income-expense-id']) }}
+
+          {{ Form::submit('Yes', ['class'=>'btn btn-danger']) }}   
+        
+        <button type="button" class="btn btn-success" data-dismiss="modal">No</button>
+        {{ Form::close() }}
+
+      </div>
+    </div>
+
+  </div>
+</div>
 
 @endsection
 
@@ -269,6 +435,50 @@ var filterByDate = function(column, startDate, endDate) {
       return [year, month, day].join('-');
   }
   
+  function editTransaction(elem) {
+
+    var id = elem.name;
+
+    $.ajax({
+
+        type: 'get',
+        url: '{!!URL::to('findIncomeAndExpenses')!!}',
+        data: {'id':id},
+
+        success:function(data){
+
+          document.getElementById('date').value = formatDate(data.created_at);
+          document.getElementById('payment-id').value = data.id;
+          document.getElementById('type').value = data.payment_type;
+          document.getElementById("amount").value = Math.abs(data.total_amount);
+          document.getElementById("description").innerHTML = data.description;
+          document.getElementById("bank_name").value = data.bank_name;
+          document.getElementById("location").value = data.location;
+        },
+
+        error:function(){
+          alert('failure');
+        }
+
+      }); 
+
+
+    $("#editTransaction").modal();
+
+  }
+
+  function deleteTransaction(elem) {
+    var transaction_id = elem.id;
+
+    document.getElementById('income-expense-id').value = transaction_id;
+
+    $("#delete-transaction").modal();
+
+  }
+
+  function approve() {
+    alert('test');
+  }
 
 </script>
 

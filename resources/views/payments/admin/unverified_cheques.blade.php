@@ -1,3 +1,5 @@
+{{-- Admin --}}
+
 @extends('layouts.master')
 
 @section('title', 'Unverified Cheques')
@@ -160,7 +162,8 @@ var filterByDate = function(column, startDate, endDate) {
                       <td>{{ strtoupper($unverified_cheque->bank_name) }}</td>
                       <td>
                         @if($unverified_cheque->cheque_verified == -1)
-                        <p class="text-warning text-weight-bold">pending</p>
+                        <a href="{{ route('payment.cheque.verification', [$unverified_cheque->id, 1]) }}" class="label label-success">Verify</a>
+                        <a href="{{ route('payment.cheque.verification', [$unverified_cheque->id, 0]) }}" class="label label-danger">Reject</a>
                         @elseif($unverified_cheque->cheque_verified == 1)
                         <p class="text-success text-weight-bold">Verified</p>
                         @elseif($unverified_cheque->cheque_verified == 0)
@@ -171,6 +174,8 @@ var filterByDate = function(column, startDate, endDate) {
                       <td>{{ number_format($unverified_cheque->amount_paid) }}</td>
 
                       <td>
+                        
+                        {{-- <button type="button" class="btn btn-info button2 btn-sm" data-toggle="modal" data-target="#myModal">Edit</button> --}}
 
                         <button class="btn btn-info button2 btn-sm" onclick="editCheque(this)" id="{{ $unverified_cheque->id }}">Edit</button>
 

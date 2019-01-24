@@ -226,6 +226,20 @@
                            <span>View Income/Expense</span>
                         </a>
                      </li>
+
+                     <li>
+                        <a href="{{ route('payment.show.advance.incomes') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>View Adv. Income</span>
+                        </a>
+                     </li>
+
+                     <li>
+                        <a href="{{ route('payment.show.advance.expenses') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>View Adv. Expense</span>
+                        </a>
+                     </li>
                      
                   </ul>
                

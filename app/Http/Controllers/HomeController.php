@@ -193,6 +193,7 @@ class HomeController extends Controller
             'client_code' => 'required|unique:users',
             'email' => 'required|unique:users',
             'programs' => 'required',
+            'address' => 'required',
         ]);
 
         User::create([
@@ -202,6 +203,7 @@ class HomeController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'user_role' => 'client',
+            'status' => 'active',
             'remember_token' => str_random(60)
         ]);
 

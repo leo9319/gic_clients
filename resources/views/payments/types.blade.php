@@ -1,7 +1,5 @@
 @extends('layouts.master')
 
-@section('url', $previous)
-
 @section('title', 'Payment Type')
 
 @section('content')
@@ -15,12 +13,6 @@
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
-
-<script type="text/javascript">
-	$(function(){
-	  $(':input[type=number]').on('mousewheel',function(e){ $(this).blur(); });
-	});
-</script>
 
 @endsection
 
@@ -61,9 +53,6 @@
 		<div class="panel-footer">
 
 			{{ Form::open(['route'=>'payment.store', 'id' => 'myForm', 'autocomplete'=>'off']) }}
-
-			<input type="hidden" name="payment_id" value="{{ $payment_id }}">
-			<input type="hidden" name="date" value="{{ $date }}">
 
 			<div class="form-group">
 
@@ -238,6 +227,8 @@
 
 		}
 
+		$(':input[type=number]').on('mousewheel',function(e){ $(this).blur(); });
+
 	}
 
 	function getPOSMachine(elem) {
@@ -357,7 +348,6 @@
 		
 	});
 
-	
 </script>
 
 @endsection

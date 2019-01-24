@@ -15,17 +15,7 @@
 
    $(document).ready( function () {
 
-       $('#bank-account').DataTable({
-
-       	'columnDefs' : [
-
-       		{
-
-       		}
-
-       	]
-
-       });
+       $('#bank-account').DataTable();
 
    });
 
@@ -65,11 +55,8 @@
                <tr>
 
                   <th>SL.</th>
-
                   <th>Account Name</th>
-
                   <th>Balance (Bank)</th>
-
                   <th class="text-center">Action</th>
 
                </tr>
@@ -81,11 +68,8 @@
                <tr>
 
                   <th>SL.</th>
-
                   <th>Account Name</th>
-
                   <th>Balance (Bank)</th>
-
                   <th class="text-center">Action</th>
 
                </tr>
