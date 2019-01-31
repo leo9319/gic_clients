@@ -36,6 +36,11 @@
 <table align="left">
   <tbody>
     <tr>
+      <td>Deposit Date:</td>
+      <td>{{ Carbon\Carbon::parse($payment_info->created_at)->format('d-M-y') }}</td>
+      <td></td>
+    </tr>
+    <tr>
       <td>Deposited In:</td>
       <td>{{ strtoupper($payment_info->bank_name) }}</td>
       <td></td>

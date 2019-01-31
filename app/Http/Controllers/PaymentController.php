@@ -429,8 +429,9 @@ class PaymentController extends Controller
         $data['steps'] = Step::getProgramAllStep($payment->program_id);
 
         $data['payment_types'] = PaymentType::where('payment_id', $payment->id)
-                                  ->where('due_payment', 0)
-                                  ->where('refund_payment', 0)
+                                  ->where('cheque_verified', '!=', 0)
+                                  ->where('online_verified', '!=', 0)
+                                  ->where('refund_payment', '!=', 1)
                                   ->get();
 
         return view('payments.edit', $data);
@@ -513,6 +514,7 @@ class PaymentController extends Controller
                 'amount_paid' => $amount_paid,
                 'amount_received' => $after_charge,
                 'deposit_date' => $deposit_date,
+                'created_at' => $date,
 
             ]);
         }
@@ -582,36 +584,52 @@ class PaymentController extends Controller
         return redirect()->back();
     }
 
-    public function chequeVerification(PaymentType $payment_type, $status)
+    public function chequeApproved(Request $request)
     {
-        PaymentType::find($payment_type->id)->update(['cheque_verified' => $status]);
-
-        // if the cheque is dissapproved then the due will increase
-        if(!$status) {
-            $payment_id = $payment_type->payment_id;
-            $total_amount = $this->findingTotalAmount($payment_id);
-            $total_amount_paid = $this->findingTotalPaidAmount($payment_id);
-            $dues = $total_amount - $total_amount_paid;
-
-            Payment::find($payment_id)->update(['dues' => $dues]);
-        }
+        PaymentType::find($request->payment_id)->update([
+            'cheque_verified' => 1,
+            'created_at' => $request->date_despisted,
+            'deposit_date' => $request->date_despisted,
+        ]);
 
         return redirect()->back();
     }
 
-    public function onlineVerification(PaymentType $payment_type, $status)
+    public function chequeDissapproved(PaymentType $payment_type)
     {
-        PaymentType::find($payment_type->id)->update(['online_verified' => $status]);
+        PaymentType::find($payment_type->id)->update(['cheque_verified' => 0]);
 
-        // if the online payment is dissapproved then the due will increase
-        if(!$status) {
-            $payment_id = $payment_type->payment_id;
-            $total_amount = $this->findingTotalAmount($payment_id);
-            $total_amount_paid = $this->findingTotalPaidAmount($payment_id);
-            $dues = $total_amount - $total_amount_paid;
+        $payment_id = $payment_type->payment_id;
+        $total_amount = $this->findingTotalAmount($payment_id);
+        $total_amount_paid = $this->findingTotalPaidAmount($payment_id);
+        $dues = $total_amount - $total_amount_paid;
 
-            Payment::find($payment_id)->update(['dues' => $dues]);
-        }
+        Payment::find($payment_id)->update(['dues' => $dues]);
+
+        return redirect()->back();
+    }
+
+    public function onlineApproved(Request $request)
+    {
+        PaymentType::find($request->payment_id)->update([
+            'online_verified' => 1,
+            'created_at' => $request->date_desposted,
+            'deposit_date' => $request->date_desposted,
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function onlineDissapproved(PaymentType $payment_type)
+    {
+        PaymentType::find($payment_type->id)->update(['online_verified' => 0]);
+
+        $payment_id = $payment_type->payment_id;
+        $total_amount = $this->findingTotalAmount($payment_id);
+        $total_amount_paid = $this->findingTotalPaidAmount($payment_id);
+        $dues = $total_amount - $total_amount_paid;
+
+        Payment::find($payment_id)->update(['dues' => $dues]);
 
         return redirect()->back();
     }
@@ -772,6 +790,7 @@ class PaymentController extends Controller
         $payment_id = Input::get('payment_id');
         $payment_type = Input::get('payment_type');
         $bank_deposited = Input::get('bank_name');
+        $date = Carbon::parse(Input::get('date'))->toDateTimeString();
       
 
         if($payment_type == 'card') {
@@ -872,6 +891,7 @@ class PaymentController extends Controller
             'bank_charge' => $charge,
             'amount_paid' => Input::get('total_amount'),
             'amount_received' => $after_charge,
+            'created_at' => $date,
         ]);
 
         // update the due
@@ -915,7 +935,7 @@ class PaymentController extends Controller
                 'amount_paid' => $request->amount_paid,
                 'amount_received' => $after_charge,
                 'recheck' => 0,
-            ]);
+        ]);
 
         $total_amount = Payment::find($payment_id)->totalAmount();
         $amount_paid = PaymentType::where('payment_id', $payment_id)->sum('amount_paid');
@@ -925,8 +945,6 @@ class PaymentController extends Controller
 
         return redirect()->route('payment.client.recheck.types.list');
 
-        
-        // return $request->all();
     }
 
     public function bankAccount()
@@ -1553,7 +1571,6 @@ class PaymentController extends Controller
         $counter = 0;
         $counter = $request->counter;
         $payment_id = Input::get('payment_id');
-        $date = Carbon::parse($request->date)->toDateTimeString();
 
         for ($i=0; $i < $counter + 1; $i++) {
             $charge = 0;
@@ -1640,6 +1657,8 @@ class PaymentController extends Controller
             } else {
                 $after_charge = $amount_paid;
             }
+
+            $date = Carbon::parse(Input::get('date-' . $i))->toDateTimeString();
 
             PaymentType::create([
                 'payment_id' => $payment_id,

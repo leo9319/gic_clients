@@ -16,11 +16,11 @@
             @endif
 
             @if(session()->has('message'))
-            <div class="alert alert-success alert-dismissible">
-                
-                {{ session()->get('message') }}
-                
-            </div>
+                <div class="alert alert-success alert-dismissible">
+                    
+                    {{ session()->get('message') }}
+                    
+                </div>
             @endif
             
             <div class="panel panel-default">
@@ -126,8 +126,11 @@
                             </div>
                         </div>
 
-                        @endif
+                        @else
 
+                        <input type="hidden" name="status" value="active">
+
+                        @endif
 
                         <div class="form-group">
                             <div class="col-md-6 col-md-offset-3">
@@ -136,12 +139,14 @@
                                 </button>
                             </div>
                         </div>
+
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 @endsection
 
 @section('footer_scripts')

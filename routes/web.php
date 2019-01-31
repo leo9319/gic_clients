@@ -209,8 +209,14 @@ Route::get('history/payment', 'PaymentController@paymentHistory')->name('payment
 Route::get('payment/verification/{payment}', 'PaymentController@verification')->name('payment.verification');
 Route::get('payment/disapprove/{payment}', 'PaymentController@disapprove')->name('payment.disapprove');
 
-Route::get('payment/cheque/verification/{payment_type}/{status}', 'PaymentController@chequeVerification')->name('payment.cheque.verification');
-Route::get('payment/online/verification/{payment_type}/{status}', 'PaymentController@onlineVerification')->name('payment.online.verification');
+Route::get('payment/cheque/verification/{payment_type}', 'PaymentController@chequeDissapproved')->name('payment.cheque.dissaproved');
+
+Route::post('payment/cheque/verification', 'PaymentController@chequeApproved')->name('payment.cheque.verification');
+
+Route::get('payment/online/verification/{payment_type}', 'PaymentController@onlineDissapproved')->name('payment.online.dissaproved');
+
+Route::post('payment/online/verification', 'PaymentController@onlineApproved')->name('payment.online.verification');
+
 Route::get('payment/generate-invoice/{payment}', 'PaymentController@generateInvoice')->name('payment.generate.invoice');
 
 Route::get('payment/statement/account', 'PaymentController@statement')->name('payment.statement');

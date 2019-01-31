@@ -159,7 +159,6 @@
         		{{ Form::hidden('due_payment', $payment_type->due_payment) }}
 
 				<select class="form-control" name="payment_type" onchange="addPaymentOptions(this)" required>
-
 					<option value="">Select a payment method</option>
 					<option value="cash">Cash</option>
 					<option value="card">POS</option>
@@ -168,7 +167,6 @@
 					<option value="bkash_salman">bKash - Salman</option>
 					<option value="upay">Upay</option>
 					<option value="online">Online</option>
-
 				</select>
 
 				<br>
@@ -199,49 +197,49 @@ function addPaymentOptions(elem) {
 
 	if (elem.value == 'card') {
 
-		var html = '<label>Card Type:</label> <select class="select2 form-control" name="card_type" onchange="getPOSMachine(this)"> <option value="visa">Visa</option> <option value="master">Master</option> <option value="amex">Amex</option> <option value="nexus">Nexus</option> </select> <br> <div id="other-card-container"></div> <label>Name on card:</label> <input type="text" name="name_on_card" placeholder="Name on card" class="form-control" required> <br> <label>Card Number (Last 4 Digits Only):</label> <input type="text" name="card_number" maxlength="4" placeholder="Card Number" class="form-control" required> <br> <label>Expiry Date:</label> <input type="text" name="expiry_date" placeholder="Expiry Date" class="form-control"> <br> <label>Select Card/POS Machine:</label> <select class="select2 form-control" name="pos_machine_mod" id="pos-machine-mod" onchange="checkForCityBank(this)"> <option value="brac">BRAC</option> <option value="city">City</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="dbbl">DBBL</option> </select> <br> <div id="alternate_pos_machine"></div> <div id="bank-card"></div> <label>Approval Code:</label> <input type="text" name="approval_code" id="approval_code" placeholder="Approval Code" class="form-control" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid through POS" name="total_amount" onchange="getTotalAmount(this)" required></div> <br>';
+		var html = '<div class="form-group"> <label>Date:</label> <input type="date" name="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <label>Card Type:</label> <select class="select2 form-control" name="card_type" onchange="getPOSMachine(this)"> <option value="visa">Visa</option> <option value="master">Master</option> <option value="amex">Amex</option> <option value="nexus">Nexus</option> </select> <br> <div id="other-card-container"></div> <label>Name on card:</label> <input type="text" name="name_on_card" placeholder="Name on card" class="form-control" required> <br> <label>Card Number (Last 4 Digits Only):</label> <input type="text" name="card_number" maxlength="4" placeholder="Card Number" class="form-control" required> <br> <label>Expiry Date:</label> <input type="text" name="expiry_date" placeholder="Expiry Date" class="form-control"> <br> <label>Select Card/POS Machine:</label> <select class="select2 form-control" name="pos_machine_mod" id="pos-machine-mod" onchange="checkForCityBank(this)"> <option value="brac">BRAC</option> <option value="city">City</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="dbbl">DBBL</option> </select> <br> <div id="alternate_pos_machine"></div> <div id="bank-card"></div> <label>Approval Code:</label> <input type="text" name="approval_code" id="approval_code" placeholder="Approval Code" class="form-control" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid through POS" name="total_amount" onchange="getTotalAmount(this)" required></div> <br>';
 
 		$('#payment-container').empty();
     	$('#payment-container').append(html);
 
 	} else if (elem.value == 'cash') {
 
-		var html = '<div class="form-group"><input type="hidden" name="bank_name" value="cash"><input type="number" class="total form-control" placeholder="Amount paid in cash" name="total_amount" onchange="getTotalAmount(this)" required></div>';
+		var html = '<div class="form-group"> <label>Date:</label> <input type="date" name="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <div class="form-group"><input type="hidden" name="bank_name" value="cash"><input type="number" class="total form-control" placeholder="Amount paid in cash" name="total_amount" onchange="getTotalAmount(this)" required></div>';
 
 		$('#payment-container').empty();
 		$('#payment-container').append(html);
 
 	} else if (elem.value == 'cheque') {
 
-		var html = '<label>Cheque Deposited To:</label> <select class="select2 form-control" name="bank_name" onchange="addBankName(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <label>Cheque Number:</label> <input type="text" name="cheque_number" placeholder="Cheque Number" class="form-control" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid in cheque" name="total_amount" onchange="getTotalAmount(this)" required></div> <br>';
+		var html = '<div class="form-group"> <label>Date:</label> <input type="date" name="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <label>Cheque Deposited To:</label> <select class="select2 form-control" name="bank_name" onchange="addBankName(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <label>Cheque Number:</label> <input type="text" name="cheque_number" placeholder="Cheque Number" class="form-control" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid in cheque" name="total_amount" onchange="getTotalAmount(this)" required></div> <br>';
 
 		$('#payment-container').empty();
 		$('#payment-container').append(html);
 
 	} else if (elem.value == 'bkash_corporate') {
 
-		var html = '<label>GIC Deposit Bank Name:</label> <input type="text" name="bank_name" placeholder="GIC Deposit Bank Name" class="form-control" value="scb" readonly> <br> <label>Phone Number</label> <input type="text" name="phone_number" placeholder="Phone Number" class="form-control" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid in bKash" name="total_amount" onchange="getTotalAmount(this)" required></div> <br>';
+		var html = '<div class="form-group"> <label>Date:</label> <input type="date" name="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <label>GIC Deposit Bank Name:</label> <input type="text" name="bank_name" placeholder="GIC Deposit Bank Name" class="form-control" value="scb" readonly> <br> <label>Phone Number</label> <input type="text" name="phone_number" placeholder="Phone Number" class="form-control" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid in bKash" name="total_amount" onchange="getTotalAmount(this)" required></div> <br>';
 
 		$('#payment-container').empty();
 		$('#payment-container').append(html);
 
 	} else if (elem.value == 'bkash_salman') {
 
-		var html = '<label>GIC Deposit Bank Name:</label> <input type="text" name="bank_name" placeholder="GIC Deposit Bank Name" class="form-control" value="salman account" readonly> <br> <label>Phone Number</label> <input type="text" name="phone_number" placeholder="Phone Number" class="form-control" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid in bKash" name="total_amount" onchange="getTotalAmount(this)" required></div> <br>';
+		var html = '<div class="form-group"> <label>Date:</label> <input type="date" name="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <label>GIC Deposit Bank Name:</label> <input type="text" name="bank_name" placeholder="GIC Deposit Bank Name" class="form-control" value="salman account" readonly> <br> <label>Phone Number</label> <input type="text" name="phone_number" placeholder="Phone Number" class="form-control" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid in bKash" name="total_amount" onchange="getTotalAmount(this)" required></div> <br>';
 
 		$('#payment-container').empty();
 		$('#payment-container').append(html);
 
 	} else if (elem.value == 'upay') {
 
-		var html = '<label>GIC Deposit Bank Name:</label> <input type="text" name="bank_name" placeholder="GIC Deposit Bank Name" class="form-control" value="ucb" readonly> <br> <label>Phone Number</label> <input type="text" name="phone_number" placeholder="Phone Number" class="form-control" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid through upay" name="total_amount" onchange="getTotalAmount(this)" required></div> <br> ';
+		var html = '<div class="form-group"> <label>Date:</label> <input type="date" name="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <label>GIC Deposit Bank Name:</label> <input type="text" name="bank_name" placeholder="GIC Deposit Bank Name" class="form-control" value="ucb" readonly> <br> <label>Phone Number</label> <input type="text" name="phone_number" placeholder="Phone Number" class="form-control" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid through upay" name="total_amount" onchange="getTotalAmount(this)" required></div> <br> ';
 
 		$('#payment-container').empty();
 		$('#payment-container').append(html);
 
 	} else if(elem.value == 'online') {
 
-		var html = '<label>Select Bank:</label> <select class="select2 form-control" name="bank_name" onchange="addCardCharge(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <label>Deposit Date:</label> <input type="date" class="form-control" name="deposit_date" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid online" name="total_amount" onchange="getTotalAmount(this)" required> </div> <br>';
+		var html = '<div class="form-group"> <label>Date:</label> <input type="date" name="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <label>Select Bank:</label> <select class="select2 form-control" name="bank_name" onchange="addCardCharge(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <label>Deposit Date:</label> <input type="date" class="form-control" name="deposit_date" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid online" name="total_amount" onchange="getTotalAmount(this)" required> </div> <br>';
 
 		$('#payment-container').empty();
 		$('#payment-container').append(html);

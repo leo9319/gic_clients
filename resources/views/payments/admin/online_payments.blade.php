@@ -160,8 +160,11 @@ var filterByDate = function(column, startDate, endDate) {
                       <td>{{ strtoupper($online_payment->bank_name) }}</td>
                       <td>
                         @if($online_payment->online_verified == -1)
-                        <a href="{{ route('payment.online.verification', [$online_payment->id, 1]) }}" class="label label-success">Verify</a>
-                        <a href="{{ route('payment.online.verification', [$online_payment->id, 0]) }}" class="label label-danger">Reject</a>
+                        {{-- <a href="{{ route('payment.online.verification', [$online_payment->id, 1]) }}" class="label label-success">Verify</a> --}}
+
+                        <a href="#" id="{{ $online_payment->id }}" class="label label-success" onclick="verifyOnline(this)">Verify</a>
+
+                        <a href="{{ route('payment.online.dissaproved', $online_payment->id) }}" class="label label-danger">Reject</a>
                         @elseif($online_payment->online_verified == 1)
                         <p class="text-success text-weight-bold">Verified</p>
                         @elseif($online_payment->online_verified == 0)
@@ -263,6 +266,40 @@ var filterByDate = function(column, startDate, endDate) {
   </div>
 </div>
 
+<div id="verify" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Verify Cheque</h4>
+      </div>
+      {{ Form::open(['route'=>'payment.online.verification']) }}
+      <div class="modal-body">
+
+        {{-- Hidden field --}}
+
+        {{ Form::hidden('payment_id', null, ['id'=>'verify-payment-id']) }}
+
+        {{-- End of hidden field --}}
+
+          <div class="form-group">
+
+            {{ Form::label('date_desposted') }}
+            {{ Form::date('date_desposted', null, ['class'=>'form-control', 'required']) }}
+            
+          </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Submit</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+      {{ Form::close() }}
+    </div>
+
+  </div>
+</div>
+
 @endsection
 
 @section('footer_scripts')
@@ -301,6 +338,16 @@ var filterByDate = function(column, startDate, endDate) {
 
 
     $('#myModal').modal();
+
+  }
+
+  function verifyOnline(elem) {
+
+    var payment_type_id = elem.id;
+    
+    document.getElementById('verify-payment-id').value = payment_type_id;
+
+    $('#verify').modal();
 
   }
 

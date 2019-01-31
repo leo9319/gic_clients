@@ -37,7 +37,7 @@
   <tbody>
     <tr>
       <td>Deposit Date:</td>
-      <td>{{ Carbon\Carbon::parse($payment_info->deposit_date)->format('d-M-y') }}</td>
+      <td>{{ Carbon\Carbon::parse($payment_info->created_at)->format('d-M-y') }}</td>
     </tr>
     <tr>
       <td>Cheque Number:</td>

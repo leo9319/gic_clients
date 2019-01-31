@@ -162,8 +162,8 @@ var filterByDate = function(column, startDate, endDate) {
                       <td>{{ strtoupper($unverified_cheque->bank_name) }}</td>
                       <td>
                         @if($unverified_cheque->cheque_verified == -1)
-                        <a href="{{ route('payment.cheque.verification', [$unverified_cheque->id, 1]) }}" class="label label-success">Verify</a>
-                        <a href="{{ route('payment.cheque.verification', [$unverified_cheque->id, 0]) }}" class="label label-danger">Reject</a>
+                        <a href="#" id="{{ $unverified_cheque->id }}" class="label label-success" onclick="verifyCheque(this)">Verify</a>
+                        <a href="{{ route('payment.cheque.dissaproved', $unverified_cheque->id) }}" class="label label-danger">Reject</a>
                         @elseif($unverified_cheque->cheque_verified == 1)
                         <p class="text-success text-weight-bold">Verified</p>
                         @elseif($unverified_cheque->cheque_verified == 0)
@@ -275,6 +275,41 @@ var filterByDate = function(column, startDate, endDate) {
   </div>
 </div>
 
+
+<div id="verify" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Verify Cheque</h4>
+      </div>
+      {{ Form::open(['route'=>'payment.cheque.verification']) }}
+      <div class="modal-body">
+
+        {{-- Hidden field --}}
+
+        {{ Form::hidden('payment_id', null, ['id'=>'verify-payment-id']) }}
+
+        {{-- End of hidden field --}}
+
+          <div class="form-group">
+
+            {{ Form::label('date_despisted') }}
+            {{ Form::date('date_despisted', null, ['class'=>'form-control', 'required']) }}
+            
+          </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Submit</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+      {{ Form::close() }}
+    </div>
+
+  </div>
+</div>
+
 @endsection
 
 @section('footer_scripts')
@@ -315,6 +350,16 @@ var filterByDate = function(column, startDate, endDate) {
 
 
     $('#myModal').modal();
+
+  }
+
+  function verifyCheque(elem) {
+
+    var payment_type_id = elem.id;
+    
+    document.getElementById('verify-payment-id').value = payment_type_id;
+
+    $('#verify').modal();
 
   }
 
