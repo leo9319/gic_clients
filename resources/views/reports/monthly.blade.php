@@ -29,10 +29,14 @@
 
 				<tr>
 
-					<th>Date</th>
+                    <th>Date</th>
+                    <th>Client Code</th>
+                    <th>Client Name</th>
+					<th>Location</th>
 					<th>Description</th>
 					<th>Type</th>
 					<th>Bank</th>
+                    <th>Notes</th>
 					<th>Amount</th>
 
 				</tr>
@@ -44,10 +48,14 @@
 
 				@foreach($reports as $key => $value)
 				  <tr>
-				    <td>{{ $value['date'] }}</td>
+                    <td>{{ $value['date'] }}</td>
+                    <td>{{ $value['client_code'] }}</td>
+                    <td>{{ $value['client_name'] }}</td>
+				    <td>{{ ucfirst($value['location']) }}</td>
 				    <td>{{ $value['description'] }}</td>
 				    <td>{{ $value['type'] }}</td>
-				    <td>{{ $value['bank'] }}</td>
+                    <td>{{ $value['bank'] }}</td>
+				    <td>{{ $value['notes'] }}</td>
 				    <td>{{ number_format($value['amount']) }}</td>
 				  </tr>
 			  @endforeach
@@ -59,10 +67,14 @@
 
                <tr>
 
-					<th>Date</th>
+                    <th>Date</th>
+                    <th>Client Code</th>
+                    <th>Client Name</th>
+					<th>Location</th>
 					<th>Description</th>
 					<th>Type</th>
 					<th>Bank</th>
+                    <th>Notes</th>
 					<th>Amount</th>
 
                </tr>

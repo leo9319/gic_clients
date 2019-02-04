@@ -1,5 +1,4 @@
 @extends('layouts.master')
-@section('url', $previous)
 @section('title', 'Payment History')
 @section('content')
 @section('header_scripts')
@@ -172,7 +171,7 @@ var filterByDate = function(column, startDate, endDate) {
                       <td>{{ number_format($payment->totalAmount()) }}</td>
                       <td>{{ number_format($payment->totalVerifiedPayment->sum('amount_paid')) }}</td>
                       <td>{{ number_format($payment->dues) }}</td>                 
-                      <td>{{ $payment->comments }}</td>                
+                      <td>{{ $payment->comments }} <i id="{{ $payment->id }}" class="fa fa-edit" onclick="editNote(this)"></i></td>                
 
                       <td>
                         <a href="{{ route('payment.generate.invoice', $payment->id) }}" class="btn btn-info btn-sm button2">Generate Invoice</a>
@@ -222,8 +221,70 @@ var filterByDate = function(column, startDate, endDate) {
 	</div>
 </div>
 
+<div id="edit-note" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Notes</h4>
+      </div>
+      {{ Form::open(['route'=>'payment.update.note']) }}
+      <div class="modal-body">
+
+          {{-- Hidden Fields --}}
+
+            {{ Form::hidden('payment_id', null, ['id'=>'payment-id']) }}
+
+          {{-- End --}}
+        
+          <div class="form-group">
+
+            {{ Form::label('notes') }}
+            {{ Form::textarea('comments', null, ['class'=>'form-control', 'id'=>'notes']) }}
+            
+          </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-info">Update</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+      {{ Form::close() }}
+    </div>
+
+  </div>
+</div>
+
 
 @section('footer_scripts')
+
+<script type="text/javascript">
+    
+  function editNote(elem) {
+    var payment_id = elem.id;
+
+    $.ajax({
+        type: 'get',
+        url: '{!!URL::to('getPaymentInfo')!!}',
+        data: {'payment_id':payment_id},
+        success:function(data){
+
+          document.getElementById('payment-id').value = payment_id;
+          document.getElementById('notes').value = data.comments;
+
+          $('#edit-note').modal();
+        },
+        error:function(){
+          alert('failed to execute the command');
+        }
+      });
+
+    
+  }
+
+</script>
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>

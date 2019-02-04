@@ -64,7 +64,7 @@
 
 					{{ Form::label('Location:') }}
 
-					{{ Form::select('location', ['dhaka'=>'Dhaka', 'chittagong'=>'Chittagong'], null,['class'=>'form-control']) }}
+					{{ Form::select('location', $locations, null,['class'=>'form-control']) }}
 					
 				</div>
 
@@ -172,6 +172,12 @@
 						</div>
 
 						<div class="form-group">
+							<label>Date:</label>
+							
+							<input type="date" class="form-control" name="payment[{{$index}}][created_at]" value="{{ Carbon\Carbon::parse($payment_type->created_at)->format('Y-m-d') }}">
+						</div>
+
+						<div class="form-group">
 							<label>Amount Paid:</label>
 
 							<input type="text" class="form-control" name="payment[{{$index}}][amount_paid]" value="{{ $payment_type->amount_paid }}">					
@@ -189,6 +195,12 @@
 							<label>Payment Type:</label>
 							
 							<input type="text" class="form-control" name="payment[{{$index}}][payment_type]" value="{{$payment_type->payment_type }}" readonly="">
+						</div>
+
+						<div class="form-group">
+							<label>Date:</label>
+							
+							<input type="date" class="form-control" name="payment[{{$index}}][created_at]" value="{{ Carbon\Carbon::parse($payment_type->created_at)->format('Y-m-d') }}">
 						</div>
 
 						<div class="form-group">
@@ -244,6 +256,12 @@
 						</div>
 
 						<div class="form-group">
+							<label>Date:</label>
+							
+							<input type="date" class="form-control" name="payment[{{$index}}][created_at]" value="{{ Carbon\Carbon::parse($payment_type->created_at)->format('Y-m-d') }}">
+						</div>
+
+						<div class="form-group">
 
 							<label>Cheque Deposited To:</label> 
 							<input type="text" name="payment[{{$index}}][bank_name]" class="form-control" value="{{ $payment_type->bank_name }}" readonly="">
@@ -279,6 +297,12 @@
 							<input type="text" class="form-control" name="payment[{{$index}}][payment_type]" value="{{ $payment_type->payment_type }}" readonly="">
 						</div>
 
+						<div class="form-group">
+							<label>Date:</label>
+							
+							<input type="date" class="form-control" name="payment[{{$index}}][created_at]" value="{{ Carbon\Carbon::parse($payment_type->created_at)->format('Y-m-d') }}">
+						</div>
+
 						<div class="form-group"> 
 							<label>GIC Deposit Bank Name:</label> 
 							<input type="text" name="payment[{{$index}}][bank_name]" placeholder="GIC Deposit Bank Name" class="form-control" value="scb" readonly> 
@@ -309,6 +333,12 @@
 						</div>
 
 						<div class="form-group">
+							<label>Date:</label>
+							
+							<input type="date" class="form-control" name="payment[{{$index}}][created_at]" value="{{ Carbon\Carbon::parse($payment_type->created_at)->format('Y-m-d') }}">
+						</div>
+
+						<div class="form-group">
 							<label>GIC Deposit Bank Name:</label> 
 							<input type="text" name="payment[{{$index}}][bank_name]" placeholder="GIC Deposit Bank Name" class="form-control" value="salman account" readonly>  
 						</div>
@@ -329,10 +359,17 @@
 						<hr>
 
 					@elseif($payment_type->payment_type == 'upay')
+
 						<div class="form-group">
 							<label>Payment Type:</label>
 							
 							<input type="text" class="form-control" name="payment[{{$index}}][payment_type]" value="{{ $payment_type->payment_type }}" readonly="">
+						</div>
+
+						<div class="form-group">
+							<label>Date:</label>
+							
+							<input type="date" class="form-control" name="payment[{{$index}}][created_at]" value="{{ Carbon\Carbon::parse($payment_type->created_at)->format('Y-m-d') }}">
 						</div>
 
 						<div class="form-group">
@@ -362,6 +399,12 @@
 							<label>Payment Type:</label>
 							
 							<input type="text" class="form-control" name="payment[{{$index}}][payment_type]" value="{{ $payment_type->payment_type }}" readonly="">
+						</div>
+
+						<div class="form-group">
+							<label>Date:</label>
+							
+							<input type="date" class="form-control" name="payment[{{$index}}][created_at]" value="{{ Carbon\Carbon::parse($payment_type->created_at)->format('Y-m-d') }}">
 						</div>
 
 						<div class="form-group">

@@ -2,7 +2,7 @@
 
 @section('url', $previous)
 
-@section('title', 'Income')
+@section('title', 'Create Income')
 
 @section('content')
 
@@ -81,7 +81,7 @@
 
 				{!! Form::label('Location:') !!}
 			
-				{!! Form::select('location', ['dhaka' => 'Dhaka', 'chittagong' => 'Chittagong'], null, ['class' => 'form-control']) !!}
+				{!! Form::select('location', $locations, null, ['class' => 'form-control']) !!}
 
 			</div>
 

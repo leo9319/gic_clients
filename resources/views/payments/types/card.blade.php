@@ -36,6 +36,11 @@
 <table align="left">
   <tbody>
     <tr>
+      <td>Date:</td>
+      <td>{{ Carbon\Carbon::parse($payment_info->created_at)->format('jS M, Y') }}</td>
+      <td></td>
+    </tr>
+    <tr>
       <td>Card Type:</td>
       <td>{{ strtoupper($payment_info->card_type) }}</td>
       <td></td>

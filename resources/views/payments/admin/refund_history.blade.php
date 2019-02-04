@@ -139,6 +139,7 @@ var filterByDate = function(column, startDate, endDate) {
 					<th>Refunded From</th>
 					<th>Cheque Number</th>
 					<th>Amount Refunded</th>
+          <th>Notes</th>
 					<th>Action</th>
 				</tr>
             </thead>
@@ -153,7 +154,8 @@ var filterByDate = function(column, startDate, endDate) {
             		<td>{{ ucfirst($refund->payment_type) }}</td>
             		<td>{{ strtoupper($refund->bank_name) }}</td>
             		<td>{{ $refund->cheque_number }}</td>
-            		<td>{{ number_format($refund->amount_paid) }}</td>
+                <td>{{ number_format($refund->amount_paid) }}</td>
+            		<td>{{ $refund->notes }}</td>
             		
       					<td>
       						<a href="{{ route('payment.client.refund.delete', $refund->id) }}" class="btn btn-danger btn-sm button2">Delete</a>
@@ -173,6 +175,7 @@ var filterByDate = function(column, startDate, endDate) {
 					<th>Refunded From</th>
 					<th>Cheque Number</th>
 					<th>Amount Refunded</th>
+          <th>Notes</th>
 					<th>Action</th>
 				</tr>
             </tfoot>

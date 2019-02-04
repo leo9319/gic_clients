@@ -32,6 +32,8 @@
 				<tr>
 
 					<th>Date</th>
+					<th>Location</th>
+					<th>Client Code</th>
 					<th>Name</th>
 					<th>Phone</th>
 					<th>Program</th>
@@ -42,6 +44,7 @@
 					<th>Due Clear Date</th>
 					<th>Counselor</th>
 					<th>Rm</th>
+					<th>Notes</th>
 
 				</tr>
 
@@ -53,6 +56,8 @@
 
 				<tr>
 					<td>{{ Carbon\Carbon::parse($payment->created_at)->format('d-M-y') }}</td>
+					<td>{{ ucfirst($payment->location) }}</td>
+					<td>{{ $payment->userInfo->client_code }}</td>
 					<td>{{ $payment->userInfo->name ?? 'Client Removed' }}</td>
 					<td>{{ $payment->userInfo->mobile ?? 'Client Removed' }}</td>
 					<td>{{ $payment->programInfo->program_name ?? 'Program Removed' }}</td>
@@ -98,6 +103,7 @@
 
 						@endif
 					</td>
+					<td>{{$payment->comments}}</td>
 				</tr>
 
 				@endforeach
@@ -109,6 +115,8 @@
                <tr>
 
                     <th>Date</th>
+                    <th>Location</th>
+                    <th>Client Code</th>
 					<th>Name</th>
 					<th>Phone</th>
 					<th>Program</th>
@@ -119,6 +127,7 @@
 					<th>Due Clear Date</th>
 					<th>Counselor</th>
 					<th>Rm</th>
+					<th>Notes</th>
 
                </tr>
 

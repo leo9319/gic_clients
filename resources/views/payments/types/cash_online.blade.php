@@ -37,7 +37,7 @@
   <tbody>
     <tr>
       <td>Deposit Date:</td>
-      <td>{{ Carbon\Carbon::parse($payment_info->created_at)->format('d-M-y') }}</td>
+      <td>{{ Carbon\Carbon::parse($payment_info->created_at)->format('jS M, Y') }}</td>
       <td></td>
     </tr>
     <tr>

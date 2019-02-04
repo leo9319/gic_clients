@@ -44,6 +44,13 @@
 
 			<div class="form-group">
 
+				{{ Form::label('Date') }}
+				{{ Form::date('date', $payment_type->created_at, ['class'=>'form-control']) }}
+				
+			</div>
+
+			<div class="form-group">
+
 				{{ Form::label('Payment Type') }}
 				{{ Form::text('payment_type', null, ['placeholder'=>'Payment Type', 'class'=>'form-control', 'readonly']) }}
 				
@@ -102,13 +109,6 @@
 
 				{{ Form::label('Phone Number') }}
 				{{ Form::text('phone_number', null, ['placeholder'=>'Phone Number', 'class'=>'form-control']) }}
-				
-			</div>
-
-			<div class="form-group">
-
-				{{ Form::label('Deposit Date') }}
-				{{ Form::date('deposit_date', null, ['placeholder'=>'Deposit Date', 'class'=>'form-control']) }}
 				
 			</div>
 
@@ -239,7 +239,7 @@ function addPaymentOptions(elem) {
 
 	} else if(elem.value == 'online') {
 
-		var html = '<div class="form-group"> <label>Date:</label> <input type="date" name="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <label>Select Bank:</label> <select class="select2 form-control" name="bank_name" onchange="addCardCharge(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <label>Deposit Date:</label> <input type="date" class="form-control" name="deposit_date" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid online" name="total_amount" onchange="getTotalAmount(this)" required> </div> <br>';
+		var html = '<div class="form-group"> <label>Date:</label> <input type="date" name="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <label>Select Bank:</label> <select class="select2 form-control" name="bank_name" onchange="addCardCharge(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid online" name="total_amount" onchange="getTotalAmount(this)" required> </div> <br>';
 
 		$('#payment-container').empty();
 		$('#payment-container').append(html);

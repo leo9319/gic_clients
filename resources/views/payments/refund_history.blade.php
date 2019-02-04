@@ -139,6 +139,7 @@ var filterByDate = function(column, startDate, endDate) {
 					<th>Refunded From</th>
 					<th>Cheque Number</th>
 					<th>Amount Refunded</th>
+          <th>Notes</th>
 				</tr>
             </thead>
 
@@ -153,6 +154,7 @@ var filterByDate = function(column, startDate, endDate) {
             		<td>{{ strtoupper($refund->bank_name) }}</td>
             		<td>{{ $refund->cheque_number }}</td>
             		<td>{{ number_format($refund->amount_paid) }}</td>
+                <td>{{ $refund->notes }}</td>
             	</tr>
             	@endforeach
               </tbody>
@@ -167,6 +169,7 @@ var filterByDate = function(column, startDate, endDate) {
 					<th>Refunded From</th>
 					<th>Cheque Number</th>
 					<th>Amount Refunded</th>
+          <th>Notes</th>
 				</tr>
             </tfoot>
          </table>

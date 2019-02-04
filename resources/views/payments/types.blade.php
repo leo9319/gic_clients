@@ -214,7 +214,7 @@
 
 		} else if(elem.value == 'online') {
 
-			var html = '<label>Select Bank:</label> <select class="select2 form-control" name="bank_name-#" onchange="addCardCharge(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <label>Deposit Date:</label> <input type="date" class="form-control" name="deposit_date-#" required> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid online" name="total_amount-#" onchange="getTotalAmount(this)" required> </div> <br>';
+			var html = '<label>Select Bank:</label> <select class="select2 form-control" name="bank_name-#" onchange="addCardCharge(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid online" name="total_amount-#" onchange="getTotalAmount(this)" required> </div> <br>';
 
 			html = html.replace(/#/g, number);
 

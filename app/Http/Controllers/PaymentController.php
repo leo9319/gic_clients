@@ -48,6 +48,17 @@ class PaymentController extends Controller
         $data['active_class'] = 'payments';
         $data['clients'] = User::userRole('client')->get();
         $data['programs'] = Program::all();
+        
+        $data['locations'] = [
+            'dhaka' => 'Dhaka', 
+            'chittagong' => 'Chittagong',
+            'cox_bazar' => 'Cox\'s bazar',
+            'sylhet' => 'Sylhet',
+            'khulna' => 'Khulna',
+            'comilla' => 'Comilla',
+            'noakhali' => 'Noakhali',
+            'rajshahi' => 'Rajshahi',
+         ];
 
         return view('payments.index', $data);
     }
@@ -434,6 +445,17 @@ class PaymentController extends Controller
                                   ->where('refund_payment', '!=', 1)
                                   ->get();
 
+        $data['locations'] = [
+            'dhaka' => 'Dhaka', 
+            'chittagong' => 'Chittagong',
+            'cox_bazar' => 'Cox\'s bazar',
+            'sylhet' => 'Sylhet',
+            'khulna' => 'Khulna',
+            'comilla' => 'Comilla',
+            'noakhali' => 'Noakhali',
+            'rajshahi' => 'Rajshahi',
+         ];
+
         return view('payments.edit', $data);
     }
 
@@ -493,6 +515,7 @@ class PaymentController extends Controller
             $phone_number =  isset($value['phone_number']) ? $value['phone_number'] : NULL;
             $deposit_date =  isset($value['deposit_date']) ? $value['deposit_date'] : NULL;
             $card_type =  isset($value['card_type']) ? $value['card_type'] : NULL;
+            $created_at =  isset($value['created_at']) ? $value['created_at'] : NULL;
 
             $after_charge = $amount_paid - (($bank_charge / 100) * $amount_paid);
 
@@ -514,7 +537,7 @@ class PaymentController extends Controller
                 'amount_paid' => $amount_paid,
                 'amount_received' => $after_charge,
                 'deposit_date' => $deposit_date,
-                'created_at' => $date,
+                'created_at' => $created_at,
 
             ]);
         }
@@ -930,11 +953,11 @@ class PaymentController extends Controller
                 'approval_code' => $request->approval_code,
                 'phone_number' => $request->phone_number,
                 'cheque_number' => $request->cheque_number,
-                'deposit_date' => $request->deposit_date,
                 'bank_name' => $request->bank_name,
                 'amount_paid' => $request->amount_paid,
                 'amount_received' => $after_charge,
                 'recheck' => 0,
+                'created_at' => $request->date,
         ]);
 
         $total_amount = Payment::find($payment_id)->totalAmount();
@@ -1134,6 +1157,17 @@ class PaymentController extends Controller
             'kamran account' => 'Kamran Account'
          ];
 
+         $data['locations'] = [
+            'dhaka' => 'Dhaka', 
+            'chittagong' => 'Chittagong',
+            'cox_bazar' => 'Cox\'s bazar',
+            'sylhet' => 'Sylhet',
+            'khulna' => 'Khulna',
+            'comilla' => 'Comilla',
+            'noakhali' => 'Noakhali',
+            'rajshahi' => 'Rajshahi',
+         ];
+
         return view('payments.create_income', $data);
     }
 
@@ -1180,6 +1214,17 @@ class PaymentController extends Controller
             'icb' => 'ICB',
             'salman account' => 'Salman Account',
             'kamran account' => 'Kamran Account'
+         ];
+
+         $data['locations'] = [
+            'dhaka' => 'Dhaka', 
+            'chittagong' => 'Chittagong',
+            'cox_bazar' => 'Cox\'s bazar',
+            'sylhet' => 'Sylhet',
+            'khulna' => 'Khulna',
+            'comilla' => 'Comilla',
+            'noakhali' => 'Noakhali',
+            'rajshahi' => 'Rajshahi',
          ];
 
         return view('payments.create_expense', $data);
@@ -1434,6 +1479,8 @@ class PaymentController extends Controller
             'amount_paid' => $request->amount,
             'amount_received' => $request->amount,
             'refund_payment' => 1,
+            'notes' => $request->notes,
+            'created_at' => $request->date,
 
         ]);
 
@@ -1867,6 +1914,22 @@ class PaymentController extends Controller
         ]);
 
         return redirect()->back();
+    }
+
+    public function updatePaymentNote(Request $request)
+    {
+        Payment::find($request->payment_id)->update([
+            'comments' => $request->comments,
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function getPaymentInfo(Request $request)
+    {
+        $data = Payment::find($request->payment_id);
+
+        return response()->json($data);
     }
 
     public function getChequeInfo(Request $request)

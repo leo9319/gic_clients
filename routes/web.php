@@ -287,7 +287,10 @@ Route::get('payment/notes/{client_id}', 'PaymentController@paymentNotes')->name(
 Route::post('payment/store/notes', 'PaymentController@storePaymentNotes')->name('payment.store.notes');
 Route::post('payment/delete/note', 'PaymentController@deletePaymentNote')->name('payment.delete.note');
 Route::post('payment/edit/note', 'PaymentController@editPaymentNote')->name('payment.edit.note');
+Route::post('payment/update/note', 'PaymentController@updatePaymentNote')->name('payment.update.note');
 
+
+Route::get('getPaymentInfo', 'PaymentController@getPaymentInfo');
 Route::get('getClientPaymentId', 'PaymentController@getClientPaymentId');
 Route::get('getChequeInfo', 'PaymentController@getChequeInfo');
 Route::get('getOnlineInfo', 'PaymentController@getOnlineInfo');

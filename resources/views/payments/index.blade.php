@@ -57,11 +57,7 @@
 			<br>
 
 			<label>Location:</label>
-			<select name="location" class="form-control">
-				<option value="dhaka">Dhaka</option>
-				<option value="chittagong">Chittagong</option>
-			</select>
-
+			{!! Form::select('location', $locations, null, ['class' => 'form-control']) !!}
 			<br>
 			
 

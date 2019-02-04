@@ -1,8 +1,6 @@
 @extends('layouts.master')
 
-@section('url', $previous)
-
-@section('title', 'Payments')
+@section('title', 'Refund')
 
 @section('content')
 
@@ -51,6 +49,14 @@
 			<input type="hidden" name="payment_id" id="payment-id">
 
 			{{-- End --}}
+
+			<div class="form-group">
+
+				<label>Date</label>
+
+				<input type="date" name="date" class="form-control" value="{{ Carbon\Carbon::now()->format('Y-m-d') }}">
+
+			</div>			
 
 			<div class="form-group">
 
@@ -136,11 +142,17 @@
 				
 			</div>
 
+			<div class="form-group">
+
+				<label>Notes:</label>
+
+				<textarea name="notes" class="form-control" rows="3" placeholder="Notes"></textarea>
+				
+			</div>
+
 
 
 			<div class="form-group">
-
-				{{-- <input class="btn btn-danger btn-block button2" type="submit" name="" value="Refund"> --}}
 
 				<button type="button" id="deliveryNext" onclick="myFunction()" class="btn btn-sm btn-success btn-block button2">Refund</button>
 				

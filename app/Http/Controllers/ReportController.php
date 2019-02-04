@@ -9,6 +9,7 @@ use App\Payment;
 use App\Step;
 use App\PaymentType;
 use App\Program;
+use App\User;
 
 class ReportController extends Controller
 {
@@ -75,10 +76,14 @@ class ReportController extends Controller
 
     	foreach ($income_and_expenses as $iae_key => $iae_value) {
 
-    		$reports[$counter]['date'] = Carbon::parse($iae_value['created_at'])->format('d-m-y');
+            $reports[$counter]['date'] = Carbon::parse($iae_value['created_at'])->format('d-m-y');
+            $reports[$counter]['client_code'] = 'N/A';
+            $reports[$counter]['client_name'] = 'N/A';
+    		$reports[$counter]['location'] = $iae_value['location'];
     		$reports[$counter]['description'] = $iae_value['description'];
     		$reports[$counter]['type'] = $iae_value['payment_type'];
-    		$reports[$counter]['bank'] = $iae_value['bank_name'];
+            $reports[$counter]['bank'] = $iae_value['bank_name'];
+    		$reports[$counter]['notes'] = $iae_value['bank_name'];
     		$reports[$counter]['amount'] = $iae_value['total_amount'];
     		$data['sum'] += $iae_value['total_amount'];
 
@@ -86,13 +91,17 @@ class ReportController extends Controller
     	}
 
     	foreach ($client_payment as $cp_key => $cp_value) {
-    		$reports[$counter]['date'] = Carbon::parse($cp_value['created_at'])->format('d-m-y');
-    		$reports[$counter]['description'] = Program::find($cp_value['program_id'])->program_name;
-    		$reports[$counter]['type'] = Step::find($cp_value['step_id'])->step_name;
+            $reports[$counter]['date'] = Carbon::parse($cp_value['created_at'])->format('d-m-y');
+            $reports[$counter]['client_code'] = User::find($cp_value['client_id'])->client_code ?? 'N/A';
+            $reports[$counter]['client_name'] = User::find($cp_value['client_id'])->name ?? 'N/A';
+    		$reports[$counter]['location'] = $cp_value['location'];
+    		$reports[$counter]['description'] = Program::find($cp_value['program_id'])->program_name ?? 'Program Removed';
+    		$reports[$counter]['type'] = Step::find($cp_value['step_id'])->step_name ?? 'Step Removed';
     		$reports[$counter]['bank'] = 'N/A';
             $without_refunds = PaymentType::where('payment_id', $cp_value['id'])->where('cheque_verified', 1)->where('refund_payment', 0)->sum('amount_received');
     		$with_refunds = PaymentType::where('payment_id', $cp_value['id'])->where('cheque_verified', 1)->where('refund_payment', 1)->sum('amount_received');
 
+            $reports[$counter]['notes'] = $cp_value['comments'];
             $reports[$counter]['amount'] = $without_refunds - $with_refunds;
 
 

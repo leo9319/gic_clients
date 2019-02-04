@@ -35,6 +35,7 @@ class CreatePaymentTypesTable extends Migration
             $table->tinyInteger('due_payment')->default(0);
             $table->tinyInteger('refund_payment')->default(0);
             $table->tinyInteger('recheck')->default(-1);
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
