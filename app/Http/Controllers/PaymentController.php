@@ -46,7 +46,7 @@ class PaymentController extends Controller
     {
         $data['previous'] = URL::to('/dashboard');
         $data['active_class'] = 'payments';
-        $data['clients'] = User::userRole('client')->get();
+        $data['clients'] = User::userRole('client')->where('status', 'active')->get();
         $data['programs'] = Program::all();
         
         $data['locations'] = [
@@ -991,6 +991,7 @@ class PaymentController extends Controller
             'agrani' => 0,
             'icb' => 0,
             'ucb_fdr' => 0,
+            'ucb_cc' => 0,
             'salman account' => 0,
             'kamran account' => 0
          ];
@@ -1006,6 +1007,7 @@ class PaymentController extends Controller
             'agrani' => 'AGRANI',
             'icb' => 'ICB',
             'ucb_fdr' => 'UCB_FDR',
+            'ucb_cc' => 'UCB_CC',
             'salman account' => 'Salman Account',
             'kamran account' => 'Kamran Account'
          ];
