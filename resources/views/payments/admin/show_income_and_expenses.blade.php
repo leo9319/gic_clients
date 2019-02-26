@@ -193,7 +193,7 @@ var filterByDate = function(column, startDate, endDate) {
                       </td>
 
 
-                      <td>{{ number_format(abs($transaction->total_amount)) }}</td>
+                      <td>{{ number_format($transaction->total_amount) }}</td>
                       <td>{{ $transaction->description }}</td>
                       <td>{{ strtoupper($transaction->bank_name) }}</td>
                       <td>{{ ucfirst($transaction->location) }}</td>
@@ -450,7 +450,7 @@ var filterByDate = function(column, startDate, endDate) {
           document.getElementById('date').value = formatDate(data.created_at);
           document.getElementById('payment-id').value = data.id;
           document.getElementById('type').value = data.payment_type;
-          document.getElementById("amount").value = Math.abs(data.total_amount);
+          document.getElementById("amount").value = data.total_amount;
           document.getElementById("description").innerHTML = data.description;
           document.getElementById("bank_name").value = data.bank_name;
           document.getElementById("location").value = data.location;

@@ -9,46 +9,6 @@
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 
-{{-- <script>
-
-   $(document).ready( function () {
-
-       var table = $('#due-payment-history').DataTable({
-
-       	dom: 'Bfrtip',
-        buttons: [
-            'csv',
-            'excel',
-            {
-                extend: 'print',
-                text: 'Print all (not just selected)',
-                exportOptions: {
-                    modifier: {
-                        selected: null
-                    }
-                }
-            },
-            {
-                text: 'Select all',
-                action: function () {
-                    table.rows().select();
-                }
-            },
-            {
-                text: 'Select none',
-                action: function () {
-                    table.rows().deselect();
-                }
-            }
-        ],
-        select: true
-
-       });
-
-   });
-
-</script> --}}
-
 <script>
 $(function() {
 
@@ -187,6 +147,8 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Remaining Due</th>
 
+                  <th>Note</th>
+
                   <th>Generate Invoice</th>
 
                </tr>
@@ -203,6 +165,7 @@ var filterByDate = function(column, startDate, endDate) {
                 <td>{{ $due_payment->stepInfo->step_name }}</td>
                 <td>{{ number_format($due_payment->totalPayment->where('due_payment', 1)->sum('amount_paid')) }}</td>
                 <td>{{ number_format($due_payment->dues) }}</td>
+                <td>{{ $due_payment->comments }}</td>
                 <td><a href="{{ route('payment.client.dues.pdf', $due_payment->id) }}" class="btn btn-primary btn-sm button button2">Generate Invoice</a></td>
               </tr>
               @endforeach
@@ -225,6 +188,8 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Due Paid</th>
 
                   <th>Remaining Due</th>
+
+                  <th>Note</th>
 
                   <th>Generate Invoice</th>
 

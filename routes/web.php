@@ -90,6 +90,7 @@ Route::get('spousetasks/{step_id}/{client_id}', 'ClientController@spousetasks')-
 Route::get('mysteps/{program_id}/{client_id}', 'ClientController@mySteps')->name('client.steps');
 Route::get('spousesteps/{program_id}/{client_id}', 'ClientController@spouseSteps')->name('spouse.steps');
 Route::get('myprograms/{client_id}', 'ClientController@myPrograms')->name('client.myprograms');
+Route::post('remove-my-program', 'ClientController@removeMyprogram')->name('client.remove_my_program');
 Route::get('spouseprograms/{client_id}', 'ClientController@spousePrograms')->name('spouse.myprograms');
 Route::get('profile/{client_id}', 'ClientController@profile')->name('client.profile');
 Route::get('client/counsellor/{client_id}', 'ClientController@assignCounsellor')->name('client.counsellor');

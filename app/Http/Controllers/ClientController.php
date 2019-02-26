@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Auth;
 use App\User;
 use App\ClientTask;
 use App\ClientProgram;
@@ -300,8 +301,20 @@ class ClientController extends Controller
         $data['client'] = User::where('id', $client_id)->first();
         $data['programs'] = ClientProgram::programs($client_id);
         $data['all_programs'] = Program::all();
+        $user_role = Auth::user()->user_role;
+
+        if($user_role == 'admin') { 
+            return view('clients.admin.myprograms', $data); 
+        }
 
         return view('clients.myprograms', $data);
+    }
+
+    public function removeMyprogram(Request $request)
+    {
+        ClientProgram::find($request->client_programs_id)->delete();
+
+        return redirect()->back();
     }
 
     public function spousePrograms($client_id)

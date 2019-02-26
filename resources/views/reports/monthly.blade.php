@@ -37,7 +37,8 @@
 					<th>Type</th>
 					<th>Bank</th>
                     <th>Notes</th>
-					<th>Amount</th>
+                    <th>Amount</th>
+					<th>After Bank Charge</th>
 
 				</tr>
 
@@ -56,7 +57,8 @@
 				    <td>{{ $value['type'] }}</td>
                     <td>{{ $value['bank'] }}</td>
 				    <td>{{ $value['notes'] }}</td>
-				    <td>{{ number_format($value['amount']) }}</td>
+                    <td>{{ number_format($value['amount']) }}</td>
+				    <td>{{ number_format($value['after_charge']) }}</td>
 				  </tr>
 			  @endforeach
 
@@ -76,6 +78,7 @@
 					<th>Bank</th>
                     <th>Notes</th>
 					<th>Amount</th>
+                    <th>After Bank Charge</th>
 
                </tr>
 

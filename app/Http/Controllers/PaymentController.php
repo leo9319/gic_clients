@@ -1336,10 +1336,6 @@ class PaymentController extends Controller
 
         $amount = $request->amount;
 
-        if($request->type == 'expense') {
-            $amount = -($amount);
-        }
-
         IncomeExpense::find($request->payment_id)->update([
             'bank_name' => $request->bank_name,
             'location' => $request->location,

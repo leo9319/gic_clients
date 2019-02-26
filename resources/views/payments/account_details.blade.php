@@ -205,7 +205,7 @@ var filterByDate = function(column, startDate, endDate) {
                 <td>{{ $value['description'] }}</td>
                 <td>{{ number_format($value['paid']) }}</td>
                 <td>{{ $value['bank_charge'] }}%</td>
-                <td>{{ number_format(abs($value['received'])) }}</td>
+                <td>{{ number_format($value['received']) }}</td>
                 <td>{{ number_format($sum += $value['received']) }}</td>
                 <td></td>
               </tr>

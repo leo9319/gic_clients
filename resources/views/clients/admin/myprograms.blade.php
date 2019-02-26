@@ -64,6 +64,8 @@
 
 						<th class="text-center">Action</th>
 
+						<th class="text-center">Action</th>
+
 					</tr>
 
 				</thead>
@@ -81,6 +83,12 @@
 							<td>
 								<a href="{{ route('client.steps', ['program_id' => $program_info->id, 'client_id'=>$programs->first()->client_id]) }}">
 									<button class="btn btn-info btn-block button2">Steps</button>
+								</a>
+							</td>
+
+							<td>
+								<a href="#">
+									<button class="btn btn-danger btn-block button2" id="remove" name="{{ $program->id }}">Remove</button>
 								</a>
 							</td>
 
@@ -142,5 +150,48 @@
 	</div>
 
 </div>
+
+<div class="modal fade" id="remove-program" role="dialog">
+  <div class="modal-dialog">
+
+      <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Warning!</h4>
+          </div>
+          <div class="modal-body">
+              <p>Are you sure you want to remove the program?</p>
+          </div>
+          <div class="modal-footer">
+
+          	  {{ Form::open(['route'=>'client.remove_my_program']) }}
+
+          	  	{{ Form::hidden('client_programs_id', null, ['id'=>'client-program-id']) }}
+
+          	  	{{ Form::submit('Yes', ['class'=>'btn btn-danger']) }}
+
+              <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+
+              {{ Form::close() }}
+          </div>
+      </div>
+
+    </div>
+</div>
+
+@endsection
+
+@section('footer_scripts')
+
+<script type="text/javascript">
+	
+	$('#remove').on('click', function(){
+
+		$('#client-program-id').val(this.name);
+
+		$('#remove-program').modal();
+	});
+
+</script>
 
 @endsection

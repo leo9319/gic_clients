@@ -84,7 +84,8 @@ class ReportController extends Controller
     		$reports[$counter]['type'] = $iae_value['payment_type'];
             $reports[$counter]['bank'] = $iae_value['bank_name'];
     		$reports[$counter]['notes'] = $iae_value['bank_name'];
-    		$reports[$counter]['amount'] = $iae_value['total_amount'];
+            $reports[$counter]['amount'] = $iae_value['total_amount'];
+    		$reports[$counter]['after_charge'] = $iae_value['total_amount'];
     		$data['sum'] += $iae_value['total_amount'];
 
     		$counter++;
@@ -98,11 +99,20 @@ class ReportController extends Controller
     		$reports[$counter]['description'] = Program::find($cp_value['program_id'])->program_name ?? 'Program Removed';
     		$reports[$counter]['type'] = Step::find($cp_value['step_id'])->step_name ?? 'Step Removed';
     		$reports[$counter]['bank'] = 'N/A';
-            $without_refunds = PaymentType::where('payment_id', $cp_value['id'])->where('cheque_verified', 1)->where('refund_payment', 0)->sum('amount_received');
-    		$with_refunds = PaymentType::where('payment_id', $cp_value['id'])->where('cheque_verified', 1)->where('refund_payment', 1)->sum('amount_received');
+
+            $without_refunds = PaymentType::where('payment_id', $cp_value['id'])->where('cheque_verified', 1)->where('refund_payment', 0)->sum('amount_paid');
+            $with_refunds = PaymentType::where('payment_id', $cp_value['id'])->where('cheque_verified', 1)->where('refund_payment', 1)->sum('amount_paid');
+
+
+            $without_refunds_ac = PaymentType::where('payment_id', $cp_value['id'])->where('cheque_verified', 1)->where('refund_payment', 0)->sum('amount_received');
+
+    		$with_refunds_ac = PaymentType::where('payment_id', $cp_value['id'])->where('cheque_verified', 1)->where('refund_payment', 1)->sum('amount_received');
 
             $reports[$counter]['notes'] = $cp_value['comments'];
             $reports[$counter]['amount'] = $without_refunds - $with_refunds;
+
+
+            $reports[$counter]['after_charge'] = $without_refunds_ac - $with_refunds_ac;
 
 
     		$data['sum'] += PaymentType::where('payment_id', $cp_value['id'])->sum('amount_received');;

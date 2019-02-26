@@ -137,13 +137,16 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Payment Date</th>
                   <th>Location</th>
+                  <th>Client Code</th>
                   <th>Client Name</th>
                   <th>Program Name</th>
                   <th>Step Name</th>
                   <th>Total Amount</th>
                   <th>Total Paid</th>
+                  <th>After Bank Charges</th>
                   <th>Due</th>
                   <th>Due Date</th>
+                  <th>Note</th>
 
                   @if(Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'admin')
                   <th class="text-center">Action</th>
@@ -159,13 +162,16 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Payment Date</th>
                   <th>Location</th>
+                  <th>Client Code</th>
                   <th>Client Name</th>
                   <th>Program Name</th>
                   <th>Step Name</th>
                   <th>Total Amount</th>
                   <th>Total Paid</th>
+                  <th>After Bank Charges</th>
                   <th>Due</th>
                   <th>Due Date</th>
+                  <th>Note</th>
 
                   @if(Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'admin')
                   <th class="text-center">Action</th>
@@ -181,6 +187,7 @@ var filterByDate = function(column, startDate, endDate) {
 
                 <td>{{ Carbon\Carbon::parse($all_due->created_at)->format('d-M-y') }}</td>
                 <td>{{ ucfirst($all_due->location) }}</td>
+                <td>{{ $all_due->userInfo->client_code ?? 'Client Deleted' }}</td>
                 <td>{{ $all_due->userInfo->name ?? 'Client Deleted' }}</td>
                 <td>{{ $all_due->programInfo->program_name ?? 'Program Deleted'}}</td>
                 <td>{{ $all_due->stepInfo->step_name ?? 'Step Deleted' }}</td>
@@ -196,9 +203,17 @@ var filterByDate = function(column, startDate, endDate) {
                     ->sum('amount_paid')) 
                   }}
                 </td>
+                <td>
+                  {{ 
+                    number_format($all_due->totalVerifiedPayment
+                    ->where('refund_payment', '!=', 1)
+                    ->sum('amount_received')) 
+                  }}
+                </td>
 
                 <td>{{ number_format($all_due->dues) }}</td>
                 <td>{{ Carbon\Carbon::parse($all_due->due_date)->format('d-M-y') }}</td>
+                <td>{{ $all_due->comments }}</td>
 
                 @if(Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'admin')
                 <td>
