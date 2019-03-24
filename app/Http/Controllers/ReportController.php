@@ -70,9 +70,13 @@ class ReportController extends Controller
         $to = $request->end_date;
 
     	$income_and_expenses =  IncomeExpense::whereNotIn('payment_type', ['Cash Transfer In', 'Cash Transfer Out'])->whereBetween('created_at', [$from, $to])->get();
-    	$client_payment =  Payment::whereBetween('created_at', [$from, $to])->get();
+    	// $client_payment =  Payment::whereBetween('created_at', [$from, $to])->get();
+        $client_payment = PaymentType::whereBetween('created_at', [$from, $to])
+                            ->where('cheque_verified', 1)
+                            ->get();
     	$counter = 0;
     	$data['sum'] = 0;
+        
 
     	foreach ($income_and_expenses as $iae_key => $iae_value) {
 
@@ -81,7 +85,9 @@ class ReportController extends Controller
             $reports[$counter]['client_name'] = 'N/A';
     		$reports[$counter]['location'] = $iae_value['location'];
     		$reports[$counter]['description'] = $iae_value['description'];
-    		$reports[$counter]['type'] = $iae_value['payment_type'];
+            $reports[$counter]['type'] = $iae_value['payment_type'];
+            $reports[$counter]['counselor'] = ['N/A'];
+    		$reports[$counter]['rm'] = ['N/A'];
             $reports[$counter]['bank'] = $iae_value['bank_name'];
     		$reports[$counter]['notes'] = $iae_value['bank_name'];
             $reports[$counter]['amount'] = $iae_value['total_amount'];
@@ -92,33 +98,64 @@ class ReportController extends Controller
     	}
 
     	foreach ($client_payment as $cp_key => $cp_value) {
+            $refund = '';
+            $counselors_array = [];
+            $rms_array = [];
             $reports[$counter]['date'] = Carbon::parse($cp_value['created_at'])->format('d-m-y');
-            $reports[$counter]['client_code'] = User::find($cp_value['client_id'])->client_code ?? 'N/A';
-            $reports[$counter]['client_name'] = User::find($cp_value['client_id'])->name ?? 'N/A';
-    		$reports[$counter]['location'] = $cp_value['location'];
-    		$reports[$counter]['description'] = Program::find($cp_value['program_id'])->program_name ?? 'Program Removed';
-    		$reports[$counter]['type'] = Step::find($cp_value['step_id'])->step_name ?? 'Step Removed';
-    		$reports[$counter]['bank'] = 'N/A';
 
-            $without_refunds = PaymentType::where('payment_id', $cp_value['id'])->where('cheque_verified', 1)->where('refund_payment', 0)->sum('amount_paid');
-            $with_refunds = PaymentType::where('payment_id', $cp_value['id'])->where('cheque_verified', 1)->where('refund_payment', 1)->sum('amount_paid');
+            $payment = Payment::find($cp_value['payment_id']);
 
+            $reports[$counter]['client_code'] = User::find($payment->client_id)->client_code ?? 'N/A';
+            $reports[$counter]['client_name'] = User::find($payment->client_id)->name ?? 'N/A';
+            $reports[$counter]['location'] = $payment->location;
+            $reports[$counter]['description'] = Program::find($payment->program_id)->program_name ?? 'Program Removed';
 
-            $without_refunds_ac = PaymentType::where('payment_id', $cp_value['id'])->where('cheque_verified', 1)->where('refund_payment', 0)->sum('amount_received');
+            if($cp_value['refund_payment']) {
 
-    		$with_refunds_ac = PaymentType::where('payment_id', $cp_value['id'])->where('cheque_verified', 1)->where('refund_payment', 1)->sum('amount_received');
+                $refund = '(refund)';
+                $reports[$counter]['amount'] = -$cp_value['amount_paid'];
+                $reports[$counter]['after_charge'] = -$cp_value['amount_received'];
 
-            $reports[$counter]['notes'] = $cp_value['comments'];
-            $reports[$counter]['amount'] = $without_refunds - $with_refunds;
+            } else {
 
+                $reports[$counter]['amount'] = $cp_value['amount_paid'];
+                $reports[$counter]['after_charge'] = $cp_value['amount_received'];
 
-            $reports[$counter]['after_charge'] = $without_refunds_ac - $with_refunds_ac;
+            }
 
+            $type = Step::find($payment->step_id)->step_name ?? 'Step Removed';
 
-    		$data['sum'] += PaymentType::where('payment_id', $cp_value['id'])->sum('amount_received');;
+            $reports[$counter]['type'] = $type . ' ' . $refund;
 
-    		$counter++;
+            foreach($payment->userInfo->getAssignedCounselors as $counselors) {
+
+                array_push($counselors_array, ($counselors->user->name ?? 'N/A'));
+
+            }
+
+            foreach($payment->userInfo->getAssignedRms as $rms) {
+
+                array_push($rms_array, ($rms->user->name ?? 'N/A'));
+
+            }
+
+            
+
+            $reports[$counter]['counselor'] = $counselors_array;
+
+            $reports[$counter]['rm'] = $rms_array;
+
+            $reports[$counter]['bank'] = $cp_value['bank_name'];
+
+            $reports[$counter]['notes'] = $payment->comments;
+
+            $data['sum'] += 0;
+
+            $counter++;
+            
     	}
+
+        // return $client_payment;
 
     	asort($reports);
     	$data['reports'] = $reports;

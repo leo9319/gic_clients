@@ -375,7 +375,7 @@ class PaymentController extends Controller
         }
 
         $request->session()->forget([
-            'receipt_id', 
+            'receipt_id',
             'location',
             'client_id',
             'program_id',

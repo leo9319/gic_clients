@@ -27,8 +27,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('sendEmailAndSmsReminder:sendemailsms')
-                  ->everyMinute();
+        // $schedule->command('sendEmailAndSmsReminder:sendemailsms')
+        //           ->everyMinute();
+
+        $schedule->command('backup:run')->everyMinute();
     }
 
     /**

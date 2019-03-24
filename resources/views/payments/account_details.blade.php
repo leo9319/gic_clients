@@ -55,6 +55,7 @@ $(function() {
     filterByDate(0, startDate, endDate); // We call our filter function
     
     $tableSel.dataTable().fnDraw(); // Manually redraw the table after filtering
+    
   });
   
   // Clear the filter. Unlike normal filters in Datatables,
@@ -101,17 +102,17 @@ var filterByDate = function(column, startDate, endDate) {
 
 <div class="container-fluid">
 
-	<div class="panel">
+  <div class="panel">
 
-		<div class="panel-body">
+    <div class="panel-body">
 
-			<h2 class="text-center">{{ strtoupper($account) }}</h2>
+      <h2 class="text-center">{{ strtoupper($account) }}</h2>
 
       <p>Total amount : <b>{{ number_format($total_amount) }}</b></p>
 
-		</div>
+    </div>
 
-		<div class="panel-footer">
+    <div class="panel-footer">
 
       <table border="0" cellspacing="5" cellpadding="5">
         <tbody>
@@ -196,7 +197,6 @@ var filterByDate = function(column, startDate, endDate) {
               @foreach($payment_breakdowns as $key => $value)
 
               
-
               <tr>
                 <td>{{ Carbon\Carbon::parse($value['date'])->format('d-M-y') }}</td>
                 <td>{{ ucfirst($value['location']) }}</td>
@@ -219,7 +219,7 @@ var filterByDate = function(column, startDate, endDate) {
 
   </div>
 
-	</div>
+  </div>
 
 </div>
 

@@ -35,6 +35,8 @@
 					<th>Location</th>
 					<th>Description</th>
 					<th>Type</th>
+                    <th>Counselor</th>
+                    <th>RM</th>
 					<th>Bank</th>
                     <th>Notes</th>
                     <th>Amount</th>
@@ -54,7 +56,25 @@
                     <td>{{ $value['client_name'] }}</td>
 				    <td>{{ ucfirst($value['location']) }}</td>
 				    <td>{{ $value['description'] }}</td>
-				    <td>{{ $value['type'] }}</td>
+                    <td>{{ $value['type'] }}</td>
+				    <td>
+                        @if(isset($value['counselor']))
+                        @foreach($value['counselor'] as $counselor)
+
+                            {{ $counselor }}
+
+                        @endforeach
+                        @endif
+                    </td>
+                    <td>
+                        @if(isset($value['rm']))
+                        @foreach($value['rm'] as $rm)
+
+                            {{ $rm }}
+
+                        @endforeach
+                        @endif
+                    </td>
                     <td>{{ $value['bank'] }}</td>
 				    <td>{{ $value['notes'] }}</td>
                     <td>{{ number_format($value['amount']) }}</td>
@@ -75,6 +95,8 @@
 					<th>Location</th>
 					<th>Description</th>
 					<th>Type</th>
+                    <th>Counselor</th>
+                    <th>RM</th>
 					<th>Bank</th>
                     <th>Notes</th>
 					<th>Amount</th>

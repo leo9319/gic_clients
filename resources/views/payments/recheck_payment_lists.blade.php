@@ -40,7 +40,8 @@ $(function() {
                 action: function () {
                     this.rows().deselect();
                 }
-            }
+            },
+            'colvis'
         ],
         select: true
   });
@@ -138,6 +139,8 @@ var filterByDate = function(column, startDate, endDate) {
                	<th>Client Code</th>
                	<th>Client Name</th>
                	<th>Payment Type</th>
+                <th>Counselor</th>
+                <th>RM</th>
                	<th>Deposited To</th>
                	<th>Amount Paid</th>
                	<th>Bank Charge</th>
@@ -157,6 +160,25 @@ var filterByDate = function(column, startDate, endDate) {
             		<td>{{ $payments_type->payment->userInfo->client_code ?? 'Client Removed' }}</td>
             		<td>{{ $payments_type->payment->userInfo->name ?? 'Client Removed' }}</td>
             		<td>{{ ucfirst($payments_type->payment_type) }}</td>
+                <td>
+
+                  @foreach($payments_type->payment->userInfo->getAssignedCounselors as $counselors)
+
+                    {{ $counselors->user->name ?? 'N/A'}}
+
+                  @endforeach
+
+                  </td>
+
+                  <td>
+
+                  @foreach($payments_type->payment->userInfo->getAssignedRms as $rms)
+
+                    {{ $rms->user->name ?? 'N/A'}}
+
+                  @endforeach
+
+                </td>
             		<td>{{ strtoupper($payments_type->bank_name) }}</td>
             		<td>{{ number_format($payments_type->amount_paid) }}</td>
             		<td>{{ $payments_type->bank_charge }}%</td>
@@ -179,6 +201,8 @@ var filterByDate = function(column, startDate, endDate) {
                	<th>Client Code</th>
                	<th>Client Name</th>
                	<th>Payment Type</th>
+                <th>Counselor</th>
+                <th>RM</th>
                	<th>Deposited To</th>
                	<th>Amount Paid</th>
                	<th>Bank Charge</th>
@@ -206,5 +230,6 @@ var filterByDate = function(column, startDate, endDate) {
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script>
 
 @endsection

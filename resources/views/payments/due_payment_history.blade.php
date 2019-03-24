@@ -39,7 +39,8 @@ $(function() {
                 action: function () {
                     this.rows().deselect();
                 }
-            }
+            },
+            'colvis'
         ],
         select: true
   });
@@ -49,7 +50,7 @@ $(function() {
     var startDate = $('#start').val(),
         endDate = $('#end').val();
     
-    filterByDate(1, startDate, endDate); // We call our filter function
+    filterByDate(0, startDate, endDate); // We call our filter function
     
     $tableSel.dataTable().fnDraw(); // Manually redraw the table after filtering
   });
@@ -143,6 +144,10 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Step</th>
 
+                  <th>Counselor</th>
+
+                  <th>RM</th>
+
                   <th>Due Paid</th>
 
                   <th>Remaining Due</th>
@@ -163,6 +168,27 @@ var filterByDate = function(column, startDate, endDate) {
                 <td>{{ $due_payment->userInfo->name ?? 'Client Removed' }}</td>
                 <td>{{ $due_payment->programInfo->program_name }}</td>
                 <td>{{ $due_payment->stepInfo->step_name }}</td>
+
+                <td>
+
+                  @foreach($due_payment->userInfo->getAssignedCounselors as $counselors)
+
+                    {{ $counselors->user->name ?? 'N/A'}}
+
+                  @endforeach
+
+                  </td>
+
+                  <td>
+
+                  @foreach($due_payment->userInfo->getAssignedRms as $rms)
+
+                    {{ $rms->user->name ?? 'N/A'}}
+
+                  @endforeach
+
+                </td>
+
                 <td>{{ number_format($due_payment->totalPayment->where('due_payment', 1)->sum('amount_paid')) }}</td>
                 <td>{{ number_format($due_payment->dues) }}</td>
                 <td>{{ $due_payment->comments }}</td>
@@ -184,6 +210,10 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Program</th>
 
                   <th>Step</th>
+
+                  <th>Counselor</th>
+                  
+                  <th>RM</th>
 
                   <th>Due Paid</th>
 
@@ -215,5 +245,6 @@ var filterByDate = function(column, startDate, endDate) {
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script>
 
 @endsection

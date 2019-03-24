@@ -338,3 +338,8 @@ Route::get('appointment/{client_id}', 'gCalendarController@setAppointment')->nam
 Route::get('oauth', 'gCalendarController@oauth')->name('oauthCallback');
 Route::get('email/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendEmail')->name('email');
 Route::get('sms/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendSMS')->name('sms');
+
+Route::get('/clear-cache', function() {
+    Artisan::call('cache:clear');
+    return "Cache is cleared";
+});

@@ -39,7 +39,8 @@ $(function() {
                 action: function () {
                     this.rows().deselect();
                 }
-            }
+            },
+            'colvis'
         ],
         select: true
   });
@@ -135,6 +136,8 @@ var filterByDate = function(column, startDate, endDate) {
 					<th>Client Name</th>
 					<th>Program Name</th>
 					<th>Step Name</th>
+          <th>Counselor</th>
+          <th>RM</th>
 					<th>Payment Type</th>
 					<th>Refunded From</th>
 					<th>Cheque Number</th>
@@ -151,6 +154,25 @@ var filterByDate = function(column, startDate, endDate) {
             		<td>{{ $refund->payment->userInfo->name ?? 'Client Removed' }}</td>
             		<td>{{ $refund->payment->programInfo->program_name ?? 'Program Removeds' }}</td>
             		<td>{{ $refund->payment->stepInfo->step_name ?? 'Steps Removed' }}</td>
+                <td>
+
+                  @foreach($refund->payment->userInfo->getAssignedCounselors as $counselors)
+
+                    {{ $counselors->user->name ?? 'N/A'}}
+
+                  @endforeach
+
+                  </td>
+
+                  <td>
+
+                  @foreach($refund->payment->userInfo->getAssignedRms as $rms)
+
+                    {{ $rms->user->name ?? 'N/A'}}
+
+                  @endforeach
+
+                </td>
             		<td>{{ ucfirst($refund->payment_type) }}</td>
             		<td>{{ strtoupper($refund->bank_name) }}</td>
             		<td>{{ $refund->cheque_number }}</td>
@@ -171,6 +193,8 @@ var filterByDate = function(column, startDate, endDate) {
 					<th>Client Name</th>
 					<th>Program Name</th>
 					<th>Step Name</th>
+          <th>Counselor</th>
+          <th>RM</th>
 					<th>Payment Type</th>
 					<th>Refunded From</th>
 					<th>Cheque Number</th>
@@ -197,5 +221,6 @@ var filterByDate = function(column, startDate, endDate) {
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script>
 
 @endsection

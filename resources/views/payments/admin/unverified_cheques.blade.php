@@ -41,7 +41,8 @@ $(function() {
                 action: function () {
                     this.rows().deselect();
                 }
-            }
+            },
+            'colvis'
         ],
         select: true
   });
@@ -139,6 +140,9 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Client Name</th>
                   <th>Program Name</th>
                   <th>Step Name</th>
+                  <th>Counselor</th>
+                  <th>RM</th>
+
                   <th>Cheque Number</th>
                   <th>Deposited To</th>
                   <th>Status</th>
@@ -158,6 +162,27 @@ var filterByDate = function(column, startDate, endDate) {
                       <td>{{ $unverified_cheque->payment->userInfo->name ?? 'Client Removed' }}</td>
                       <td>{{ $unverified_cheque->payment->programInfo->program_name ?? 'N/A' }}</td>
                       <td>{{ $unverified_cheque->payment->stepInfo->step_name ?? 'N/A' }}</td>
+
+                      <td>
+
+                        @foreach($unverified_cheque->payment->userInfo->getAssignedCounselors as $counselors)
+
+                          {{ $counselors->user->name ?? 'N/A'}}
+
+                        @endforeach
+
+                        </td>
+
+                        <td>
+
+                        @foreach($unverified_cheque->payment->userInfo->getAssignedRms as $rms)
+
+                          {{ $rms->user->name ?? 'N/A'}}
+
+                        @endforeach
+
+                      </td>
+
                       <td>{{ $unverified_cheque->cheque_number }}</td>
                       <td>{{ strtoupper($unverified_cheque->bank_name) }}</td>
                       <td>
@@ -194,6 +219,8 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Client Name</th>
                   <th>Program Name</th>
                   <th>Step Name</th>
+                  <th>Counselor</th>
+                  <th>RM</th>
                   <th>Cheque Number</th>
                   <th>Deposited To</th>
                   <th>Status</th>
@@ -324,6 +351,7 @@ var filterByDate = function(column, startDate, endDate) {
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script>
 
 <script type="text/javascript">
 

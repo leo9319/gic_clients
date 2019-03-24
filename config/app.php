@@ -182,6 +182,8 @@ return [
         * PDF Service Providers...
         */
         Barryvdh\DomPDF\ServiceProvider::class,
+        Spatie\Backup\BackupServiceProvider::class,
+        BC\Laravel\DropboxDriver\ServiceProvider::class,
 
         
 

@@ -38,7 +38,8 @@ $(function() {
                 action: function () {
                     this.rows().deselect();
                 }
-            }
+            },
+            'colvis'
         ],
         select: true
   });
@@ -96,12 +97,12 @@ var filterByDate = function(column, startDate, endDate) {
 @stop
 
 <div class="container-fluid">
-	<div class="panel">
-		<div class="panel-body">
-			<h2>Payment History</h2>
-		</div>
+  <div class="panel">
+    <div class="panel-body">
+      <h2>Payment History</h2>
+    </div>
 
-		<div class="panel-footer">
+    <div class="panel-footer">
 
       <table border="0" cellspacing="5" cellpadding="5">
         <tbody>
@@ -122,7 +123,7 @@ var filterByDate = function(column, startDate, endDate) {
       <button id="clearFilter" class="btn btn-info btn-sm" class="btn btn-success">Clear Filter</button>
       <hr>
 
-			<table id="payment-history" class="table table-striped table-bordered" style="width:100%">
+      <table id="payment-history" class="table table-striped table-bordered" style="width:100%">
 
             <thead>
 
@@ -133,6 +134,8 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Name</th>
                   <th>Program</th>
                   <th>Step</th>
+                  <th>Counselor</th>
+                  <th>RM</th>
                   <th>Invoice Amount</th>
                   <th>Total Paid</th>
                   <th>Due Amount</th>
@@ -149,30 +152,51 @@ var filterByDate = function(column, startDate, endDate) {
 
             <tbody>
 
-            	@foreach($payments as $payment)
+              @foreach($payments as $payment)
 
               @if($payment)
 
               <?php $class = ($payment->recheck == 1 ? 'text-danger' : '') ?>
 
-                  	<tr class="{{ $class }}">
+                    <tr class="{{ $class }}">
 
                       <td>{{ Carbon\Carbon::parse($payment->created_at)->format('d-M-y') }}</td>
                       <td>{{ ucfirst($payment->location) }}</td>
                       <td>{{ $payment->receipt_id }}</td>
                       
-                  		<td>
-                  			<a href="{{ route('client.profile', $payment->client_id) }}">
-                  				{{ $payment->userInfo->client_code ?? 'Client Removed'}}
-                  			</a>   
-                  		</td>
+                      <td>
+                        <a href="{{ route('client.profile', $payment->client_id) }}">
+                          {{ $payment->userInfo->client_code ?? 'Client Removed'}}
+                        </a>   
+                      </td>
                       
-                  		<td>{{ $payment->userInfo->name ?? 'Client Removed'}}</td>  
-                  		<td>{{ $payment->programInfo->program_name ?? 'Program Removed'}}</td> 
-                  		<td>{{ $payment->stepInfo->step_name ?? 'Step Removed' }}</td>                  
+                      <td>{{ $payment->userInfo->name ?? 'Client Removed'}}</td>  
+                      <td>{{ $payment->programInfo->program_name ?? 'Program Removed'}}</td> 
+                      <td>{{ $payment->stepInfo->step_name ?? 'Step Removed' }}</td> 
+
+                      <td>
+                  
+                        @foreach($payment->userInfo->getAssignedCounselors as $counselors)
+
+                            {{ $counselors->user->name ?? 'N/A' }}
+
+                        @endforeach
+
+                      </td>
+
+                      <td>
+                        
+                        @foreach($payment->userInfo->getAssignedRms as $rms)
+
+                            {{ $rms->user->name ?? 'N/A' }}
+
+                        @endforeach
+
+                      </td>
+
                       <td>{{ number_format($payment->totalAmount()) }}</td>
                       <td>{{ number_format($payment->totalVerifiedPayment->sum('amount_paid')) }}</td>
-                      <td>{{ number_format($payment->dues) }}</td>
+                      <td>{{ number_format($payment->totalAmount() - $payment->totalVerifiedPayment->sum('amount_paid')) }}</td>
                       <td>{{ $payment->comments }}</td>
 
                       <td>
@@ -193,11 +217,11 @@ var filterByDate = function(column, startDate, endDate) {
 
                       @endif
 
-                  	</tr>
+                    </tr>
 
               @endif
 
-            	@endforeach
+              @endforeach
 
             </tbody>
 
@@ -212,6 +236,8 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Name</th>
                   <th>Program</th>
                   <th>Step</th>
+                  <th>Counselor</th>
+                  <th>RM</th>
                   <th>Invoice Amount</th>
                   <th>Total Paid</th>
                   <th>Due Amount</th>
@@ -230,8 +256,8 @@ var filterByDate = function(column, startDate, endDate) {
             </tfoot>
 
          </table>
-		</div>
-	</div>
+    </div>
+  </div>
 </div>
 
 <div id="myModal" class="modal fade" role="dialog">
@@ -270,6 +296,7 @@ var filterByDate = function(column, startDate, endDate) {
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script>
 
 <script type="text/javascript">
 

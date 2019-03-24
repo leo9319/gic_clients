@@ -41,7 +41,8 @@ $(function() {
                 action: function () {
                     this.rows().deselect();
                 }
-            }
+            },
+            'colvis'
         ],
         select: true
   });
@@ -100,15 +101,15 @@ var filterByDate = function(column, startDate, endDate) {
 
 <div class="container-fluid">
 
-	<div class="panel">
+  <div class="panel">
 
-		<div class="panel-body">
+    <div class="panel-body">
 
-			<h2 class="text-center">Client Dues</h2>
+      <h2 class="text-center">Client Dues</h2>
 
-		</div>
+    </div>
 
-		<div class="panel-footer">
+    <div class="panel-footer">
 
       <table border="0" cellspacing="5" cellpadding="5">
           <tbody>
@@ -129,7 +130,7 @@ var filterByDate = function(column, startDate, endDate) {
         <button id="clearFilter" class="btn btn-info btn-sm" class="btn btn-success">Clear Filter</button>
         <hr>
 
-			<table id="client_dues" class="table table-striped table-bordered" style="width:100%">
+      <table id="client_dues" class="table table-striped table-bordered" style="width:100%">
 
             <thead>
 
@@ -139,8 +140,11 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Location</th>
                   <th>Client Code</th>
                   <th>Client Name</th>
+                  <th>Phone</th>
                   <th>Program Name</th>
                   <th>Step Name</th>
+                  <th>Counselor</th>
+                  <th>RM</th>
                   <th>Total Amount</th>
                   <th>Total Paid</th>
                   <th>After Bank Charges</th>
@@ -164,8 +168,11 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Location</th>
                   <th>Client Code</th>
                   <th>Client Name</th>
+                  <th>Phone</th>
                   <th>Program Name</th>
                   <th>Step Name</th>
+                  <th>Counselor</th>
+                  <th>RM</th>
                   <th>Total Amount</th>
                   <th>Total Paid</th>
                   <th>After Bank Charges</th>
@@ -183,14 +190,35 @@ var filterByDate = function(column, startDate, endDate) {
 
             <tbody>
               @foreach($all_dues as $all_due)
-            	<tr>
+              <tr>
 
                 <td>{{ Carbon\Carbon::parse($all_due->created_at)->format('d-M-y') }}</td>
                 <td>{{ ucfirst($all_due->location) }}</td>
                 <td>{{ $all_due->userInfo->client_code ?? 'Client Deleted' }}</td>
                 <td>{{ $all_due->userInfo->name ?? 'Client Deleted' }}</td>
+                <td>{{ $all_due->userInfo->mobile ?? 'Phone missing' }}</td>
                 <td>{{ $all_due->programInfo->program_name ?? 'Program Deleted'}}</td>
                 <td>{{ $all_due->stepInfo->step_name ?? 'Step Deleted' }}</td>
+
+                <td>
+                  
+                  @foreach($all_due->userInfo->getAssignedCounselors as $counselors)
+
+                      {{ $counselors->user->name }}
+
+                  @endforeach
+
+                </td>
+
+                <td>
+                  
+                  @foreach($all_due->userInfo->getAssignedRms as $rms)
+
+                      {{ $rms->user->name }}
+
+                  @endforeach
+
+                </td>
 
                 <td>
                   {{ number_format($all_due->opening_fee + $all_due->embassy_student_fee + $all_due->service_solicitor_fee + $all_due->other) }}
@@ -221,15 +249,15 @@ var filterByDate = function(column, startDate, endDate) {
                 </td>
                 @endif
 
-            	</tr>
+              </tr>
               @endforeach
             </tbody>            
 
          </table>
 
-		</div>
+    </div>
 
-	</div>
+  </div>
 
 </div>
 
@@ -247,5 +275,6 @@ var filterByDate = function(column, startDate, endDate) {
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script>
 
 @endsection

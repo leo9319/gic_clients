@@ -43,6 +43,6 @@ class Payment extends Model
     {
         return $this->opening_fee + $this->embassy_student_fee + $this->service_solicitor_fee + $this->other;
     }
-
+    
 
 }
