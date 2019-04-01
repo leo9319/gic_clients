@@ -15,6 +15,7 @@
             @endif
 
             @if(Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'counselor')
+
                <li>
                   <a href="{{ route('user.clients', Auth::user()->id) }}" class="{{ $active_class == 'my-clients' ? 'active' : '' }}">
                      <i class="fa fa-user-plus"></i>
@@ -28,13 +29,13 @@
                      <span>My Tasks</span>
                   </a>
                </li>
+
                <li>
                   <a href="{{ route('client.appointment', Auth::user()->id) }}" class="{{ $active_class == 'my-appointments' ? 'active' : '' }}">
                      <i class="fa fa-calendar"></i>
                      <span>My Appointments</span>
                   </a>
                </li>
-
 
             @endif
 
@@ -156,7 +157,6 @@
                   <ul class="nav">
                      <li><a href="{{ route('file.create') }}" class="">Create Your File</a></li>
                      <li><a href="{{ route('file.myfile') }}" class="">View My File</a></li>
-                     <!-- <li><a href="#" class="">Edit File</a></li> -->
                   </ul>
                </div>
             </li>
@@ -278,17 +278,6 @@
 
                      @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
 
-                     <li>
-                        <a href="{{ route('payment.client.unverified.cheques') }}" class="">
-                           <i class="fa fa-credit-card"></i>
-                           <span>Unverified Cheques</span></a>
-                     </li>
-
-                     <li>
-                        <a href="{{ route('payment.client.online.payments') }}" class="">
-                           <i class="fa fa-credit-card"></i>
-                           <span>Online Payments</span></a>
-                     </li>
 
                      <li>
                         <a href="{{ route('payment.client.recheck.types.list') }}" class="">
@@ -314,31 +303,28 @@
                </div>
             </li>
 
-            @endif
-
-            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'backend')
 
             <li>
-               <a href="#subDues" data-toggle="collapse" class="collapsed {{ $active_class == 'dues' ? 'active' : '' }}"><i class="fa fa-credit-card"></i> <span>Dues and Refund</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+               <a href="#subDues" data-toggle="collapse" class="collapsed {{ $active_class == 'dues' ? 'active' : '' }}"><i class="fa fa-hourglass-end"></i> <span>Dues and Refund</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 
                <div id="subDues" class="collapse ">
                   <ul class="nav">
 
                      <li>
                         <a href="{{ route('payment.client.dues.history') }}" class="">
-                           <i class="fa fa-credit-card"></i>
+                           <i class="fa fa-hourglass-end"></i>
                            <span>Due Payment History</span></a>
                      </li>
 
                      <li>
                         <a href="{{ route('payment.client.dues') }}" class="">
-                           <i class="fa fa-credit-card"></i>
+                           <i class="fa fa-hourglass-end"></i>
                            <span>Client Dues</span></a>
                      </li>
 
                      <li>
                         <a href="{{ route('payment.client.refund.history') }}" class="">
-                           <i class="fa fa-credit-card"></i>
+                           <i class="fa fa-hourglass-end"></i>
                            <span>Refund History</span></a>
                      </li>
 
@@ -346,7 +332,7 @@
 
                      <li>
                         <a href="{{ route('payment.client.refund') }}" class="">
-                           <i class="fa fa-credit-card"></i>
+                           <i class="fa fa-hourglass-end"></i>
                            <span>Refund Client</span></a>
                      </li>
 
@@ -355,6 +341,44 @@
                   </ul>
                </div>
             </li>
+
+            @if (Auth::user()->user_role != 'backend')
+
+            <li>
+               <a href="#subUnverifiedPayments" data-toggle="collapse" class="collapsed {{ $active_class == 'unverified_payments' ? 'active' : '' }}"><i class="fa fa-question-circle"></i> <span>Unverified Payments</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+
+               <div id="subUnverifiedPayments" class="collapse ">
+                  <ul class="nav">
+
+                     <li>
+                        <a href="{{ route('payment.client.unverified.cheques') }}" class="">
+                           <i class="fa fa-question-circle"></i>
+                           <span>Cheques</span></a>
+                     </li>
+
+                     <li>
+                        <a href="{{ route('payment.client.online.payments') }}" class="">
+                           <i class="fa fa-question-circle"></i>
+                           <span>Online</span></a>
+                     </li>
+
+                     <li>
+                        <a href="{{ route('payment.client.unverified.bkash_salman') }}" class="">
+                           <i class="fa fa-question-circle"></i>
+                           <span>bKAsh Personal</span></a>
+                     </li>
+
+                     <li>
+                        <a href="{{ route('payment.client.unverified.bkash_corporate') }}" class="">
+                           <i class="fa fa-question-circle"></i>
+                           <span>bKAsh Corporate</span></a>
+                     </li>
+                     
+                  </ul>
+               </div>
+            </li>
+
+            @endif
 
             @endif
 

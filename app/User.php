@@ -65,6 +65,7 @@ class User extends Authenticatable
         $amount_received = PaymentType::whereIn('payment_id', $payment_ids)
                             ->where('cheque_verified', '!=', 0)
                             ->where('online_verified', '!=', 0)
+                            ->where('bkash_salman_verified', '!=', 0)
                             ->where('refund_payment', '!=', 1)
                             ->sum('amount_paid');
                             

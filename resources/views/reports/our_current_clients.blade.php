@@ -75,7 +75,7 @@
 
 					</td>
 					<td>{{ Carbon\Carbon::parse($payment->created_at)->format('d-M-y') }}</td>
-					<td>{{ number_format($payment->dues) }}</td>
+					<td>{{ number_format($payment->totalAmount() - $payment->totalVerifiedPayment->sum('amount_paid')) }}</td>
 					<td>{{ Carbon\Carbon::parse($payment->due_date)->format('d-M-y') }}</td>
 					<td>
 						@if($payment->userInfo)

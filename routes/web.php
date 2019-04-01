@@ -216,7 +216,15 @@ Route::post('payment/cheque/verification', 'PaymentController@chequeApproved')->
 
 Route::get('payment/online/verification/{payment_type}', 'PaymentController@onlineDissapproved')->name('payment.online.dissaproved');
 
+Route::get('payment/bkash-salman/verification/{payment_type}', 'PaymentController@bkashSalmanDissapproved')->name('payment.bkash.salman.dissaproved');
+
+Route::get('payment/bkash-corporate/verification/{payment_type}', 'PaymentController@bkashCorporateDissapproved')->name('payment.bkash.corporate.dissaproved');
+
 Route::post('payment/online/verification', 'PaymentController@onlineApproved')->name('payment.online.verification');
+
+Route::post('payment/bkash-salman/verification', 'PaymentController@bkashSalmanApproved')->name('payment.bkash.salman.verification');
+
+Route::post('payment/bkash-corporate/verification', 'PaymentController@bkashCorporateApproved')->name('payment.bkash.corporate.verification');
 
 Route::get('payment/generate-invoice/{payment}', 'PaymentController@generateInvoice')->name('payment.generate.invoice');
 
@@ -270,8 +278,21 @@ Route::post('payment/client/dues/payment/store', 'PaymentController@storeDuePaym
 Route::get('payment/client/dues/history', 'PaymentController@dueHistory')->name('payment.client.dues.history');
 Route::get('payment/client/dues/pdf/{payment_id}', 'PaymentController@generateDuePDF')->name('payment.client.dues.pdf');
 Route::get('payment/client/payment/recheck/{payment_id}', 'PaymentController@recheckPayment')->name('payment.client.payment.recheck');
+
+
+
 Route::get('payment/client/unverified/cheque', 'PaymentController@unverifiedCheques')->name('payment.client.unverified.cheques');
 Route::get('payment/client/online/payments', 'PaymentController@onlinePayments')->name('payment.client.online.payments');
+
+
+Route::get('payment/client/unverified/bkash-salman', 'PaymentController@unverifiedBkashSalman')->name('payment.client.unverified.bkash_salman');
+
+Route::get('payment/client/unverified/bkash-corporate', 'PaymentController@unverifiedBkashCorporate')->name('payment.client.unverified.bkash_corporate');
+
+
+
+
+
 Route::get('payment/client/recheck/{payment_type_id}', 'PaymentController@recheckPaymentType')->name('payment.client.recheck.payment_type');
 Route::get('payment/client/recheck/types/list', 'PaymentController@recheckPaymentTypeList')->name('payment.client.recheck.types.list');
 
@@ -282,6 +303,8 @@ Route::post('payment/client/delete/reissue/', 'PaymentController@deleteAndReissu
 Route::post('payment/delete/payment', 'PaymentController@deletePayment')->name('payment.delete');
 
 Route::post('payment/update/cheque-info', 'PaymentController@updateChequeInfo')->name('payment.update.cheque.info');
+Route::post('payment/update/bkash-salman-info', 'PaymentController@updateBkashSalmanInfo')->name('payment.update.bkash.salman.info');
+Route::post('payment/update/bkash-corporate-info', 'PaymentController@updateBkashCorporateInfo')->name('payment.update.bkash.corporate.info');
 Route::post('payment/update/online-info', 'PaymentController@updateOnlineInfo')->name('payment.update.online.info');
 
 Route::get('payment/notes/{client_id}', 'PaymentController@paymentNotes')->name('payment.notes');

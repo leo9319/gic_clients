@@ -372,6 +372,20 @@ var filterByDate = function(column, startDate, endDate) {
 
         </div>
 
+        <div class="form-group">
+
+          {!! Form::label('advance_payment:') !!}
+
+          <br>
+
+          <input type="radio" name="advance_payment" value="yes" id="advance-payment-yes"> Yes
+
+          <br>
+
+         <input type="radio" name="advance_payment" value="no" id="advance-payment-no"> No
+
+        </div>
+
         </div>
 
       <div class="modal-footer">
@@ -454,6 +468,13 @@ var filterByDate = function(column, startDate, endDate) {
           document.getElementById("description").innerHTML = data.description;
           document.getElementById("bank_name").value = data.bank_name;
           document.getElementById("location").value = data.location;
+
+          if(data.advance_payment == 'yes') {
+            document.getElementById("advance-payment-yes").checked = true;
+          } else {
+            document.getElementById("advance-payment-no").checked = true;
+          }
+
         },
 
         error:function(){

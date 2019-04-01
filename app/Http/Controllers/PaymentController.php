@@ -194,6 +194,8 @@ class PaymentController extends Controller
             $charge = 0;
             $cheque_verified = 1;
             $online_verified = 1;
+            $bkash_salman_verified = 1;
+            $bkash_corporate_verified = 1;
             $payment_type = Input::get('payment_type-' . $i);
             $bank_deposited = Input::get('bank_name-' . $i);
             $after_charge = 0;
@@ -255,13 +257,19 @@ class PaymentController extends Controller
 
                 $online_verified = -1;
 
-            } else if($payment_type == 'bkash_corporate' || $payment_type == 'upay') {
+            } else if($payment_type == 'upay') {
 
                 $charge = 1.5;
+
+            } else if($payment_type == 'bkash_corporate') {
+
+                $charge = 1.5;
+                $bkash_corporate_verified = -1;
 
             } else if($payment_type == 'bkash_salman') {
 
                 $charge = 2;
+                $bkash_salman_verified = -1;
 
             } else {
 
@@ -290,6 +298,8 @@ class PaymentController extends Controller
                 'bank_name' => $bank_deposited,
                 'cheque_verified' => $cheque_verified,
                 'online_verified' => $online_verified,
+                'bkash_salman_verified' => $bkash_salman_verified,
+                'bkash_corporate_verified' => $bkash_corporate_verified,
                 'bank_charge' => $charge,
                 'amount_paid' => Input::get('total_amount-' . $i),
                 'amount_received' => $after_charge,
@@ -414,6 +424,8 @@ class PaymentController extends Controller
         $data['payment_types'] = PaymentType::where('payment_id', $payment->id)
                                  ->where('cheque_verified', '!=', 0)
                                  ->where('online_verified', '!=', 0)
+                                 ->where('bkash_salman_verified', '!=', 0)
+                                 ->where('bkash_corporate_verified', '!=', 0)
                                  ->where('refund_payment', '!=', 1)
                                  ->get();
 
@@ -442,6 +454,8 @@ class PaymentController extends Controller
         $data['payment_types'] = PaymentType::where('payment_id', $payment->id)
                                   ->where('cheque_verified', '!=', 0)
                                   ->where('online_verified', '!=', 0)
+                                  ->where('bkash_salman_verified', '!=', 0)
+                                  ->where('bkash_corporate_verified', '!=', 0)
                                   ->where('refund_payment', '!=', 1)
                                   ->get();
 
@@ -510,6 +524,8 @@ class PaymentController extends Controller
             $approval_code =  isset($value['approval_code']) ? $value['approval_code'] : NULL;
             $cheque_number =  isset($value['cheque_number']) ? $value['cheque_number'] : NULL;
             $cheque_verified =  isset($value['cheque_verified']) ? $value['cheque_verified'] : 1;
+            $bkash_salman_verified =  isset($value['bkash_salman_verified']) ? $value['bkash_salman_verified'] : 1;
+            $bkash_corporate_verified =  isset($value['bkash_corporate_verified']) ? $value['bkash_corporate_verified'] : 1;
             $bank_name =  isset($value['bank_name']) ? $value['bank_name'] : NULL;
             $bank_charge =  isset($value['bank_charge']) ? $value['bank_charge'] : NULL;
             $phone_number =  isset($value['phone_number']) ? $value['phone_number'] : NULL;
@@ -533,6 +549,8 @@ class PaymentController extends Controller
                 'cheque_number' => $cheque_number,
                 'bank_name' => $bank_name,
                 'cheque_verified' => $cheque_verified,
+                'bkash_salman_verified' => $bkash_salman_verified,
+                'bkash_corporate_verified' => $bkash_corporate_verified,
                 'bank_charge' => $bank_charge,
                 'amount_paid' => $amount_paid,
                 'amount_received' => $after_charge,
@@ -657,6 +675,58 @@ class PaymentController extends Controller
         return redirect()->back();
     }
 
+    public function bkashSalmanApproved(Request $request)
+    {
+        PaymentType::find($request->payment_id)->update([
+            'bkash_salman_verified' => 1,
+            'created_at' => $request->date_deposited,
+            'deposit_date' => $request->date_deposited,
+        ]);
+
+        return redirect()->back();
+
+        // return $request->all();
+    }
+
+    public function bkashCorporateApproved(Request $request)
+    {
+        PaymentType::find($request->payment_id)->update([
+            'bkash_corporate_verified' => 1,
+            'created_at' => $request->date_deposited,
+            'deposit_date' => $request->date_deposited,
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function bkashSalmanDissapproved(PaymentType $payment_type)
+    {
+        PaymentType::find($payment_type->id)->update(['bkash_salman_verified' => 0]);
+
+        $payment_id = $payment_type->payment_id;
+        $total_amount = $this->findingTotalAmount($payment_id);
+        $total_amount_paid = $this->findingTotalPaidAmount($payment_id);
+        $dues = $total_amount - $total_amount_paid;
+
+        Payment::find($payment_id)->update(['dues' => $dues]);
+
+        return redirect()->back();
+    }
+
+    public function bkashCorporateDissapproved(PaymentType $payment_type)
+    {
+        PaymentType::find($payment_type->id)->update(['bkash_corporate_verified' => 0]);
+
+        $payment_id = $payment_type->payment_id;
+        $total_amount = $this->findingTotalAmount($payment_id);
+        $total_amount_paid = $this->findingTotalPaidAmount($payment_id);
+        $dues = $total_amount - $total_amount_paid;
+
+        Payment::find($payment_id)->update(['dues' => $dues]);
+
+        return redirect()->back();
+    }
+
     public function generateInvoice(Payment $payment)
     {
         $client = User::find($payment->client_id);
@@ -677,18 +747,22 @@ class PaymentController extends Controller
         $data['service_solicitor_fee'] = $payment->service_solicitor_fee;
         $data['other'] = $payment->other;
         // $data['amount_paid'] = PaymentType::where('payment_id', $payment->id)->sum('amount_paid');
-        $data['dues'] = $payment->dues;
+        // $data['dues'] = $payment->dues;
         $data['due_date'] = $payment->due_date;
         $data['comments'] = $payment->comments;
 
         $data['payment_methods'] = PaymentType::where('payment_id', $payment->id)
                                     ->where('cheque_verified', '!=', 0)
                                     ->where('online_verified', '!=', 0)
+                                    ->where('bkash_salman_verified', '!=', 0)
+                                    ->where('bkash_corporate_verified', '!=', 0)
                                     ->where('refund_payment', '!=', 1)
                                     ->get();
 
         $created_by = User::find($payment->created_by);
         $data['created_by'] = $created_by ? $created_by->name : '';
+
+        $data['dues']  = $payment->totalAmount() - $payment->totalVerifiedPayment->sum('amount_paid');
 
         $pdf = PDF::loadView('invoice.index', $data);
         return $pdf->download($client->client_code.'-payment-invoice.pdf');
@@ -808,6 +882,8 @@ class PaymentController extends Controller
         $charge = 0;
         $cheque_verified = 1;
         $online_verified = 1;
+        $bkash_salman_verified = 1;
+        $bkash_corporate_verified = 1;
         $after_charge = 0;
         $id = Input::get('id');
         $payment_id = Input::get('payment_id');
@@ -872,13 +948,19 @@ class PaymentController extends Controller
 
             $online_verified = -1;
 
-        } else if($payment_type == 'bkash_corporate' || $payment_type == 'upay') {
+        } else if($payment_type == 'upay') {
 
             $charge = 1.5;
+
+        } else if($payment_type == 'bkash_corporate') {
+
+            $charge = 1.5;
+            $bkash_corporate_verified = -1;
 
         } else if($payment_type == 'bkash_salman') {
 
             $charge = 2;
+            $bkash_salman_verified = -1;
 
         } else {
 
@@ -909,6 +991,8 @@ class PaymentController extends Controller
             'bank_name' => $bank_deposited,
             'cheque_verified' => $cheque_verified,
             'online_verified' => $online_verified,
+            'bkash_salman_verified' => $bkash_salman_verified,
+            'bkash_corporate_verified' => $bkash_corporate_verified,
             'deposit_date' => Input::get('deposit_date'),
             'due_payment' => $request->due_payment,
             'bank_charge' => $charge,
@@ -978,6 +1062,8 @@ class PaymentController extends Controller
         $bank_account_client = PaymentType::where([
             'cheque_verified' => 1,
             'online_verified' => 1,
+            'bkash_salman_verified' => 1,
+            'bkash_corporate_verified' => 1,
         ])->get();
 
         $banks = [
@@ -992,6 +1078,7 @@ class PaymentController extends Controller
             'icb' => 0,
             'ucb_fdr' => 0,
             'ucb_cc' => 0,
+            'brac_umrah' => 0,
             'salman account' => 0,
             'kamran account' => 0
          ];
@@ -1008,6 +1095,7 @@ class PaymentController extends Controller
             'icb' => 'ICB',
             'ucb_fdr' => 'UCB_FDR',
             'ucb_cc' => 'UCB_CC',
+            'brac_umrah' => 'BRAC_UMRAH',
             'salman account' => 'Salman Account',
             'kamran account' => 'Kamran Account'
          ];
@@ -1060,6 +1148,8 @@ class PaymentController extends Controller
         $payment_histories = $data['payment_histories'] = PaymentType::where('bank_name', $account)
                              ->where('cheque_verified', 1)
                              ->where('online_verified', 1)
+                             ->where('bkash_salman_verified', 1)
+                             ->where('bkash_corporate_verified', 1)
                              ->get();
 
         $incomes_and_expenses = $data['incomes_and_expenses'] = IncomeExpense::where([
@@ -1332,6 +1422,7 @@ class PaymentController extends Controller
 
     public function updateIncomesAndExpenses(Request $request)
     {
+        // return $request->all();
         $date_timestamp = Carbon::parse($request->date)->toDateTimeString();
 
         $amount = $request->amount;
@@ -1342,6 +1433,7 @@ class PaymentController extends Controller
             'total_amount' => $amount,
             'recheck' => 1,
             'description' => $request->description,
+            'advance_payment' => $request->advance_payment,
             'created_at' => $date_timestamp,
         ]);
 
@@ -1543,7 +1635,13 @@ class PaymentController extends Controller
             $data['all_dues'] = Payment::whereIn('client_id', $client_ids)->where('dues', '>', 0)->get();
 
         } else {
-            $data['all_dues'] = Payment::where('dues', '>', 0)->get();
+            $data['all_dues'] = Payment::all();
+            // return $data['all_dues'] = Payment::with(['totalVerifiedPayment'])->get();
+
+            // $data['all_dues'] = Payment::with(array('totalPayment'=>function($query){
+            //     $query->select(DB::raw('payment_types.payment_id, SUM(payment_types.amount_paid) AS amount_received'))->groupBy('payment_types.payment_id');
+            // }))->select(DB::raw("payments.id, payments.receipt_id, payments.location, payments.client_id, payments.program_id, payments.step_id, payments.opening_fee, payments.embassy_student_fee, payments.service_solicitor_fee, payments.other, payments.recheck, payments.description, payments.dues, payments.due_date, payments.due_cleared_date, payments.created_at, payments.created_by, payments.comments, payments.updated_at, (payments.opening_fee + payments.embassy_student_fee + payments.service_solicitor_fee + payments.other) AS invoice_amount"))->get();
+
         }
 
         
@@ -1561,6 +1659,8 @@ class PaymentController extends Controller
         $data['payment_types'] = PaymentType::where('payment_id', $payment_id->id)
                                  ->where('cheque_verified', '!=', 0)
                                  ->where('online_verified', '!=', 0)
+                                 ->where('bkash_salman_verified', '!=', 0)
+                                 ->where('bkash_corporate_verified', '!=', 0)
                                  ->where('refund_payment', '!=', 1)
                                  ->get();
 
@@ -1572,7 +1672,19 @@ class PaymentController extends Controller
         $data['previous'] = URL::to('/dashboard');
         $data['active_class'] = 'payments';
         $data['payment_id'] = $payment_id;
-        $data['total_amount'] = Payment::find($payment_id)->dues;
+        $payment_id = Payment::find($payment_id);
+
+        $program_fee = $payment_id->opening_fee + $payment_id->embassy_student_fee + $payment_id->service_solicitor_fee + $payment_id->other;
+
+        $payment_types = PaymentType::where('payment_id', $payment_id->id)
+                                 ->where('cheque_verified', '!=', 0)
+                                 ->where('online_verified', '!=', 0)
+                                 ->where('bkash_salman_verified', '!=', 0)
+                                 ->where('bkash_corporate_verified', '!=', 0)
+                                 ->where('refund_payment', '!=', 1)
+                                 ->get();
+
+        $data['total_amount'] = $program_fee - $payment_types->sum('amount_paid');
 
         return view('payments.due_payment', $data);
     }
@@ -1621,6 +1733,8 @@ class PaymentController extends Controller
             $charge = 0;
             $cheque_verified = 1;
             $online_verified = 1;
+            $bkash_salman_verified = 1;
+            $bkash_corporate_verified = 1;
             $payment_type = Input::get('payment_type-' . $i);
             $bank_deposited = Input::get('bank_name-' . $i);
             $after_charge = 0;
@@ -1685,10 +1799,12 @@ class PaymentController extends Controller
             } else if($payment_type == 'bkash_corporate') {
 
                 $charge = 1.5;
+                $bkash_corporate_verified = -1;
 
             } else if($payment_type == 'bkash_salman') {
 
                 $charge = 2;
+                $bkash_salman_verified = -1;
 
             } else {
 
@@ -1719,6 +1835,8 @@ class PaymentController extends Controller
                 'bank_name' => $bank_deposited,
                 'cheque_verified' => $cheque_verified,
                 'online_verified' => $online_verified,
+                'bkash_salman_verified' => $bkash_salman_verified,
+                'bkash_corporate_verified' => $bkash_corporate_verified,
                 'due_payment' => 1,
                 'bank_charge' => $charge,
                 'amount_paid' => Input::get('total_amount-' . $i),
@@ -1829,6 +1947,36 @@ class PaymentController extends Controller
         
     }
 
+    public function unverifiedBkashSalman()
+    {
+        $data['active_class'] = 'payments';
+        $data['unverified_bkashes_salman'] = PaymentType::where('payment_type', 'bkash_salman')->where('bkash_salman_verified', '!=', '1')->get();
+
+        $user_role = Auth::user()->user_role;
+
+        if($user_role == 'admin') {
+            return view('payments.admin.unverified_bkash_salman', $data);
+        }
+
+        return view('payments.unverified_bkash_salman', $data);
+
+    }
+
+    public function unverifiedBkashCorporate()
+    {
+        $data['active_class'] = 'payments';
+        $data['unverified_bkashes_corporate'] = PaymentType::where('payment_type', 'bkash_corporate')->where('bkash_corporate_verified', '!=', '1')->get();
+
+        $user_role = Auth::user()->user_role;
+
+        if($user_role == 'admin') {
+            return view('payments.admin.unverified_bkash_corporate', $data);
+        }
+
+        return view('payments.unverified_bkash_corporate', $data);
+
+    }
+
     public function generateDuePDF($payment_id)
     {
         $due['payment'] = $payment = Payment::find($payment_id);
@@ -1856,6 +2004,8 @@ class PaymentController extends Controller
         $due['payments'] = PaymentType::where('payment_id', $payment_id)
                             ->where('cheque_verified', '!=', 0)
                             ->where('online_verified', '!=', 0)
+                            ->where('bkash_salman_verified', '!=', 0)
+                            ->where('bkash_corporate_verified', '!=', 0)
                             ->where('refund_payment', '!=', 1)
                             ->get();
 
@@ -1879,6 +2029,8 @@ class PaymentController extends Controller
         ->where('refund_payment', '!=', 1)
         ->where('cheque_verified', '=', 1)
         ->where('online_verified', '=', 1)
+        ->where('bkash_salman_verified', '=', 1)
+        ->where('bkash_corporate_verified', '=', 1)
         ->sum('amount_paid');
 
         $refunds = PaymentType::where(
@@ -1908,6 +2060,24 @@ class PaymentController extends Controller
     {
         PaymentType::find($request->payment_id)->update([
             'bank_name' => $request->bank_name,
+            'deposit_date' => $request->deposit_date,
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function updateBkashSalmanInfo(Request $request)
+    {
+        PaymentType::find($request->payment_id)->update([
+            'deposit_date' => $request->deposit_date,
+        ]);
+
+        return redirect()->back();
+    }
+
+    public function updateBkashCorporateInfo(Request $request)
+    {
+        PaymentType::find($request->payment_id)->update([
             'deposit_date' => $request->deposit_date,
         ]);
 
@@ -1963,6 +2133,8 @@ class PaymentController extends Controller
         $payment_types = PaymentType::where('payment_id', $payment_id)
                           ->where('cheque_verified', '!=', 0)
                           ->where('online_verified', '!=', 0)
+                          ->where('bkash_salman_verified', '!=', 0)
+                          ->where('bkash_corporate_verified', '!=', 0)
                           ->get();
 
         return $payment_types->sum('amount_paid');
@@ -1973,6 +2145,8 @@ class PaymentController extends Controller
         $payment_types = PaymentType::where('payment_id', $payment_id)
                           ->where('cheque_verified', '!=', 0)
                           ->where('online_verified', '!=', 0)
+                          ->where('bkash_salman_verified', '!=', 0)
+                          ->where('bkash_corporate_verified', '!=', 0)
                           ->get();
 
         return $payment_types->sum('amount_paid');

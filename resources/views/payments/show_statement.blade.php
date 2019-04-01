@@ -21,8 +21,8 @@
 		  
 		  <tr>
 		      <td colspan="1" class="blank"> 
-		      	<b>Customer Code:</b><br>
-		      	<b>Customer Name:</b><br>
+		      	<b>Client Code:</b><br>
+		      	<b>Client Name:</b><br>
 		      	<b>Spouse Name:</b><br>
 		      	<b>Mobile:</b><br>
 		      	<b>Email:</b><br>
@@ -89,6 +89,7 @@
 		      	{{ number_format($payment_methods
 		      		->where('cheque_verified', '!=', 0)
 		      		->where('online_verified', '!=', 0)
+		      		->where('bkash_salman_verified', '!=', 0)
 		      		->where('refund_payment', 0)
 		      		->sum('amount_paid')) }}<br>
 		      	{{ number_format($dues) }}<br>
@@ -97,6 +98,7 @@
 		      	{{ number_format($payment_methods
 		      		->where('cheque_verified', '!=', 0)
 		      		->where('online_verified', '!=', 0)
+		      		->where('bkash_salman_verified', '!=', 0)
 		      		->where('refund_payment', 0)
 		      		->sum('amount_paid') - $refunds->sum('amount_paid')) }}<br>
 		      	<br>
@@ -139,10 +141,11 @@
 		      	{{ number_format($payment_history->totalPayment
 		      		->where('cheque_verified', '!=', 0)
                     ->where('online_verified', '!=', 0)
+                    ->where('bkash_salman_verified', '!=', 0)
 		      		->where('refund_payment', 0)
 		      		->sum('amount_paid')) }}
 		      </td>
-		      <td>{{ number_format($payment_history->dues) }}</td>
+		      <td>{{ number_format($payment_history->totalAmount() - $payment_history->totalVerifiedPayment->sum('amount_paid')) }}</td>
 
 		  </tr>
 

@@ -190,7 +190,11 @@ var filterByDate = function(column, startDate, endDate) {
                 </td>
 
                 <td>{{ number_format($due_payment->totalPayment->where('due_payment', 1)->sum('amount_paid')) }}</td>
-                <td>{{ number_format($due_payment->dues) }}</td>
+
+                <td>{{ number_format($due_payment->totalAmount() - $due_payment->totalVerifiedPayment->sum('amount_paid')) }}</td>
+
+                {{-- <td>{{$due_payment->dues}}</td> --}}
+
                 <td>{{ $due_payment->comments }}</td>
                 <td><a href="{{ route('payment.client.dues.pdf', $due_payment->id) }}" class="btn btn-primary btn-sm button button2">Generate Invoice</a></td>
               </tr>

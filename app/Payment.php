@@ -35,6 +35,7 @@ class Payment extends Model
         return $this->hasMany('App\PaymentType')
                     ->where('cheque_verified', '!=', 0)
                     ->where('online_verified', '!=', 0)
+                    ->where('bkash_salman_verified', '!=', 0)
                     ->where('refund_payment', '!=', 1);
                     
     }

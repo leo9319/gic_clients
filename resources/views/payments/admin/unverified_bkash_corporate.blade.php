@@ -1,6 +1,11 @@
+{{-- Admin --}}
+
 @extends('layouts.master')
-@section('title', 'Payment History')
+
+@section('title', 'bKash Corporate')
+
 @section('content')
+
 @section('header_scripts')
 
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
@@ -9,7 +14,7 @@
 <script>
 $(function() {
 
-  var $tableSel = $('#payment-history');
+  var $tableSel = $('#unverified-bkash-corporate');
   $tableSel.dataTable({
     "ordering": false,
      dom: 'Bfrtip',
@@ -36,7 +41,8 @@ $(function() {
                 action: function () {
                     this.rows().deselect();
                 }
-            }
+            },
+            'colvis'
         ],
         select: true
   });
@@ -94,12 +100,16 @@ var filterByDate = function(column, startDate, endDate) {
 @stop
 
 <div class="container-fluid">
-	<div class="panel">
-		<div class="panel-body">
-			<h2>Payment History</h2>
-		</div>
 
-		<div class="panel-footer">
+  <div class="panel">
+
+    <div class="panel-body">
+
+      <h2>bKash Corporate</h2>
+
+    </div>
+
+    <div class="panel-footer">
 
       <table border="0" cellspacing="5" cellpadding="5">
         <tbody>
@@ -120,135 +130,162 @@ var filterByDate = function(column, startDate, endDate) {
       <button id="clearFilter" class="btn btn-info btn-sm" class="btn btn-success">Clear Filter</button>
       <hr>
 
-			<table id="payment-history" class="table table-striped table-bordered" style="width:100%">
+      <table id="unverified-bkash-corporate" class="table table-striped table-bordered" style="width:100%">
 
             <thead>
 
                <tr>
-
                   <th>Date</th>
-                  <th>Location</th>
-                  <th>Receipt ID</th>
-                  <th>Client Code.</th>
-                  <th>Name</th>
-                  <th>Program</th>
-                  <th>Step</th>
-                  <th>Invoice Amount</th>
-                  <th>Total Paid</th>
-                  <th>Due Amount</th>
-                  <th>Note</th>
-                  <th>View Details</th>
-                  <th>View Payment</th>
-                  {{-- <th>Edit</th> --}}
-
+                  <th>Client Code</th>
+                  <th>Client Name</th>
+                  <th>Program Name</th>
+                  <th>Step Name</th>
+                  <th>Counselor</th>
+                  <th>RM</th>
+                  <th>Status</th>
+                  <th>Amount</th>
                </tr>
 
             </thead>
 
             <tbody>
 
-            	@foreach($payments as $payment)
+              @foreach($unverified_bkashes_corporate as $unverified_bkash_corporate)
 
-              @if($payment)
-
-              <?php $class = ($payment->recheck == 1 ? 'text-danger' : '') ?>
-
-                  	<tr class="{{ $class }}">
-
-                      <td>{{ Carbon\Carbon::parse($payment->created_at)->format('d-M-y') }}</td>
-                      <td>{{ ucfirst($payment->location) }}</td>
-                      <td>{{ $payment->receipt_id }}</td>
-
-                  		<td>
-                  			<a href="{{ route('client.profile', $payment->client_id) }}">
-                  				{{ $payment->userInfo->client_code ?? 'Client Removed'}}
-                  			</a>
-                  		</td>
-
-                  		<td>{{ $payment->userInfo->name ?? 'Client Removed'}}</td>
-                  		<td>{{ $payment->programInfo->program_name ?? ''}}</td>
-                  		<td>{{ $payment->stepInfo->step_name ?? 'Step Removed' }}</td>  
-                      <td>{{ number_format($payment->totalAmount()) }}</td>
-                      <td>{{ number_format($payment->totalVerifiedPayment->sum('amount_paid')) }}</td>
-                      <td>{{ number_format($payment->totalAmount() - $payment->totalVerifiedPayment->sum('amount_paid')) }}</td>                
-                      <td>{{ $payment->comments }} <i id="{{ $payment->id }}" class="fa fa-edit" onclick="editNote(this)"></i></td>                
+                    <tr>
+                      <td>{{ Carbon\Carbon::parse($unverified_bkash_corporate->created_at)->format('d-M-y') }}</td>
+                      <td>{{ $unverified_bkash_corporate->payment->userInfo->client_code ?? 'Client Removed' }}</td>
+                      <td>{{ $unverified_bkash_corporate->payment->userInfo->name ?? 'Client Removed' }}</td>
+                      <td>{{ $unverified_bkash_corporate->payment->programInfo->program_name ?? 'N/A' }}</td>
+                      <td>{{ $unverified_bkash_corporate->payment->stepInfo->step_name ?? 'N/A' }}</td>
 
                       <td>
-                        <a href="{{ route('payment.generate.invoice', $payment->id) }}" class="btn btn-info btn-sm button2">Generate Invoice</a>
+
+                        @foreach($unverified_bkash_corporate->payment->userInfo->getAssignedCounselors as $counselors)
+
+                          {{ $counselors->user->name ?? 'N/A'}}
+
+                        @endforeach
+
+                        </td>
+
+                        <td>
+
+                        @foreach($unverified_bkash_corporate->payment->userInfo->getAssignedRms as $rms)
+
+                          {{ $rms->user->name ?? 'N/A'}}
+
+                        @endforeach
+
                       </td>
 
                       <td>
-                        <a href="{{ route('payment.show', $payment->id) }}" class="btn btn-defualt btn-sm button2">View Payment</a>
+                        @if($unverified_bkash_corporate->bkash_corporate_verified == -1)
+                        <a href="#" id="{{ $unverified_bkash_corporate->id }}" class="label label-success" onclick="verifyBkashCorporate(this)">Verify</a>
+                        <a href="{{ route('payment.bkash.corporate.dissaproved', $unverified_bkash_corporate->id) }}" class="label label-danger">Reject</a>
+                        @elseif($unverified_bkash_corporate->bkash_corporate_verified == 1)
+                        <p class="text-success text-weight-bold">Verified</p>
+                        @elseif($unverified_bkash_corporate->bkash_corporate_verified == 0)
+                        <p class="text-danger text-weight-bold">Unverified</p>
+                        @endif
                       </td>
 
-                      {{-- <td>
-                        <a href="{{ route('payment.edit', $payment->id) }}"><i class="fa fa-edit"></i></a>
-                      </td> --}}
+                      <td>{{ number_format($unverified_bkash_corporate->amount_paid) }}</td>
+                    </tr>
 
-                  	</tr>
-
-              @endif
-
-            	@endforeach
+              @endforeach
 
             </tbody>
 
             <tfoot>
 
                <tr>
-
                   <th>Date</th>
-                  <th>Location</th>
-                  <th>Receipt ID</th>
-                  <th>Client Code.</th>
-                  <th>Name</th>
-                  <th>Program</th>
-                  <th>Step</th>
-                  <th>Invoice Amount</th>
-                  <th>Total Paid</th>
-                  <th>Due Amount</th>
-                  <th>Note</th>
-                  <th>View Details</th>
-                  <th>View Payment</th>
-                  {{-- <th>Edit</th> --}}
-
+                  <th>Client Code</th>
+                  <th>Client Name</th>
+                  <th>Program Name</th>
+                  <th>Step Name</th>
+                  <th>Counselor</th>
+                  <th>RM</th>
+                  <th>Status</th>
+                  <th>Amount</th>
                </tr>
 
             </tfoot>
 
          </table>
-		</div>
-	</div>
+
+    </div>
+
+  </div>
+
 </div>
 
-<div id="edit-note" class="modal fade" role="dialog">
+
+<div id="myModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Notes</h4>
+        <h4 class="modal-title">bKash Information</h4>
       </div>
-      {{ Form::open(['route'=>'payment.update.note']) }}
       <div class="modal-body">
+        {{ Form::open(['route'=>'payment.update.bkash.corporate.info']) }}
 
-          {{-- Hidden Fields --}}
+        {{-- Hidden Fields --}}
 
-            {{ Form::hidden('payment_id', null, ['id'=>'payment-id']) }}
+        {{ Form::hidden('payment_id', null, ['id'=>'payment-id']) }}
 
-          {{-- End --}}
+        {{--  --}}
+
+        <div class="form-group">
+
+          {{ Form::label('Deposite Date') }}
+          {{ Form::date('deposit_date', null, ['class'=>'form-control', 'id'=>'deposit-date']) }}
+          
+        </div>
         
-          <div class="form-group">
-
-            {{ Form::label('notes') }}
-            {{ Form::textarea('comments', null, ['class'=>'form-control', 'id'=>'notes']) }}
-            
-          </div>
-
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-info">Update</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+    {{ Form::close() }}
+
+  </div>
+</div>
+
+
+<div id="verify" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Verify bKash Corporate</h4>
+      </div>
+      {{ Form::open(['route'=>'payment.bkash.corporate.verification']) }}
+      <div class="modal-body">
+
+        {{-- Hidden field --}}
+
+        {{ Form::hidden('payment_id', null, ['id'=>'verify-payment-id']) }}
+
+        {{-- End of hidden field --}}
+
+          <div class="form-group">
+
+            {{ Form::label('date_deposited') }}
+            {{ Form::date('date_deposited', null, ['class'=>'form-control', 'required']) }}
+            
+          </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Submit</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
       {{ Form::close() }}
@@ -257,34 +294,9 @@ var filterByDate = function(column, startDate, endDate) {
   </div>
 </div>
 
+@endsection
 
 @section('footer_scripts')
-
-<script type="text/javascript">
-    
-  function editNote(elem) {
-    var payment_id = elem.id;
-
-    $.ajax({
-        type: 'get',
-        url: '{!!URL::to('getPaymentInfo')!!}',
-        data: {'payment_id':payment_id},
-        success:function(data){
-
-          document.getElementById('payment-id').value = payment_id;
-          document.getElementById('notes').value = data.comments;
-
-          $('#edit-note').modal();
-        },
-        error:function(){
-          alert('failed to execute the command');
-        }
-      });
-
-    
-  }
-
-</script>
 
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
@@ -296,7 +308,20 @@ var filterByDate = function(column, startDate, endDate) {
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script>
 
-@endsection
+<script type="text/javascript">
 
+  function verifyBkashCorporate(elem) {
+
+    var payment_type_id = elem.id;
+    
+    document.getElementById('verify-payment-id').value = payment_type_id;
+
+    $('#verify').modal();
+
+  }
+
+  
+</script>
 @endsection

@@ -190,6 +190,7 @@ var filterByDate = function(column, startDate, endDate) {
 
             <tbody>
               @foreach($all_dues as $all_due)
+              @if($all_due->totalAmount() - $all_due->totalVerifiedPayment->sum('amount_paid') > 0)
               <tr>
 
                 <td>{{ Carbon\Carbon::parse($all_due->created_at)->format('d-M-y') }}</td>
@@ -204,7 +205,7 @@ var filterByDate = function(column, startDate, endDate) {
                   
                   @foreach($all_due->userInfo->getAssignedCounselors as $counselors)
 
-                      {{ $counselors->user->name }}
+                      {{ $counselors->user->name ?? 'User Deleted'}}
 
                   @endforeach
 
@@ -239,7 +240,7 @@ var filterByDate = function(column, startDate, endDate) {
                   }}
                 </td>
 
-                <td>{{ number_format($all_due->dues) }}</td>
+                <td>{{ number_format($all_due->totalAmount() - $all_due->totalVerifiedPayment->sum('amount_paid')) }}</td>
                 <td>{{ Carbon\Carbon::parse($all_due->due_date)->format('d-M-y') }}</td>
                 <td>{{ $all_due->comments }}</td>
 
@@ -250,6 +251,7 @@ var filterByDate = function(column, startDate, endDate) {
                 @endif
 
               </tr>
+              @endif
               @endforeach
             </tbody>            
 
