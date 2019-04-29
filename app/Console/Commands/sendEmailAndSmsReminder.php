@@ -24,7 +24,7 @@ class sendEmailAndSmsReminder extends Command
      *
      * @var string
      */
-    protected $description = 'This is for sending email and sms reminder to the Rms and client';
+    protected $description = 'This is for sending email and sms reminder to the clients';
 
     /**
      * Create a new command instance.

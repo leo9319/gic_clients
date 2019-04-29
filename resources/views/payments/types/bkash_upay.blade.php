@@ -55,6 +55,27 @@
       <td>{{ $payment_info->bank_charge }}%</td>
       <td></td>
     </tr>
+
+    @if($payment_info->payment_type == 'bkash_salman')
+
+    <tr>
+      <td>Approved?</td>
+      <td>{{ ($payment_info->bkash_salman_verified == 1) ? 'Yes' : 'No'}}</td>
+      <td></td>
+    </tr>
+
+    @endif
+
+    @if($payment_info->payment_type == 'bkash_corporate')
+
+    <tr>
+      <td>Approved?</td>
+      <td>{{ ($payment_info->bkash_corporate_verified == 1) ? 'Yes' : 'No'}}</td>
+      <td></td>
+    </tr>
+
+    @endif
+
   </tbody>
 </table>
 

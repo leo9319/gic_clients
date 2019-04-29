@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 use App\ClientTask;
 use Faker\Provider\cs_CZ\DateTime;
 use App\User;
+use App\Reminder;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use URL;
+use Artisan;
 
 class TestController extends Controller
 {
@@ -118,7 +120,7 @@ class TestController extends Controller
 
     public function test()
     {
-        echo 'test';
+        
     }
 
 

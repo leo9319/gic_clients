@@ -28,6 +28,7 @@ Route::resources([
 	'counselors' => 'CounselorController',
 	'program' => 'ProgramController',
 	'payment' => 'PaymentController',
+	'reminders' => 'ReminderController',
 
 ]);
 
@@ -40,7 +41,7 @@ Route::get('/rms/remove/client/{rm_client_id}', 'RmController@removeClient')->na
 
 
 
-Route::get('test', 'TestController@index')->name('test');
+Route::get('test', 'TestController@test')->name('test');
 Route::get('myfile', 'FileController@myFile')->name('file.myfile');
 
 Route::post('additional-info', 'FileController@storeAddition')->name('store.addition');
@@ -283,6 +284,8 @@ Route::get('payment/client/payment/recheck/{payment_id}', 'PaymentController@rec
 
 Route::get('payment/client/unverified/cheque', 'PaymentController@unverifiedCheques')->name('payment.client.unverified.cheques');
 Route::get('payment/client/online/payments', 'PaymentController@onlinePayments')->name('payment.client.online.payments');
+Route::get('payment/client/pay-gic/payments', 'PaymentController@payGICPayments')->name('payment.client.pay_gic.payments');
+Route::get('payment/client/pay-gic-ssl/payments', 'PaymentController@payGICSSLPayments')->name('payment.client.pay_gic_ssl.payments');
 
 
 Route::get('payment/client/unverified/bkash-salman', 'PaymentController@unverifiedBkashSalman')->name('payment.client.unverified.bkash_salman');
@@ -316,10 +319,12 @@ Route::post('payment/update/note', 'PaymentController@updatePaymentNote')->name(
 
 Route::get('getPaymentInfo', 'PaymentController@getPaymentInfo');
 Route::get('getClientPaymentId', 'PaymentController@getClientPaymentId');
+Route::get('getClientInfo', 'UserController@getClientInfo');
 Route::get('getChequeInfo', 'PaymentController@getChequeInfo');
 Route::get('getOnlineInfo', 'PaymentController@getOnlineInfo');
 Route::get('findNoteInfo', 'PaymentController@findNoteInfo');
 Route::get('findIncomeAndExpenses', 'PaymentController@findIncomeAndExpenses');
+Route::get('getReminderData', 'ReminderController@getReminderData');
 
 
 
@@ -330,6 +335,8 @@ Route::get('invoice/opening/{client_id}', 'InvoiceController@opening')->name('in
 
 
 Route::get('myclients/{user_id}', 'UserController@myclients')->name('user.clients');
+Route::get('user/{user_id}', 'UserController@edit')->name('user.edit');
+Route::post('user/update', 'UserController@update')->name('user.update');
 
 
 
@@ -366,3 +373,5 @@ Route::get('/clear-cache', function() {
     Artisan::call('cache:clear');
     return "Cache is cleared";
 });
+
+Route::post('reminders/delete', 'ReminderController@delete')->name('reminders.delete');

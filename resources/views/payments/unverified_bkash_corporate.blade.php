@@ -178,12 +178,11 @@ var filterByDate = function(column, startDate, endDate) {
                       </td>
 
                       <td>
-                        @if($unverified_bkash_corporate->bkash_salman_verified == -1)
-                        <a href="#" id="{{ $unverified_bkash_corporate->id }}" class="label label-success" onclick="verifyBkashSalman(this)">Verify</a>
-                        <a href="{{ route('payment.bkash.salman.dissaproved', $unverified_bkash_corporate->id) }}" class="label label-danger">Reject</a>
-                        @elseif($unverified_bkash_corporate->bkash_salman_verified == 1)
+                        @if($unverified_bkash_corporate->bkash_corporate_verified == -1)
+                        <p class="text-warning text-weight-bold">Pending</p>
+                        @elseif($unverified_bkash_corporate->bkash_corporate_verified == 1)
                         <p class="text-success text-weight-bold">Verified</p>
-                        @elseif($unverified_bkash_corporate->bkash_salman_verified == 0)
+                        @elseif($unverified_bkash_corporate->bkash_corporate_verified == 0)
                         <p class="text-danger text-weight-bold">Unverified</p>
                         @endif
                       </td>

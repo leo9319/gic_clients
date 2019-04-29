@@ -40,7 +40,13 @@
                </ul>
             </li> -->
             @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
-            <li><a href="{{ route('user.create') }}"><i class="fa fa-user"></i> <span>Register a Client</span></a></li>
+            <li>
+               <a href="{{ url('https://paygic.com/login') }}" target="_blank"><i class="fas fa-dollar-sign"></i> <span>Pay GIC</span></a>
+            </li>
+
+            <li>
+               <a href="{{ route('user.create') }}"><i class="fa fa-user"></i> <span>Register a Client</span></a>
+            </li>
             @endif
             <li class="dropdown">
 

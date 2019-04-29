@@ -133,7 +133,9 @@ var filterByDate = function(column, startDate, endDate) {
             <thead>
 				<tr>
 					<th>Date</th>
-					<th>Client Name</th>
+					<th>Location</th>
+          <th>Client Code</th>
+          <th>Client Name</th>
 					<th>Program Name</th>
 					<th>Step Name</th>
           <th>Counselor</th>
@@ -151,7 +153,9 @@ var filterByDate = function(column, startDate, endDate) {
             	@foreach($refunds as $refund)
             	<tr>
             		<td>{{ Carbon\Carbon::parse($refund->created_at)->format('d-M-y') }}</td>
-            		<td>{{ $refund->payment->userInfo->name ?? 'Client Removed' }}</td>
+            		<td>{{ ucfirst($refund->payment->location) ?? 'N/A' }}</td>
+                <td>{{ $refund->payment->userInfo->client_code ?? 'Client Removed' }}</td>
+                <td>{{ $refund->payment->userInfo->name ?? 'Client Removed' }}</td>
             		<td>{{ $refund->payment->programInfo->program_name ?? 'Program Removeds' }}</td>
             		<td>{{ $refund->payment->stepInfo->step_name ?? 'Steps Removed' }}</td>
                 <td>
@@ -190,7 +194,9 @@ var filterByDate = function(column, startDate, endDate) {
             <tfoot>
             	<tr>
 					<th>Date</th>
-					<th>Client Name</th>
+					<th>Location</th>
+          <th>Client Code</th>
+          <th>Client Name</th>
 					<th>Program Name</th>
 					<th>Step Name</th>
           <th>Counselor</th>

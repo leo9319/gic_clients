@@ -49,4 +49,9 @@ class CounsellorClient extends Model
         return static::where('client_id', $client_id)->get();
     }
 
+    public static function getAssignedClients($counselor_id)
+    {
+        return static::where('counsellor_id', $counselor_id)->get();
+    }
+
 }

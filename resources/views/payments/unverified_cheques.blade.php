@@ -141,7 +141,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Deposited To</th>
                   <th>Status</th>
                   <th>Amount</th>
-                  <th>Edit</th>
                </tr>
 
             </thead>
@@ -170,11 +169,6 @@ var filterByDate = function(column, startDate, endDate) {
 
                       <td>{{ number_format($unverified_cheque->amount_paid) }}</td>
 
-                      <td>
-
-                        <button class="btn btn-info button2 btn-sm" onclick="editCheque(this)" id="{{ $unverified_cheque->id }}">Edit</button>
-
-                      </td>
                     </tr>
 
             	@endforeach
@@ -193,7 +187,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Deposited To</th>
                   <th>Status</th>
                   <th>Amount</th>
-                  <th>Edit</th>
                </tr>
 
             </tfoot>

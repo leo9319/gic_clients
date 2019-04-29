@@ -36,10 +36,10 @@
 
     <div class="to">INVOICE TO:</div>
 
-    <h2 class="name">{{ $client ? $client->name : 'Client Not Found!' }}</h2>
-    <b>{{ $client ? $client->client_code : 'Client Code Not Found!' }}</b>
-    <div class="address">{{ $client_file_info ? $client_file_info->address : 'Address Not Found!' }}</div>
-    <div class="email">{{ $client ? $client->email : 'Email Not Found!' }}</div>
+    <h2 class="name">{{ ucwords($payment->userInfo->name) ?? 'N/A' }}</h2>
+    <b>{{ $payment->userInfo->client_code ?? 'N/A' }}</b>
+    <div class="address">{{ $payment->userInfo->getAdditionalInfo->address ?? 'N/A' }}</div>
+    <div class="email">{{ $payment->userInfo->email ?? 'N/A' }}</div>
 
   </div>
 
@@ -51,11 +51,11 @@
       <table>
         <tr>
           <td>Program Name:</td>
-          <td>{{ $program ? $program->program_name : 'Program Name Not Found!' }}</td>
+          <td>{{ str_replace('_', ' ', $payment->programInfo->program_name) ?? 'N/A' }}</td>
         </tr>
         <tr>
           <td>Step Name:</td>
-          <td>{{ $step ? $step->step_name : 'Step Name Not Found!' }}</td>
+          <td>{{ $payment->stepInfo->step_name ?? 'N/A' }}</td>
         </tr>
       </table>
 
@@ -122,17 +122,17 @@
      <tr>
         <td colspan="2"></td>
         <td colspan="2">SUBTOTAL</td>
-        <td>{{ number_format($total_amount) }}</td>
+        <td>{{ number_format($payment->totalAmount()) }}</td>
      </tr>
      <tr>
         <td colspan="2"></td>
         <td colspan="2">AMOUNT PAID</td>
-        <td>{{ number_format($payment_types->sum('amount_paid')) }}</td>
+        <td>{{ number_format($payment->totalApprovedPayment->sum('amount_paid')) }}</td>
      </tr>
      <tr>
         <td colspan="2"></td>
         <td colspan="2">TOTAL DUE</td>
-        <td>{{ number_format($total_amount - $payment_types->sum('amount_paid')) }}</td>
+        <td>{{ number_format($payment->totalAmount() - $payment->totalApprovedPayment->sum('amount_paid')) }}</td>
      </tr>
   </tfoot>
 </table>
@@ -145,15 +145,15 @@
         <tr>
           <td>Verified by Accounts</td>
 
-        @if($payment->recheck == 0)
-          <td><img src="{{ asset('img/tick.png') }}" width="30"></td>
-        @elseif($payment->recheck == 1)
-          <td><img src="{{ asset('img/cross.png') }}" width="30"></td>
-        @endif
+          @if($payment->recheck == 0)
+            <td><img src="{{ asset('img/tick.png') }}" width="30"></td>
+          @elseif($payment->recheck == 1)
+            <td><img src="{{ asset('img/cross.png') }}" width="30"></td>
+          @endif
 
-        @if(Auth::user()->user_role == 'accountant')
-          <td><a href="{{ route('payment.verification', $payment->id) }}" class="btn btn-success">Verify</a></td>
-        @endif
+          @if(Auth::user()->user_role == 'accountant')
+            <td><a href="{{ route('payment.verification', $payment->id) }}" class="btn btn-success">Verify</a></td>
+          @endif
 
         </tr>
       </table>
@@ -161,8 +161,8 @@
     @endif
 </div>
 
-<h2 class="name">Payment Structure(s):</h2>
-<div>Total amount received: {{ number_format($payment_types->sum('amount_received')) }}</div>
+<h2 class="name">Payment Structure(s): [INCLUDES PAYMENTS PENDING VERIFICATION]</h2>
+<div>Total amount received: {{ number_format($payment->totalVerifiedPayment->sum('amount_received')) }}</div>
 <hr>
 
 <table class="table table-bordered">
@@ -173,30 +173,32 @@
       <th><b>Bank Charge</b></th>
       <th><b>Amount Received</b></th>
       <th><b>Action</b></th>
-      <th><b>Action</b></th>
       <th><b>Status</b></th>
     </tr>
   </thead>
   <tbody>
-    @foreach($payment_types as $payment_type)
+    @foreach($payment->totalVerifiedPayment as $payment_type)
     <tr>
       <th>{{ ucfirst($payment_type->payment_type) }}</th>
       <th>{{ number_format($payment_type->amount_paid) }}</th>
       <th>{{ $payment_type->bank_charge }}%</th>
       <th>{{ number_format($payment_type->amount_received, 2) }}</th>
-      <th><a  href="{{ route('payment.structure.client', [$payment_type->id, $payment_type->payment_type]) }}" class="btn btn-info btn-sm">View Details</a></th>
       <th>
-        <a href="{{ route('payment.client.recheck.payment_type', $payment_type->id) }}" class="btn btn-danger btn-sm">Recheck</a>
+
+        <a  href="{{ route('payment.structure.client', [$payment_type->id, $payment_type->payment_type]) }}" class="btn btn-info btn-sm">View Details</a>
+
       </th>
+
       <th>
         @if($payment_type->recheck == 0)
-        <p>Checked</p>
+          <p>Checked</p>
         @elseif($payment_type->recheck == 1)
-        <p>Pending</p>
+          <p>Pending</p>
         @else
-        <p></p>
+          <p></p>
         @endif
       </th>
+
     </tr>
     @endforeach
   </tbody>
@@ -208,17 +210,6 @@
 <p>{{ $payment->comments }}</p>
 
 <hr>
-
-
-
-
-{{-- @if(Auth::user()->user_role == 'admin')
-  @if($payment->recheck == -1 || $payment->recheck == 0)
-    <a href="{{ route('payment.client.payment.recheck', $payment->id) }}" class="btn btn-danger btn-block" style="width: 100%">Recheck This Entry</a>
-  @elseif($payment->recheck == 1)
-    <a href="javascript:void(0)" class="btn btn-success btn-block" style="width: 100%">Sent for Recheck</a>
-  @endif
-@endif --}}
 
 </main>
 

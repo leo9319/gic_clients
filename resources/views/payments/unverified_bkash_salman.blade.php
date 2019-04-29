@@ -179,12 +179,11 @@ var filterByDate = function(column, startDate, endDate) {
 
                       <td>
                         @if($unverified_bkash_salman->bkash_salman_verified == -1)
-                        <a href="#" id="{{ $unverified_bkash_salman->id }}" class="label label-success" onclick="verifyBkashSalman(this)">Verify</a>
-                        <a href="{{ route('payment.bkash.salman.dissaproved', $unverified_bkash_salman->id) }}" class="label label-danger">Reject</a>
+                          <p class="text-warning text-weight-bold">Pending</p>
                         @elseif($unverified_bkash_salman->bkash_salman_verified == 1)
-                        <p class="text-success text-weight-bold">Verified</p>
+                          <p class="text-success text-weight-bold">Verified</p>
                         @elseif($unverified_bkash_salman->bkash_salman_verified == 0)
-                        <p class="text-danger text-weight-bold">Unverified</p>
+                          <p class="text-danger text-weight-bold">Unverified</p>
                         @endif
                       </td>
 
@@ -308,44 +307,4 @@ var filterByDate = function(column, startDate, endDate) {
 <script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script>
 
-<script type="text/javascript">
-
-  // function editBkash(elem){
-
-  //   var payment_id = elem.id;
-
-  //   $.ajax({
-  //     type: 'get',
-  //     url: '{!! URL::to('getChequeInfo') !!}',
-  //     data: {'payment_id':payment_id},
-  //     success:function(data) {
-
-  //       document.getElementById('cheque-number').value = data.cheque_number;
-  //       document.getElementById('bank-name').value = data.bank_name;
-  //       document.getElementById('deposit-date').value = data.deposit_date;
-  //       document.getElementById('payment-id').value = data.id;
-  //     },
-  //     error:function(){
-
-  //     }
-
-  //   });
-
-
-  //   $('#myModal').modal();
-
-  // }
-
-  function verifyBkashSalman(elem) {
-
-    var payment_type_id = elem.id;
-    
-    document.getElementById('verify-payment-id').value = payment_type_id;
-
-    $('#verify').modal();
-
-  }
-
-  
-</script>
 @endsection

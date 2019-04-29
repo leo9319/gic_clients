@@ -585,21 +585,41 @@ class ClientController extends Controller
     {
         $client_id = $request->client_id;
 
-        $validatedData = $request->validate([
-            'client_code' => 'required|unique:users,client_code,'.$client_id,
-            'email' => 'unique:users,email,'.$client_id,
-            'password' => 'required|string|min:6|confirmed',
-        ]);
+        if(Auth::user()->user_role == 'admin') {
 
-        
-        User::find($client_id)->update([
-            'client_code' => $request->client_code,
-            'name' => $request->name,
-            'mobile' => $request->mobile,
-            'email' => $request->email,
-            'status' => $request->status,
-            'password' => bcrypt($request->password),
-        ]);
+            $validatedData = $request->validate([
+                'client_code' => 'required|unique:users,client_code,'.$client_id,
+                'email' => 'unique:users,email,'.$client_id,
+                'password' => 'required|string|min:6|confirmed',
+            ]);
+
+            
+            User::find($client_id)->update([
+                'client_code' => $request->client_code,
+                'name' => $request->name,
+                'mobile' => $request->mobile,
+                'email' => $request->email,
+                'status' => $request->status,
+                'password' => bcrypt($request->password),
+            ]);
+
+        } else {
+
+            $validatedData = $request->validate([
+                'client_code' => 'required|unique:users,client_code,'.$client_id,
+                'email' => 'unique:users,email,'.$client_id,
+            ]);
+
+            
+            User::find($client_id)->update([
+                'client_code' => $request->client_code,
+                'name' => $request->name,
+                'mobile' => $request->mobile,
+                'email' => $request->email,
+                'status' => $request->status,
+            ]);
+
+        }
 
         DB::table('client_file_infos')->where('client_id', $client_id)->update([
             'spouse_name' => $request->spouse_name,

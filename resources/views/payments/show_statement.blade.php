@@ -1,190 +1,118 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+@extends('layouts.master')
 
-<head>
-	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
-	
-	<title>Statement</title>
-	
-	<link rel='stylesheet' type='text/css' href='{{ asset('css/statement/style.css') }}' />
-	<link rel='stylesheet' type='text/css' href='{{ asset('css/statement/print.css') }}' media="print" />
+@section('title', 'Statement of Accounts')
 
-</head>
+@section('content')
 
-<body>
+<div class="container-fluid">
 
-	<div id="page-wrap">
+   <div class="panel">
 
-		<textarea id="header">Statement of Account</textarea>
+      <div class="panel-body">
 
-		<table id="items">
-		  
-		  <tr>
-		      <td colspan="1" class="blank"> 
-		      	<b>Client Code:</b><br>
-		      	<b>Client Name:</b><br>
-		      	<b>Spouse Name:</b><br>
-		      	<b>Mobile:</b><br>
-		      	<b>Email:</b><br>
-		      	<br>
-		      	<b>Address:</b>
-		      	<br>
-		      	<br>
-		      	<b>File Opened On:</b><br>
-		      	<br>
-		      	<b>RM:</b><br>
-		      	<b>Counselor:</b><br>
-		      	<br>
-		      	<br>
-		      </td>
+         <h2 class="text-center">Statement of Accounts</h2>
 
-		      <td colspan="4" class="blank">
-		      	{{ $client->client_code }} <br>
-		      	{{ $client->name }} <br>
-		      	{{ $client->getAdditionalInfo->spouse_name ?? 'N/A' }} <br>
-		      	{{ $client->mobile }} <br>
-		      	{{ $client->email }} <br>
-		      	<br>
-		      	{{ $client->getAdditionalInfo->address ?? 'N/A'}} <br>
-		      	<br>
-		      	{{ Carbon\Carbon::parse($client->created_at)->format('jS F, Y') }} <br>
-		      	<br>
+         <hr>
 
-		      	@forelse($rms as $rm)
-		      		{{ App\User::find($rm->rm_id) ? App\User::find($rm->rm_id)->name : '' }},
-		      	@empty
-		      		No RM assigned
-		      	@endforelse
+         <div class="row">
+            <div class="col-md-6">
+            	<p><b>Client Code:</b> {{ $client->client_code ?? 'N/A' }}</p>
+                <p><b>Client Name:</b> {{ $client->name ?? 'N/A' }}</p>
+                <p><b>Spouse:</b> {{ $client->getAdditionalInfo->spouse_name ?? 'N/A' }}</p>
+                <p><b>Mobile:</b> {{ $client->mobile ?? 'N/A' }}</p>
+                <p><b>Email:</b> {{ $client->email ?? 'N/A' }}</p>
+                <p><b>Address:</b> {{ $client->getAdditionalInfo->address ?? 'N/A'}}</p>
+                <p><b>Client Registered On:</b> {{ Carbon\Carbon::parse($client->created_at)->format('jS F, Y') }}</p>
+                <p><b>RM:</b> 
+                	@forelse($rms as $rm)
+                  		{{ $rm->user->name ?? 'N/A' }} 
+               		@empty
+                  		No RM assigned
+           			@endforelse
+           		</p>
+                <p><b>Counselor:</b>
+					@forelse($counselors as $counselor)
+                  		{{ $counselor->user->name ?? 'N/A' }} 
+               		@empty
+                  		No Counselor assigned
+           			@endforelse
+                </p>
+            </div>
+            <div class="col-md-6 text-right">
+               <p><b>Total Program Costs:</b> {{ number_format($payable) }}</p>
+               <p><b>Total Amount Received: </b> {{ number_format($payment_received) }}</p>
+               <p><b>Dues:</b> {{ number_format($payable - $payment_received) }}</p>
+               <p><b>Refunded:</b> {{ number_format($refunds->sum('amount_paid')) }}</p>
+               <p><b>Total Received after dues and refund:</b> {{ number_format($payment_received - $refunds->sum('amount_paid')) }}</p>
+            </div>
+         </div>
 
-		      	<br>
-		      	@forelse($counselors as $counselor)
-		      		{{ App\User::find($counselor->counsellor_id) ? App\User::find($counselor->counsellor_id)->name : '' }},
-		      	@empty
-		      		No Counselor assigned
-		      	@endforelse
-		      	<br>
-		      	<br>
-		      	<br>
-		      </td>
+         <hr>
 
-		      <td colspan="2" class="blank" style="border-left: 1px solid black">
-		      	Total Program Costs:<br>
-		      	Total Amount Received:<br>
-		      	Dues:
-		      	<br>
-		      	<br>
-		      	Refunded:<br>
-		      	Total Received after dues and refund:<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      </td>
-		      <td colspan="2" class="blank">
-		      	{{ number_format($payable) }}<br>
-		      	{{ number_format($payment_methods
-		      		->where('cheque_verified', '!=', 0)
-		      		->where('online_verified', '!=', 0)
-		      		->where('bkash_salman_verified', '!=', 0)
-		      		->where('refund_payment', 0)
-		      		->sum('amount_paid')) }}<br>
-		      	{{ number_format($dues) }}<br>
-		      	<br>
-		      	{{ number_format($refunds->sum('amount_paid')) }}<br>
-		      	{{ number_format($payment_methods
-		      		->where('cheque_verified', '!=', 0)
-		      		->where('online_verified', '!=', 0)
-		      		->where('bkash_salman_verified', '!=', 0)
-		      		->where('refund_payment', 0)
-		      		->sum('amount_paid') - $refunds->sum('amount_paid')) }}<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      	<br>
-		      </td>
-		  </tr>
-		
-		</table>
+        <h3><b>Payment History</b></h3>
 
-		<br>
+        <hr>
 
-		<h3>Programs:</h3>
-		
-		<table id="items">
-		
-		  <tr>
-		      <th>Program Name</th>
-		      <th>Step Name</th>
-		      <th>Date</th>
-		      <th>Total Amount</th>
-		      <th>Amount Paid</th>
-		      <th>Due</th>
-		  </tr>
+        <table class="table">
+           <thead>
+             <tr>
+               <th scope="col">Date</th>
+               <th scope="col">Program Name</th>
+               <th scope="col">Step Name</th>
+               <th scope="col">Total Amount</th>
+               <th scope="col">Amount Paid</th>
+               <th scope="col">Due</th>
+             </tr>
+           </thead>
+           <tbody>
+           	@foreach($payment_histories as $payment_history)
+             <tr>
+               <td>{{ Carbon\Carbon::parse($payment_history->created_at)->format('d-M-y') }}</td>
+               <td>{{ $payment_history->programInfo->program_name ?? 'N/A'}}</td>
+               <td>{{ $payment_history->stepInfo->step_name ?? 'N/A'}}</td>
+               <td>{{ number_format($payment_history->totalAmount()) }}</td>
+               <td>{{ number_format($payment_history->totalApprovedPayment->sum('amount_paid')) }}</td>
+               <td>{{ number_format($payment_history->totalAmount() - $payment_history->totalApprovedPayment->sum('amount_paid')) }}
+               </td>
+             </tr>
+             @endforeach
+           </tbody>
+        </table>
 
-		  @foreach($payment_histories as $payment_history)
-		  
-		  <tr class="item-row">
+        <hr>
 
-		      <td>{{ $payment_history->programInfo->program_name }}</td>
-		      <td>{{ $payment_history->stepInfo->step_name }}</td>
-		      <td>{{ Carbon\Carbon::parse($payment_history->created_at)->format('d-m-y') }}</td>
-		      <td>{{ number_format($payment_history->totalAmount()) }}</td>
-		      <td>
-		      	{{ number_format($payment_history->totalPayment
-		      		->where('cheque_verified', '!=', 0)
-                    ->where('online_verified', '!=', 0)
-                    ->where('bkash_salman_verified', '!=', 0)
-		      		->where('refund_payment', 0)
-		      		->sum('amount_paid')) }}
-		      </td>
-		      <td>{{ number_format($payment_history->totalAmount() - $payment_history->totalVerifiedPayment->sum('amount_paid')) }}</td>
+        @if(count($refunds) > 0)
 
-		  </tr>
+        <h3><b>Refunds:</b></h3>
 
-		  @endforeach
-		
-		</table>
+	    <table class="table">
+	    
+	      <tr>
+	          <th>Program Name</th>
+	          <th>Step Name</th>
+	          <th>Bank Name</th>
+	          <th>Amount Refunded</th>
+	      </tr>
 
-		<br>
+	      @foreach($refunds as $refund)
 
-		<h3>Refunds:</h3>
+	      <tr class="item-row">
+	       <td>{{ $refund->payment->programInfo->program_name }}</td>
+	       <td>{{ $refund->payment->stepInfo->step_name }}</td>
+	       <td>{{ strtoupper($refund->bank_name) }}</td>
+	       <td>{{ number_format($refund->amount_paid) }}</td>
+	      </tr>
 
-		<table id="items">
-		
-		  <tr>
-		      <th>Program Name</th>
-		      <th>Step Name</th>
-		      <th>Bank Name</th>
-		      <th>Amount Refunded</th>
-		  </tr>
+	      @endforeach
 
-		  @foreach($refunds as $refund)
+	    </table>
 
-		  <tr class="item-row">
-		  	<td>{{ $refund->payment->programInfo->program_name }}</td>
-		  	<td>{{ $refund->payment->stepInfo->step_name }}</td>
-		  	<td>{{ strtoupper($refund->bank_name) }}</td>
-		  	<td>{{ number_format($refund->amount_paid) }}</td>
-		  </tr>
+	    @endif
 
-		  @endforeach
+      </div>
 
-		</table>
+   </div>
 
-		<br><br>
-		<br><br>
-		<br><br>
-	
-	</div>
-	
-</body>
+</div>
 
-</html>
+@endsection

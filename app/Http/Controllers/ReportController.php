@@ -46,6 +46,7 @@ class ReportController extends Controller
     	}
 
     	foreach ($client_payment as $cp_key => $cp_value) {
+            
     		$reports[$counter]['date'] = Carbon::parse($cp_value['created_at'])->format('d-m-y');
     		$reports[$counter]['description'] = Program::find($cp_value['program_id'])->program_name;
     		$reports[$counter]['type'] = Step::find($cp_value['step_id'])->step_name;
@@ -70,9 +71,12 @@ class ReportController extends Controller
         $to = $request->end_date;
 
     	$income_and_expenses =  IncomeExpense::whereNotIn('payment_type', ['Cash Transfer In', 'Cash Transfer Out'])->whereBetween('created_at', [$from, $to])->get();
-    	// $client_payment =  Payment::whereBetween('created_at', [$from, $to])->get();
+
         $client_payment = PaymentType::whereBetween('created_at', [$from, $to])
                             ->where('cheque_verified', 1)
+                            ->where('online_verified', 1)
+                            ->where('bkash_salman_verified', 1)
+                            ->where('bkash_corporate_verified', 1)
                             ->get();
     	$counter = 0;
     	$data['sum'] = 0;
@@ -120,7 +124,6 @@ class ReportController extends Controller
 
                 $reports[$counter]['amount'] = $cp_value['amount_paid'];
                 $reports[$counter]['after_charge'] = $cp_value['amount_received'];
-
             }
 
             $type = Step::find($payment->step_id)->step_name ?? 'Step Removed';
@@ -176,4 +179,5 @@ class ReportController extends Controller
 
         return view('reports.our_current_clients', $data);
     }
+    
 }

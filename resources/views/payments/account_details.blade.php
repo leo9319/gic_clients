@@ -1,7 +1,5 @@
 @extends('layouts.master')
 
-@section('url', $previous)
-
 @section('title', 'Payment Details')
 
 @section('content')
@@ -143,6 +141,8 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Location</th>
 
+                  <th>Client Code</th>
+
                   <th>Client Name</th>
 
                   <th>Type</th>
@@ -156,8 +156,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Amount</th>
 
                   <th>Balance</th>
-
-                  <th class="text-center">Action</th>
 
                </tr>
 
@@ -171,6 +169,8 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Location</th>
 
+                  <th>Client Code</th>
+
                   <th>Client Name</th>
 
                   <th>Type</th>
@@ -184,8 +184,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Amount</th>
 
                   <th>Balance</th>
-
-                  <th class="text-center">Action</th>
 
                </tr>
 
@@ -200,6 +198,7 @@ var filterByDate = function(column, startDate, endDate) {
               <tr>
                 <td>{{ Carbon\Carbon::parse($value['date'])->format('d-M-y') }}</td>
                 <td>{{ ucfirst($value['location']) }}</td>
+                <td>{{ $value['client_code'] }}</td>
                 <td>{{ $value['client_name'] }}</td>
                 <td>{{ $value['type'] }}</td>
                 <td>{{ $value['description'] }}</td>
@@ -207,7 +206,6 @@ var filterByDate = function(column, startDate, endDate) {
                 <td>{{ $value['bank_charge'] }}%</td>
                 <td>{{ number_format($value['received']) }}</td>
                 <td>{{ number_format($sum += $value['received']) }}</td>
-                <td></td>
               </tr>
 
               @endforeach

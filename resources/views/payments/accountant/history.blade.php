@@ -139,7 +139,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Note</th>
                   <th>View Details</th>
                   <th>View Payment</th>
-                  {{-- <th>Edit</th> --}}
 
                </tr>
 
@@ -210,7 +209,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Note</th>
                   <th>View Details</th>
                   <th>View Payment</th>
-                  {{-- <th>Edit</th> --}}
 
                </tr>
 

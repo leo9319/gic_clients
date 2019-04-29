@@ -48,17 +48,31 @@
       <td>{{ strtoupper($payment_info->bank_name) }}</td>
     </tr>
     <tr>
+
       <td>Cheque Verified:</td>
+
       @if($payment_info->cheque_verified == -1)
-        <td>
-          <a href="{{ route('payment.cheque.verification', [$payment_info->id, 1]) }}" class="btn btn-primary btn-sm">Approve</a>
-          <a href="{{ route('payment.cheque.verification', [$payment_info->id, 0]) }}" class="btn btn-danger btn-sm">Disapprove</a>
-        </td>
+
+        @if(Auth::user()->user_type == 'admin')
+
+          <td>
+            <a href="{{ route('payment.cheque.verification', [$payment_info->id, 1]) }}" class="btn btn-primary btn-sm">Approve</a>
+            <a href="{{ route('payment.cheque.verification', [$payment_info->id, 0]) }}" class="btn btn-danger btn-sm">Disapprove</a>
+          </td>
+
+        @else
+
+          <td>Pending</td>
+
+        @endif
+
       @elseif($payment_info->cheque_verified == 1)
         <td>Verified</td>
       @else
         <td>Not Verified</td>
       @endif
+
+
     </tr>
   </tbody>
 </table>

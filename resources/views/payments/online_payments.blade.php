@@ -140,7 +140,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Deposited To</th>
                   <th>Status</th>
                   <th>Amount</th>
-                  <th>Edit</th>
                </tr>
 
             </thead>
@@ -158,7 +157,7 @@ var filterByDate = function(column, startDate, endDate) {
                       <td>{{ strtoupper($online_payment->bank_name) }}</td>
                       <td>
                         @if($online_payment->online_verified == -1)
-                        <p class="text-warning text-weight-bold">Verified</p>
+                        <p class="text-warning text-weight-bold">Pending</p>
                         @elseif($online_payment->online_verified == 1)
                         <p class="text-success text-weight-bold">Verified</p>
                         @elseif($online_payment->online_verified == 0)
@@ -168,11 +167,6 @@ var filterByDate = function(column, startDate, endDate) {
 
                       <td>{{ number_format($online_payment->amount_paid) }}</td>
 
-                      <td>
-
-                        <button class="btn btn-info button2 btn-sm" onclick="editOnline(this)" id="{{ $online_payment->id }}">Edit</button>
-
-                      </td>
                     </tr>
 
             	@endforeach
@@ -190,7 +184,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Deposited To</th>
                   <th>Status</th>
                   <th>Amount</th>
-                  <th>Edit</th>
                </tr>
 
             </tfoot>
@@ -275,32 +268,4 @@ var filterByDate = function(column, startDate, endDate) {
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
 
-<script type="text/javascript">
-
-  function editOnline(elem){
-
-    var payment_id = elem.id;
-
-    $.ajax({
-      type: 'get',
-      url: '{!! URL::to('getOnlineInfo') !!}',
-      data: {'payment_id':payment_id},
-      success:function(data) {
-        document.getElementById('bank-name').value = data.bank_name;
-        document.getElementById('deposit-date').value = data.deposit_date;
-        document.getElementById('payment-id').value = data.id;
-      },
-      error:function(){
-
-      }
-
-    });
-
-
-    $('#myModal').modal();
-
-  }
-
-  
-</script>
 @endsection

@@ -132,9 +132,13 @@ var filterByDate = function(column, startDate, endDate) {
             <thead>
 				<tr>
 					<th>Date</th>
+          <th>Location</th>
+          <th>Client Code</th>
 					<th>Client Name</th>
 					<th>Program Name</th>
 					<th>Step Name</th>
+          <th>Counselor</th>
+          <th>RM</th>
 					<th>Payment Type</th>
 					<th>Refunded From</th>
 					<th>Cheque Number</th>
@@ -147,9 +151,30 @@ var filterByDate = function(column, startDate, endDate) {
             	@foreach($refunds as $refund)
             	<tr>
             		<td>{{ Carbon\Carbon::parse($refund->created_at)->format('d-M-y') }}</td>
+                <td>{{ ucfirst($refund->payment->location) ?? 'N/A' }}</td>
+                <td>{{ $refund->payment->userInfo->client_code ?? 'Client Removed' }}</td>
             		<td>{{ $refund->payment->userInfo->name ?? 'Client Removed' }}</td>
             		<td>{{ $refund->payment->programInfo->program_name ?? 'Program Removeds' }}</td>
             		<td>{{ $refund->payment->stepInfo->step_name ?? 'Steps Removed' }}</td>
+                <td>
+
+                  @foreach($refund->payment->userInfo->getAssignedCounselors as $counselors)
+
+                    {{ $counselors->user->name ?? 'N/A'}}
+
+                  @endforeach
+
+                  </td>
+
+                  <td>
+
+                  @foreach($refund->payment->userInfo->getAssignedRms as $rms)
+
+                    {{ $rms->user->name ?? 'N/A'}}
+
+                  @endforeach
+
+                </td>
             		<td>{{ ucfirst($refund->payment_type) }}</td>
             		<td>{{ strtoupper($refund->bank_name) }}</td>
             		<td>{{ $refund->cheque_number }}</td>
@@ -161,16 +186,20 @@ var filterByDate = function(column, startDate, endDate) {
 
             <tfoot>
             	<tr>
-					<th>Date</th>
-					<th>Client Name</th>
-					<th>Program Name</th>
-					<th>Step Name</th>
-					<th>Payment Type</th>
-					<th>Refunded From</th>
-					<th>Cheque Number</th>
-					<th>Amount Refunded</th>
-          <th>Notes</th>
-				</tr>
+      					<th>Date</th>
+                <th>Location</th>
+                <th>Client Code</th>
+                <th>Client Name</th>
+                <th>Program Name</th>
+                <th>Step Name</th>
+                <th>Counselor</th>
+                <th>RM</th>
+                <th>Payment Type</th>
+                <th>Refunded From</th>
+                <th>Cheque Number</th>
+                <th>Amount Refunded</th>
+                <th>Notes</th>
+				      </tr>
             </tfoot>
          </table>
 

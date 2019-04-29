@@ -45,6 +45,17 @@
       <td>{{ strtoupper($payment_info->bank_name) }}</td>
       <td></td>
     </tr>
+
+    @if($payment_info->payment_type == 'online')
+
+    <tr>
+      <td>Approved?</td>
+      <td>{{ ($payment_info->online_verified == 1) ? 'Yes' : 'No'}}</td>
+      <td></td>
+    </tr>
+
+    @endif
+
   </tbody>
 </table>
 

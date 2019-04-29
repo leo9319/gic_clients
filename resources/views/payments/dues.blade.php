@@ -190,7 +190,7 @@ var filterByDate = function(column, startDate, endDate) {
 
             <tbody>
               @foreach($all_dues as $all_due)
-              @if($all_due->totalAmount() - $all_due->totalVerifiedPayment->sum('amount_paid') > 0)
+              @if($all_due->totalAmount() - $all_due->totalApprovedPayment->sum('amount_paid') > 0)
               <tr>
 
                 <td>{{ Carbon\Carbon::parse($all_due->created_at)->format('d-M-y') }}</td>
@@ -225,22 +225,9 @@ var filterByDate = function(column, startDate, endDate) {
                   {{ number_format($all_due->opening_fee + $all_due->embassy_student_fee + $all_due->service_solicitor_fee + $all_due->other) }}
                 </td>
 
-                <td>
-                  {{ 
-                    number_format($all_due->totalVerifiedPayment
-                    ->where('refund_payment', '!=', 1)
-                    ->sum('amount_paid')) 
-                  }}
-                </td>
-                <td>
-                  {{ 
-                    number_format($all_due->totalVerifiedPayment
-                    ->where('refund_payment', '!=', 1)
-                    ->sum('amount_received')) 
-                  }}
-                </td>
-
-                <td>{{ number_format($all_due->totalAmount() - $all_due->totalVerifiedPayment->sum('amount_paid')) }}</td>
+                <td>{{ number_format($all_due->totalApprovedPayment->sum('amount_paid')) }}</td>
+                <td>{{ number_format($all_due->totalApprovedPayment->sum('amount_received')) }}</td>
+                <td>{{ number_format($all_due->totalAmount() - $all_due->totalApprovedPayment->sum('amount_paid')) }}</td>
                 <td>{{ Carbon\Carbon::parse($all_due->due_date)->format('d-M-y') }}</td>
                 <td>{{ $all_due->comments }}</td>
 

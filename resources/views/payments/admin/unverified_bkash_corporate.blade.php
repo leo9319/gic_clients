@@ -144,6 +144,7 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>RM</th>
                   <th>Status</th>
                   <th>Amount</th>
+                  <th>After Bank Charge</th>
                </tr>
 
             </thead>
@@ -191,6 +192,7 @@ var filterByDate = function(column, startDate, endDate) {
                       </td>
 
                       <td>{{ number_format($unverified_bkash_corporate->amount_paid) }}</td>
+                      <td>{{ number_format($unverified_bkash_corporate->amount_received) }}</td>
                     </tr>
 
               @endforeach
@@ -209,6 +211,7 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>RM</th>
                   <th>Status</th>
                   <th>Amount</th>
+                  <th>After Bank Charge</th>
                </tr>
 
             </tfoot>

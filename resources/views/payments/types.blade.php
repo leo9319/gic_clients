@@ -68,6 +68,8 @@
 					<option value="bkash_salman">bKash - Salman</option>
 					<option value="upay">Upay</option>
 					<option value="online">Online</option>
+					<option value="pay_gic">Pay GIC - EBL</option>
+					<option value="pay_gic_ssl">Pay GIC - SSL</option>
 
 				</select>
 				
@@ -133,7 +135,7 @@
 
 	function addPaymentType() {
 
-		var html = '<div id="payment-div-#"><div class="form-group"> <label class="text-success">Payment Type:</label> <select id=# class="select2 form-control" name="payment_type-#" onchange="addPaymentOptions(this)" required> <option value="">Select a payment method</option> <option value="cash">Cash</option> <option value="card">POS</option> <option value="cheque">Cheque</option> <option value="bkash_corporate">bKash - Corporate</option> <option value="bkash_salman">bKash - Salman</option> <option value="upay">Upay</option> <option value="online">Online</option> </select> </div><div id="payment-container-#"></div><input type="hidden" name="counter" value="#"><a class="text-danger" href="javascript:void(0)" onclick="removePaymentType(#)">(-) Remove This Payment Type</a><hr></div>';
+		var html = '<div id="payment-div-#"> <div class="form-group"> <label class="text-success">Payment Type:</label> <select id=# class="select2 form-control" name="payment_type-#" onchange="addPaymentOptions(this)" required> <option value="">Select a payment method</option> <option value="cash">Cash</option> <option value="card">POS</option> <option value="cheque">Cheque</option> <option value="bkash_corporate">bKash - Corporate</option> <option value="bkash_salman">bKash - Salman</option> <option value="upay">Upay</option> <option value="online">Online</option> <option value="pay_gic">Pay GIC - EBL</option> <option value="pay_gic_ssl">Pay GIC - SSL</option> </select> </div> <div id="payment-container-#"></div> <input type="hidden" name="counter" value="#"><a class="text-danger" href="javascript:void(0)" onclick="removePaymentType(#)">(-) Remove This Payment Type</a> <hr> </div>';
 
 		html = html.replace(/#/g, number);
 
@@ -215,6 +217,24 @@
 		} else if(elem.value == 'online') {
 
 			var html = '<label>Select Bank:</label> <select class="select2 form-control" name="bank_name-#" onchange="addCardCharge(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid online" name="total_amount-#" onchange="getTotalAmount(this)" required> </div> <br>';
+
+			html = html.replace(/#/g, number);
+
+			$('#payment-container-' + number).empty();
+			$('#payment-container-' + number).append(html);
+
+		} else if(elem.value == 'pay_gic') {
+
+			var html = '<label>Select Bank:</label> <input type="text" name="bank_name-#" placeholder="GIC Deposit Bank Name" class="form-control" value="ebl" readonly> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid online" name="total_amount-#" onchange="getTotalAmount(this)" required> </div> <br>';
+
+			html = html.replace(/#/g, number);
+
+			$('#payment-container-' + number).empty();
+			$('#payment-container-' + number).append(html);
+
+		} else if(elem.value == 'pay_gic_ssl') {
+
+			var html = '<label>Select Bank:</label> <input type="text" name="bank_name-#" placeholder="GIC Deposit Bank Name" class="form-control" value="scb" readonly> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid online" name="total_amount-#" onchange="getTotalAmount(this)" required> </div> <br>';
 
 			html = html.replace(/#/g, number);
 

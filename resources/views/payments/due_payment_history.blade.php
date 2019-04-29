@@ -136,6 +136,8 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Date</th>
 
+                  <th>Location</th>
+
                   <th>Client Code.</th>
 
                   <th>Client Name</th>
@@ -163,7 +165,12 @@ var filterByDate = function(column, startDate, endDate) {
             <tbody>
               @foreach($due_payments as $due_payment)
               <tr>
-                <td>{{ Carbon\Carbon::parse($due_payment->due_cleared_date)->format('d-M-y') }}</td>
+                <td>
+
+                  {{ Carbon\Carbon::parse($due_payment->totalPayment->first()->created_at)->format('d-M-y') }}
+
+                </td>
+                <td>{{ ucfirst($due_payment->location ?? 'N/A') }}</td>
                 <td>{{ $due_payment->userInfo->client_code ?? 'Client Removed' }}</td>
                 <td>{{ $due_payment->userInfo->name ?? 'Client Removed' }}</td>
                 <td>{{ $due_payment->programInfo->program_name }}</td>
@@ -189,11 +196,10 @@ var filterByDate = function(column, startDate, endDate) {
 
                 </td>
 
-                <td>{{ number_format($due_payment->totalPayment->where('due_payment', 1)->sum('amount_paid')) }}</td>
+                <td>{{ number_format($due_payment->totalApprovedPayment->where('due_payment', 1)->sum('amount_paid')) }}</td>
 
-                <td>{{ number_format($due_payment->totalAmount() - $due_payment->totalVerifiedPayment->sum('amount_paid')) }}</td>
+                <td>{{ number_format($due_payment->totalAmount() - $due_payment->totalApprovedPayment->sum('amount_paid')) }}</td>
 
-                {{-- <td>{{$due_payment->dues}}</td> --}}
 
                 <td>{{ $due_payment->comments }}</td>
                 <td><a href="{{ route('payment.client.dues.pdf', $due_payment->id) }}" class="btn btn-primary btn-sm button button2">Generate Invoice</a></td>
@@ -206,6 +212,8 @@ var filterByDate = function(column, startDate, endDate) {
                <tr>
 
                   <th>Date</th>
+
+                  <th>Location</th>
 
                   <th>Client Code.</th>
 

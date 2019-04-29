@@ -37,6 +37,30 @@
                   </a>
                </li>
 
+               <li>
+
+                  <a href="#subReminders" data-toggle="collapse" class="collapsed {{ $active_class == 'reminders' ? 'active' : '' }}"><i class="fas fa-stopwatch"></i> <span>Reminders</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+
+                  <div id="subReminders" class="collapse">
+
+                     <ul class="nav">
+
+                        <li>
+                           <a href="{{ route('reminders.create') }}" class="">
+                              <i class="fas fa-stopwatch"></i>
+                              <span>Create Reminders</span></a>
+                        </li>
+                        <li>
+                           <a href="{{ route('reminders.index') }}" class="">
+                              <i class="fas fa-stopwatch"></i>
+                              <span>View Reminders</span></a>
+                        </li>
+
+                     </ul>
+
+                  </div>
+               </li>
+
             @endif
 
             @if(Auth::user()->user_role == 'client')
@@ -201,42 +225,42 @@
             @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
 
             <li>
-               <a href="#subIncomesAndExpenses" data-toggle="collapse" class="collapsed {{ $active_class == 'incomes-expenses' ? 'active' : '' }}"><i class="fa fa-credit-card"></i> <span>Incomes/Expenses</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+               <a href="#subIncomesAndExpenses" data-toggle="collapse" class="collapsed {{ $active_class == 'incomes-expenses' ? 'active' : '' }}"><i class="fas fa-exchange-alt"></i> <span>Incomes/Expenses</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 
                <div id="subIncomesAndExpenses" class="collapse ">
                   <ul class="nav">
 
                      <li>
                         <a href="{{ route('payment.income') }}" class="">
-                           <i class="fa fa-credit-card"></i>
+                           <i class="fas fa-exchange-alt"></i>
                            <span>Income</span>
                         </a>
                      </li>
 
                      <li>
                         <a href="{{ route('payment.expense') }}" class="">
-                           <i class="fa fa-credit-card"></i>
+                           <i class="fas fa-exchange-alt"></i>
                            <span>Expense</span>
                         </a>
                      </li>
 
                      <li>
                         <a href="{{ route('payment.show.income.and.expenses') }}" class="">
-                           <i class="fa fa-credit-card"></i>
+                           <i class="fas fa-exchange-alt"></i>
                            <span>View Income/Expense</span>
                         </a>
                      </li>
 
                      <li>
                         <a href="{{ route('payment.show.advance.incomes') }}" class="">
-                           <i class="fa fa-credit-card"></i>
+                           <i class="fas fa-exchange-alt"></i>
                            <span>View Adv. Income</span>
                         </a>
                      </li>
 
                      <li>
                         <a href="{{ route('payment.show.advance.expenses') }}" class="">
-                           <i class="fa fa-credit-card"></i>
+                           <i class="fas fa-exchange-alt"></i>
                            <span>View Adv. Expense</span>
                         </a>
                      </li>
@@ -342,8 +366,6 @@
                </div>
             </li>
 
-            @if (Auth::user()->user_role != 'backend')
-
             <li>
                <a href="#subUnverifiedPayments" data-toggle="collapse" class="collapsed {{ $active_class == 'unverified_payments' ? 'active' : '' }}"><i class="fa fa-question-circle"></i> <span>Unverified Payments</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
 
@@ -363,6 +385,18 @@
                      </li>
 
                      <li>
+                        <a href="{{ route('payment.client.pay_gic.payments') }}" class="">
+                           <i class="fa fa-question-circle"></i>
+                           <span>Pay GIC - EBL</span></a>
+                     </li>
+
+                     <li>
+                        <a href="{{ route('payment.client.pay_gic_ssl.payments') }}" class="">
+                           <i class="fa fa-question-circle"></i>
+                           <span>Pay GIC - SSL</span></a>
+                     </li>
+
+                     <li>
                         <a href="{{ route('payment.client.unverified.bkash_salman') }}" class="">
                            <i class="fa fa-question-circle"></i>
                            <span>bKAsh Personal</span></a>
@@ -377,8 +411,6 @@
                   </ul>
                </div>
             </li>
-
-            @endif
 
             @endif
 

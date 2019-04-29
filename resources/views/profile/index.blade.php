@@ -34,7 +34,7 @@
                <div class="profile-main">
                   <img src="{{ asset('img/blank-dp.png') }}" class="img-circle" alt="Avatar" height="100">
                   <h3 class="name">{{ $client->name }}</h3>
-                  <span><a href="{{ route('client.edit.ind', $client->id) }}"><i class="fa fa-edit"></i> Edit Profile</a></span>
+                  <span><a href="{{ route('user.edit', $client->id) }}"><i class="fa fa-edit"></i> Edit Profile</a></span>
                </div>
             </div>
             <div class="profile-detail">

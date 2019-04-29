@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'client_code', 'name', 'mobile', 'email', 'password', 'user_role', 'status', 'remember_token'
+        'client_code', 'name', 'mobile', 'email', 'password', 'user_role', 'status', 'profile_picture', 'remember_token'
     ];
 
     /**
@@ -73,6 +73,36 @@ class User extends Authenticatable
 
         return $amount_received - $refund;
 
+    }
+
+    public function getTotalVerifiedAmountPaid()
+    {
+
+        $payment_ids = Payment::where('client_id', $this->id)->pluck('id');
+        $amount_received = PaymentType::whereIn('payment_id', $payment_ids)
+                            ->where('cheque_verified', '=', 1)
+                            ->where('online_verified', '=', 1)
+                            ->where('bkash_salman_verified', '=', 1)
+                            ->where('bkash_corporate_verified', '=', 1)
+                            ->where('refund_payment', '!=', 1)
+                            ->sum('amount_paid');
+                            
+        $refund = PaymentType::whereIn('payment_id', $payment_ids)->where('refund_payment', '=', 1)->sum('amount_paid');
+
+        return $amount_received - $refund;
+
+    }
+
+    public function getTotalInvoiceAmount()
+    {
+        $all_payments = Payment::where('client_id', $this->id)->get();
+
+        $total_opening_fee = $all_payments->sum('opening_fee');
+        $total_embassy_student_fee = $all_payments->sum('embassy_student_fee');
+        $total_service_solicitor_fee = $all_payments->sum('service_solicitor_fee');
+        $total_other = $all_payments->sum('other');
+
+        return ($total_opening_fee + $total_embassy_student_fee + $total_service_solicitor_fee + $total_other);
     }
 
     public function payments()

@@ -62,8 +62,8 @@
             	<tr>
             		<td>{{ $client->client_code }}</td>
             		<td>{{ $client->name }}</td>
-            		<td>{{ number_format($client->getTotalAmountPaid()) }}</td>
-            		<td>{{ number_format($client->payments->sum('dues')) }}</td>
+            		<td>{{ number_format($client->getTotalVerifiedAmountPaid()) }}</td>
+                  <td>{{ number_format($client->getTotalInvoiceAmount() - $client->getTotalVerifiedAmountPaid()) }}</td>
             		<td>
                      <a href="{{ route('payment.show.statement', $client->id) }}" class="btn btn-info button2">View Statement</a>
                      <a href="{{ route('payment.notes', $client->id) }}" class="btn btn-success button2">Payment Notes</a>

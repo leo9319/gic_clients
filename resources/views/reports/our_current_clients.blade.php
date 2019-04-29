@@ -66,16 +66,15 @@
 
 						{{ 
 							number_format(
-								$payment->totalPayment->where('refund_payment', '!=', 1)->sum('amount_paid') -
+								$payment->totalApprovedPayment->sum('amount_paid') -
 								$payment->totalPayment->where('refund_payment', '=', 1)->sum('amount_paid')
 						    )
-
 
 						}}
 
 					</td>
 					<td>{{ Carbon\Carbon::parse($payment->created_at)->format('d-M-y') }}</td>
-					<td>{{ number_format($payment->totalAmount() - $payment->totalVerifiedPayment->sum('amount_paid')) }}</td>
+					<td>{{ number_format($payment->totalAmount() - $payment->totalApprovedPayment->sum('amount_paid')) }}</td>
 					<td>{{ Carbon\Carbon::parse($payment->due_date)->format('d-M-y') }}</td>
 					<td>
 						@if($payment->userInfo)

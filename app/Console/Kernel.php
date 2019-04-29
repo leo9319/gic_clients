@@ -5,6 +5,8 @@ namespace App\Console;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Reminder;
+use Carbon\Carbon;
 
 class Kernel extends ConsoleKernel
 {
@@ -15,7 +17,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //registering my commands
-        'App\Console\Commands\sendEmailAndSmsReminder'
+        'App\Console\Commands\sendEmailAndSmsReminder',
+        'App\Console\Commands\PendingClients',
 
 
     ];
@@ -28,17 +31,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('sendEmailAndSmsReminder:sendemailsms')
-        //           ->everyMinute();// $schedule->command('sendEmailAndSmsReminder:sendemailsms')
-        //           ->everyMinute();
+        $from = Carbon::today()->toDateString();
+        $to = Carbon::tomorrow()->toDateString();
 
-        $schedule->command('backup:run')->everyMinute();
+        $todays_schedule = Reminder::whereBetween('end_date', [$from, $to])->where('status', 1)->first();
 
-        // $schedule->call(function () {
-        //     DB::table('fields')->insert([
-        //         'field_type' => 'test'
-        //     ]);
-        // })->everyMinute();
+        $schedule->command('pending:clients')->daily()->at('09:00')->when(function () use ($todays_schedule) {
+            return $todays_schedule;
+        });
 
     }
 
