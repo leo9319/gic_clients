@@ -168,8 +168,8 @@ var filterByDate = function(column, startDate, endDate) {
                   		<td>{{ $payment->programInfo->program_name ?? ''}}</td>
                   		<td>{{ $payment->stepInfo->step_name ?? 'Step Removed' }}</td>  
                       <td>{{ number_format($payment->totalAmount()) }}</td>
-                      <td>{{ number_format($payment->totalVerifiedPayment->sum('amount_paid')) }}</td>
-                      <td>{{ number_format($payment->totalAmount() - $payment->totalVerifiedPayment->sum('amount_paid')) }}</td>                
+                      <td>{{ number_format($payment->totalApprovedPayment->sum('amount_paid')) }}</td>
+                      <td>{{ number_format($payment->totalAmount() - $payment->totalApprovedPayment->sum('amount_paid')) }}</td>                
                       <td>{{ $payment->comments }} <i id="{{ $payment->id }}" class="fa fa-edit" onclick="editNote(this)"></i></td>                
 
                       <td>

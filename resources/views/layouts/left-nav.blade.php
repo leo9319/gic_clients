@@ -439,6 +439,34 @@
                   </a>
                </li>
 
+               <li>
+                  <a href="#subSalary" data-toggle="collapse" class="collapsed {{ $active_class == 'salary' ? 'active' : '' }}"><i class="far fa-money-bill-alt"></i> <span>GIC Salary</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
+
+                  <div id="subSalary" class="collapse ">
+                     <ul class="nav">
+
+                        <li>
+                           <a href="#" class="">
+                              <i class="fas fa-hand-holding-usd"></i>
+                              <span>View/Generate</span></a>
+                        </li>
+
+                        <li>
+                           <a href="#" class="">
+                              <i class="fas fa-calculator"></i>
+                              <span>Monthly Calculations</span></a>
+                        </li>
+
+                        <li>
+                           <a href="{{ route('salaries.set_variables') }}" class="">
+                              <i class="fas fa-cogs"></i>
+                              <span>Set Variables</span></a>
+                        </li>
+                        
+                     </ul>
+                  </div>
+               </li>
+
             @endif
 
          </ul>

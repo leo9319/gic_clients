@@ -248,7 +248,7 @@ class PaymentController extends Controller
 
             } else if($payment_type == 'pay_gic_ssl') {
 
-                $charge = 2.5;
+                $charge = 3.5;
                 $online_verified = -1;
 
             } else {
@@ -956,7 +956,7 @@ class PaymentController extends Controller
 
         } else if($payment_type == 'pay_gic_ssl') {
 
-            $charge = 2.5;
+            $charge = 3.5;
             $online_verified = -1;
 
         } else {
@@ -1075,6 +1075,7 @@ class PaymentController extends Controller
             'ucb_fdr' => 0,
             'ucb_cc' => 0,
             'brac_umrah' => 0,
+            'ucb_umrah' => 0,
             'salman account' => 0,
             'kamran account' => 0
          ];
@@ -1092,6 +1093,7 @@ class PaymentController extends Controller
             'ucb_fdr' => 'UCB_FDR',
             'ucb_cc' => 'UCB_CC',
             'brac_umrah' => 'BRAC_UMRAH',
+            'ucb_umrah' => 'UCB_UMRAH',
             'salman account' => 'Salman Account',
             'kamran account' => 'Kamran Account'
          ];
@@ -1819,7 +1821,7 @@ class PaymentController extends Controller
 
             } else if($payment_type == 'pay_gic_ssl') {
 
-                $charge = 2.5;
+                $charge = 3.5;
                 $online_verified = -1;
 
             } else {

@@ -375,3 +375,10 @@ Route::get('/clear-cache', function() {
 });
 
 Route::post('reminders/delete', 'ReminderController@delete')->name('reminders.delete');
+
+// ------------------------------------------------------------------------------------------
+
+Route::get('salaries/set-employees', 'SalaryController@setEmployees')->name('salaries.set_employees');
+Route::get('salaries/set-variables', 'SalaryController@setVariables')->name('salaries.set_variables');
+Route::get('salaries/set-rms', 'SalaryController@setRMs')->name('salaries.set_rms');
+Route::post('salaries/store-employees', 'SalaryController@storeEmployees')->name('salaries.store_employees');
