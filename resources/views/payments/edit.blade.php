@@ -1,7 +1,5 @@
 @extends('layouts.master')
 
-@section('url', $previous)
-
 @section('title', 'Edit Payments')
 
 @section('content')
@@ -431,6 +429,60 @@
 
 					</div>
 
+					@elseif($payment_type->payment_type == 'pay_gic')
+
+					<div class="form-group">
+						<label>Payment Type:</label>
+							
+						<input type="text" class="form-control" name="payment[{{$index}}][payment_type]" value="{{ $payment_type->payment_type }}" readonly="">
+					</div>
+
+					<div class="form-group">
+						<label>Date:</label>
+						
+						<input type="date" class="form-control" name="payment[{{$index}}][created_at]" value="{{ Carbon\Carbon::parse($payment_type->created_at)->format('Y-m-d') }}">
+					</div>
+
+					<div class="form-group">
+						<label>Select Bank:</label> 
+						<input type="text" name="payment[{{$index}}][bank_name]" class="form-control" value="{{ $payment_type->bank_name }}" readonly="">
+					</div>
+
+					<div class="form-group">
+						<label>Total Amount:</label> 
+						<input type="number" class="total form-control" placeholder="Amount paid in bKash" name="payment[{{$index}}][amount_paid]" value="{{ $payment_type->amount_paid }}" required>
+					</div>
+
+					<input type="hidden" name="payment[{{ $index }}][bank_charge]" value={{ $payment_type->bank_charge }}>
+
+					{{-- Pay GIC SSL --}}
+
+					@elseif($payment_type->payment_type == 'pay_gic_ssl')
+
+					<div class="form-group">
+						<label>Payment Type:</label>
+							
+						<input type="text" class="form-control" name="payment[{{$index}}][payment_type]" value="{{ $payment_type->payment_type }}" readonly="">
+					</div>
+
+					<div class="form-group">
+						<label>Date:</label>
+						
+						<input type="date" class="form-control" name="payment[{{$index}}][created_at]" value="{{ Carbon\Carbon::parse($payment_type->created_at)->format('Y-m-d') }}">
+					</div>
+
+					<div class="form-group">
+						<label>Select Bank:</label> 
+						<input type="text" name="payment[{{$index}}][bank_name]" class="form-control" value="{{ $payment_type->bank_name }}" readonly="">
+					</div>
+
+					<div class="form-group">
+						<label>Total Amount:</label> 
+						<input type="number" class="total form-control" placeholder="Amount paid in bKash" name="payment[{{$index}}][amount_paid]" value="{{ $payment_type->amount_paid }}" required>
+					</div>
+
+					<input type="hidden" name="payment[{{ $index }}][bank_charge]" value={{ $payment_type->bank_charge }}>
+
 					@endif
 
 
@@ -557,6 +609,10 @@
 			allowClear: true
 		});
 		
+	});
+
+	$(function(){
+	  $(':input[type=number]').on('mousewheel',function(e){ $(this).blur(); });
 	});
 
 	$( function() {

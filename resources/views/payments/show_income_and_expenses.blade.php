@@ -257,6 +257,10 @@ var filterByDate = function(column, startDate, endDate) {
 
 <script type="text/javascript">
 
+  $(function(){
+    $(':input[type=number]').on('mousewheel',function(e){ $(this).blur(); });
+  });
+
   function formatDate(date) {
       var d = new Date(date),
           month = '' + (d.getMonth() + 1),

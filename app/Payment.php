@@ -8,9 +8,14 @@ class Payment extends Model
 {
     protected $guarded = [];
 
-    public function userInfo()
+    public function user()
     {
     	return $this->hasOne('App\User', 'id', 'client_id');
+    }
+
+    public function userInfo()
+    {
+        return $this->hasOne('App\User', 'id', 'client_id');
     }
 
     public function programInfo()

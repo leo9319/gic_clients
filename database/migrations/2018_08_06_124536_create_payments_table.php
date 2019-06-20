@@ -15,7 +15,7 @@ class CreatePaymentsTable extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('receipt_id')->nullable();
+            $table->string('receipt_id')->nullable();
             $table->string('location')->default('dhaka');
             $table->integer('client_id');
             $table->integer('program_id');

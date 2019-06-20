@@ -153,6 +153,7 @@ Route::get('findClientProgram', 'ProgramController@clientProgram');
 Route::get('findProgramStep', 'ProgramController@programStep');
 Route::get('findClientProgramStep', 'ProgramController@clientProgramStep');
 Route::get('getIndividualClientProgram', 'ProgramController@individualClientProgram');
+Route::get('getClientDues', 'PaymentController@getClientDues');
 
 Route::post('program/edit', 'ProgramController@editProgram')->name('edit.program');
 
@@ -208,6 +209,9 @@ Route::post('form', 'FormController@store')->name('home.form.store');
 
 
 Route::get('history/payment', 'PaymentController@paymentHistory')->name('payment.history');
+Route::get('history/payment/beta', 'PaymentController@paymentHistoryBeta')->name('payment.history.beta');
+Route::get('history/payment/data', 'PaymentController@paymentHistoryData')->name('payment.history.data');
+
 Route::get('payment/verification/{payment}', 'PaymentController@verification')->name('payment.verification');
 Route::get('payment/disapprove/{payment}', 'PaymentController@disapprove')->name('payment.disapprove');
 
@@ -361,8 +365,6 @@ Route::post('reports/monthly', 'ReportController@monthly')->name('reports.monthl
 Route::post('reports/our-current-clients', 'ReportController@ourCurrentClients')->name('reports.our_current_clients');
 
 
-
-
 Route::resource('gcalendar', 'gCalendarController');
 Route::get('appointment/{client_id}', 'gCalendarController@setAppointment')->name('appointment.client');
 Route::get('oauth', 'gCalendarController@oauth')->name('oauthCallback');
@@ -382,3 +384,13 @@ Route::get('salaries/set-employees', 'SalaryController@setEmployees')->name('sal
 Route::get('salaries/set-variables', 'SalaryController@setVariables')->name('salaries.set_variables');
 Route::get('salaries/set-rms', 'SalaryController@setRMs')->name('salaries.set_rms');
 Route::post('salaries/store-employees', 'SalaryController@storeEmployees')->name('salaries.store_employees');
+
+// -------------------------------------------------------------------------------------------
+
+Route::post('data/users', 'TestController@getUsers')->name('dataProcessing');
+
+// Route::resource('ajax-crud', 'AjaxCrudController');
+
+Route::post('ajax-crud/update', 'AjaxCrudController@update')->name('ajax-crud.update');
+
+Route::get('ajax-crud/destroy/{id}', 'AjaxCrudController@destroy');

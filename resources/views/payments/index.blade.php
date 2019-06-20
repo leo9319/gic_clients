@@ -1,7 +1,5 @@
 @extends('layouts.master')
 
-@section('url', $previous)
-
 @section('title', 'Payments')
 
 @section('content')
@@ -132,7 +130,7 @@
 
 			<br>
 
-			<input class="btn btn-primary btn-block button2" type="submit" name="" value="Proceed to Payment">
+			<input id="proceed-to-payment" class="btn btn-primary btn-block button2" type="submit" name="" value="Proceed to Payment">
 
 			{{ Form::close() }}
 
@@ -201,6 +199,34 @@
 					},
 
 				});
+
+
+				$.ajax({
+
+					type: 'get',
+					url: '{!!URL::to('getClientDues')!!}',
+					data: {'client_id':client_id},
+
+					success:function(dues) {
+
+						if(dues > 0) {
+
+							alert('Please clear previous receipt first!');
+
+							$('#proceed-to-payment').attr("disabled", true);
+
+						} else {
+
+							// alert('dues does not exist');
+
+							$('#proceed-to-payment').attr("disabled", false);
+
+						}
+
+					},
+
+				});
+
 
 			},
 

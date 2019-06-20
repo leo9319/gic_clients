@@ -1,7 +1,5 @@
 @extends('layouts.master')
 
-@section('url', $previous)
-
 @section('title', 'Dues')
 
 @section('content')
@@ -190,7 +188,7 @@ var filterByDate = function(column, startDate, endDate) {
 
             <tbody>
               @foreach($all_dues as $all_due)
-              @if($all_due->totalAmount() - $all_due->totalApprovedPayment->sum('amount_paid') > 0)
+              @if(($all_due->totalAmount() - $all_due->totalApprovedPayment->sum('amount_paid') > 0) && ($all_due->userInfo->status == 'active'))
               <tr>
 
                 <td>{{ Carbon\Carbon::parse($all_due->created_at)->format('d-M-y') }}</td>

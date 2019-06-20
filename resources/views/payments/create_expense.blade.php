@@ -126,6 +126,10 @@
 @section('footer_scripts')
 
 <script type="text/javascript">
+
+	$(function(){
+	  $(':input[type=number]').on('mousewheel',function(e){ $(this).blur(); });
+	});
 	
 	$( function() {
 		var today = new Date();

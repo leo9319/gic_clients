@@ -596,6 +596,122 @@ class PaymentController extends Controller
         return view('payments.history', $data);
     }
 
+    public function paymentHistoryBeta()
+    {
+        $data['active_class'] = 'payments';
+
+        return view('payments.admin.history_beta', $data);
+    }
+
+    public function paymentHistoryData()
+    {
+        if(request()->ajax())
+        {
+
+            $start_date = (!empty($_GET["start_date"])) ? ($_GET["start_date"]) : '';
+            $end_date   = (!empty($_GET["end_date"])) ? ($_GET["end_date"]) : ''; 
+
+            $payments   = Payment::query();
+
+            if($start_date && $end_date){
+
+                $start_date = date('Y-m-d', strtotime($start_date));
+                $end_date = date('Y-m-d', strtotime($end_date));
+
+                $payments->whereDate('P.created_at', '>=', $start_date)->whereDate('P.created_at', '<=', $end_date);
+
+            }
+
+            $payments   = $payments->from('payments AS P')
+                                ->leftJoin('users AS U', 'U.id', '=', 'P.client_id')
+                                ->leftJoin('programs AS PG', 'PG.id', '=', 'P.program_id')
+                                ->leftJoin('steps AS S', 'S.id', '=', 'P.step_id')
+                                ->select(
+                                    'P.id', 
+                                    'P.created_at AS payment_date', 
+                                    'P.location', 
+                                    'P.receipt_id', 
+                                    'P.comments', 
+                                    'P.client_id', 
+                                    'U.client_code', 
+                                    'U.name', 
+                                    'PG.program_name', 
+                                    'S.step_name', 
+                                     DB::raw(
+                                        "P.opening_fee +
+                                         P.embassy_student_fee +
+                                         P.service_solicitor_fee +
+                                         P.other AS invoice_amount"
+                                ))
+                                ->get();
+
+        foreach ($payments as $payment) {
+
+            // for calculating the amount_paid
+            $amount_paid = DB::table('payment_types')
+                                ->where('payment_id', $payment->id)
+                                ->where('cheque_verified', 1)
+                                ->where('online_verified', 1)
+                                ->where('bkash_salman_verified', 1)
+                                ->where('bkash_corporate_verified', 1)
+                                ->where('refund_payment', '!=', 1)
+                                ->groupBy('payment_id')
+                                ->sum('amount_paid');
+
+            // for finding the assigned Counselor
+            $counselor_clients = CounsellorClient::assignedCounselor($payment->client_id);
+            $rm_clients        = RmClient::getAssignedRms($payment->client_id);
+
+            $counselors        = [];
+            $rms               = [];
+
+            foreach ($counselor_clients as $counselor_client) {
+                $counselors[] = $counselor_client->user->name ?? 'N/A';
+            }
+
+            foreach ($rm_clients as $rm_client) {
+                $rms[] = $rm_client->user->name ?? 'N/A';
+            }
+
+            $payment->counselors  = $counselors;
+            $payment->rms         = $rms;
+            $payment->amount_paid = $amount_paid;
+            $payment->due_amount  = $payment->invoice_amount - $amount_paid;
+
+        }
+
+
+            return datatables()->of($payments)
+                    ->addColumn('action', function($data){
+
+                        $button = '<a href="'.url('payment/generate-invoice/'.$data->id).'" class="btn btn-info btn-sm button2">Generate Invoice</a>';
+
+                        return $button;
+                    })
+                    ->addColumn('view_details', function($data){
+
+                        $button = '<a href="'.url('payment/'.$data->id).'" class="btn btn-secondary btn-sm button2">View Payment</a>';
+
+                        return $button;
+                    })
+                    ->addColumn('edit', function($data){
+
+                        $button = '<a href="'.url('payment/'.$data->id.'/edit').'" class="btn btn-primary btn-sm button2">Edit</a>';
+
+                        return $button;
+                    })
+                    ->addColumn('delete', function($data){
+
+                        $button = '<button type="button" name="edit" id="'.$data->id.'" class="delete btn btn-danger btn-sm">Delete</button>';
+
+                        return $button;
+                    })
+                    ->rawColumns(['action', 'view_details', 'edit', 'delete'])
+                    ->make(true);
+        }
+        return view('ajax_index');
+    }
+
     public function verification($payment_id)
     {
         Payment::find($payment_id)->update(['recheck' => 0]);
@@ -1645,6 +1761,7 @@ class PaymentController extends Controller
             $data['all_dues'] = Payment::whereIn('client_id', $client_ids)->where('dues', '>', 0)->get();
 
         } else {
+
             $data['all_dues'] = Payment::all();
 
         }
@@ -2226,6 +2343,19 @@ class PaymentController extends Controller
                           ->get();
 
         return $payment_types->sum('amount_paid');
+    }
+
+    public function getClientDues(Request $request)
+    {
+        $user           = User::find($request->client_id);
+
+        $invoice_amount = $user->getTotalInvoiceAmount();
+
+        $amount_paid    = $user->getTotalVerifiedAmountPaid();
+
+        $dues           = $invoice_amount - $amount_paid;
+
+        return $dues;
     }
 
     public function array_sort_by_column(&$array, $column, $direction = SORT_ASC) {
