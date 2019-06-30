@@ -103,25 +103,25 @@
 
 			<label>Initial Assessment fee:</label>
 
-			<input type="number" id="file-opening-fee" class="form-control" placeholder="Initial Assessment fee" name="opening_fee" onkeyup="sumOfTotal()">
+			<input type="number" id="file-opening-fee" class="form-control" placeholder="Initial Assessment fee" name="opening_fee" value="0" onkeyup="sumOfTotal()">
 
 			<br>
 
 			<label>Lawyer Fees/ Service Charges:</label>
 
-			<input type="number" id="embassy-student-fee" class="form-control" placeholder="Embassy/Student fee" onkeyup="sumOfTotal()" name="embassy_student_fee">
+			<input type="number" id="embassy-student-fee" class="form-control" placeholder="Embassy/Student fee" onkeyup="sumOfTotal()"  value="0" name="embassy_student_fee">
 
 			<br>
 
 			<label>Government / Third party fees:</label>
 
-			<input type="number" id="service-solicitor-fee" class="form-control" placeholder="Service / Solicitor Charge" name="service_solicitor_fee" onkeyup="sumOfTotal()">
+			<input type="number" id="service-solicitor-fee" class="form-control" placeholder="Service / Solicitor Charge" name="service_solicitor_fee"  value="0" onkeyup="sumOfTotal()">
 
 			<br>
 
 			<label>Other fee:</label>
 
-			<input type="number" id="other-fee" class="form-control" placeholder="Other Fee" name="other" onkeyup="sumOfTotal()">
+			<input type="number" id="other-fee" class="form-control" placeholder="Other Fee" name="other"  value="0" onkeyup="sumOfTotal()">
 
 			<br>
 
@@ -216,8 +216,6 @@
 							$('#proceed-to-payment').attr("disabled", true);
 
 						} else {
-
-							// alert('dues does not exist');
 
 							$('#proceed-to-payment').attr("disabled", false);
 

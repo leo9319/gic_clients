@@ -39,7 +39,18 @@
                   <li><a href="#">Troubleshooting</a></li>
                </ul>
             </li> -->
+            
+
+            @if (Auth::user()->id == 7)
+
+            <li>
+               <a href="{{ route('maintenance.mode') }}"><i class="fas fa-exclamation-triangle"></i> <span>DEVELOPER MODE</span></a>
+            </li> 
+
+            @endif
+
             @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')
+            
             <li>
                <a href="{{ url('https://paygic.com/login') }}" target="_blank"><i class="fas fa-dollar-sign"></i> <span>Pay GIC</span></a>
             </li>

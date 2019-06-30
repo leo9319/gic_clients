@@ -16,39 +16,45 @@
 Auth::routes();
 
 
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 Route::resources([
 
-	'file' => 'FileController',
-	'step' => 'StepController',
-	'task' => 'TaskController',
-	'client' => 'ClientController',
-	'rms' => 'RmController',
+	'file'       => 'FileController',
+	'step'       => 'StepController',
+	'task'       => 'TaskController',
+	'client'     => 'ClientController',
+	'rms'        => 'RmController',
 	'counselors' => 'CounselorController',
-	'program' => 'ProgramController',
-	'payment' => 'PaymentController',
-	'reminders' => 'ReminderController',
+	'program'    => 'ProgramController',
+	'payment'    => 'PaymentController',
+	'reminders'  => 'ReminderController',
 
 ]);
 
 
+// --------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 Route::get('/counselors/remove/client/{counselor_client_id}', 'CounselorController@removeClient')->name('remove.counselor.client');
+
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 Route::get('/rms/remove/client/{rm_client_id}', 'RmController@removeClient')->name('remove.rm.client');
 
 
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-
-Route::get('test', 'TestController@test')->name('test');
 Route::get('myfile', 'FileController@myFile')->name('file.myfile');
-
 Route::post('additional-info', 'FileController@storeAddition')->name('store.addition');
 Route::post('additional-test', 'FileController@storeTest')->name('store.test');
 
 
-
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 Route::get('task/delete/{task_id}', 'TaskController@deleteTask')->name('delete.task');
@@ -57,13 +63,10 @@ Route::get('assign-task/{program_id}/{client}', 'TaskController@assignClient')->
 Route::get('assign-group-task/{program_id}/{client}', 'TaskController@assignGroupClient')->name('assign.group.task')->middleware('role:admin,rm,accountant');
 Route::post('assign-task/{program_id}/{client_id}', 'TaskController@storeClientTasks')->name('store.client.task')->middleware('role:admin,rm,accountant');
 Route::get('group/{program_id}', 'TaskController@taskGroup')->name('task.group');
-
 Route::get('approval/{client_task_id}/{approval}', 'TaskController@approval')->name('task.approval');
 Route::get('approval/spouse/{spouse_task_id}/{approval}', 'TaskController@spouseApproval')->name('task.spouse.approval');
-
 Route::get('task/user-tasks/{user_id}', 'TaskController@userTasks')->name('task.user.tasks');
 Route::get('task/update/status/{task_id}/{status}', 'TaskController@updateTaskStatus')->name('task.update.status');
-
 Route::post('task/edit', 'TaskController@editTask')->name('edit.task');
 Route::post('upload/{program_id}/{client_id}', 'TaskController@storeFiles')->name('upload.files');
 Route::post('group/{client_id}/{program_id}', 'TaskController@taskGroupStore')->name('task.group.store');
@@ -72,17 +75,13 @@ Route::post('update/client/task', 'TaskController@updateClientTask')->name('upda
 Route::post('update/spouse/task', 'TaskController@updateSpouseTask')->name('update.spouse.task');
 Route::post('individual-tasks/{client_id}/{program_id}', 'TaskController@storeIndividualTasks')->name('task.add.individual');
 Route::post('task/upload/file', 'TaskController@uploadFile')->name('task.upload.file');
-
 Route::get('getStep', 'TaskController@getStep');
 Route::post('task/user/create', 'TaskController@addUserTask')->name('task.user.create');
-
 Route::get('task/client/user-task/{client_id}/{user_id}', 'TaskController@userTask')->name('task.client.user');
-
 Route::get('task/approve/{task_id}/{approval}', 'TaskController@taskApprove')->name('task.approve');
 
 
-
-
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 Route::get('mytasks/{step_id}/{client_id}', 'ClientController@mytasks')->name('client.mytasks');
@@ -98,12 +97,10 @@ Route::get('client/counsellor/{client_id}', 'ClientController@assignCounsellor')
 Route::get('client/rm/{client_id}', 'ClientController@assignRm')->name('client.rm');
 Route::get('client/assigned/counselor/{client_id}', 'ClientController@assingedCounselor')->name('client.assigned.counselor');
 Route::get('client/assigned/rm/{client_id}', 'ClientController@assingedRm')->name('client.assigned.rm');
-
 Route::post('myprograms/{client_id}', 'ClientController@storeClientProgram')->name('client.myprograms.store');
 Route::post('complete-group/{client_id}/{program_id}', 'ClientController@completeGroupStore')->name('client.group.complete.store');
 Route::post('client/counsellor/{client_id}', 'ClientController@assignCounsellorStore')->name('client.counsellor.store');
 Route::post('client/rm/{client_id}', 'ClientController@assignRmStore')->name('client.rm.store');
-
 Route::post('client/step/{program_id}/{client_id}', 'ClientController@storeSteps')->name('client.step.store');
 Route::post('client/individual/step/{step_id}/{client_id}', 'ClientController@storeIndividualTask')->name('client.task.individual.store');
 Route::post('spouse/individual/step/{step_id}/{client_id}', 'ClientController@storeSpouseIndividualTask')->name('spouse.task.individual.store');
@@ -113,29 +110,23 @@ Route::post('client/update/ind', 'ClientController@clientUpdate')->name('client.
 Route::get('getClientName', 'ClientController@getClientName');
 
 
-
-
-
-
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 Route::get('home', 'HomeController@home')->name('home');
 Route::get('dashboard', 'HomeController@index')->name('dashboard');
 Route::get('users', 'HomeController@users')->name('users')->middleware('role:admin');
-
 Route::get('user-create', 'HomeController@createUser')->name('user.create');
 Route::post('user-create', 'HomeController@storeUser')->name('user.store');
-
 Route::post('users/{id}', 'HomeController@updateUserRole')->name('users.update.role')->middleware('role:admin');
 Route::post('update-staff', 'HomeController@customStaffRegisterUpdate')->name('staff.update');
 Route::post('register-staff', 'HomeController@customStaffRegisterStore')->name('staff.store');
 Route::get('getUserInformation', 'HomeController@getUserInformation');
 Route::post('user/delete', 'HomeController@deletUser')->name('delete.user');
+Route::get('shut/the/application/down', 'HomeController@activateMaintenanceMode')->name('maintenance.mode')->middleware('role:admin');
 
 
-
-
-
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 Route::get('appointments', 'AppointmentController@index')->name('appointment.index');
@@ -144,8 +135,7 @@ Route::get('appointments/counselor', 'AppointmentController@setCounselorAppointm
 Route::get('client/appointments/{client_id}', 'AppointmentController@clientAppointment')->name('client.appointment');
 
 
-
-
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 Route::get('program/delete/{program_id}', 'ProgramController@deleteProgram')->name('delete.program');
@@ -153,13 +143,10 @@ Route::get('findClientProgram', 'ProgramController@clientProgram');
 Route::get('findProgramStep', 'ProgramController@programStep');
 Route::get('findClientProgramStep', 'ProgramController@clientProgramStep');
 Route::get('getIndividualClientProgram', 'ProgramController@individualClientProgram');
-Route::get('getClientDues', 'PaymentController@getClientDues');
-
 Route::post('program/edit', 'ProgramController@editProgram')->name('edit.program');
 
 
-
-
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 Route::get('target/department', 'TargetController@department')->name('target.department');
@@ -170,111 +157,80 @@ Route::post('target/{user_id}', 'TargetController@storeTarget')->name('store.tar
 Route::post('target/department/set', 'TargetController@storeDepartmentTarget')->name('target.department.store');
 
 
-
-
-
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 Route::get('comment/task/{client_task_id}', 'CommentController@task')->name('comment.tasks');
 Route::post('comment/task/{client_task_id}', 'CommentController@taskCommentStore')->name('comment.tasks.store');
-
 Route::get('comment/user/task/{user_task_id}', 'CommentController@userTask')->name('comment.user.tasks');
 Route::post('comment/user/task/{user_task_id}', 'CommentController@userTaskCommentStore')->name('comment.user.tasks.store');
-
 Route::get('comment/spouse/task/{spouse_task_id}', 'CommentController@spouseTask')->name('comment.spouse.tasks');
 Route::post('comment/spouse/task/{spouse_task_id}', 'CommentController@spouseTaskCommentStore')->name('comment.spouse.tasks.store');
-
 Route::get('comment/appointment/{client_appointment_id}', 'CommentController@appointment')->name('comment.appointments');
 Route::post('comment/appointment/{client_appointment_id}', 'CommentController@appointmentCommentStore')->name('comment.appointment.store');
 
 
-
-
-
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 Route::get('sms/{client_id}', 'TextController@smsIndex')->name('sms.index');
 Route::get('email/{client_id}', 'TextController@emailIndex')->name('email.index');
-
 Route::post('email/{client_id}', 'TextController@sendEmail')->name('email.send');
 Route::post('sms/{client_id}', 'TextController@sendSms')->name('sms.send');
 
 
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 Route::get('form', 'FormController@index')->name('home.form');
 Route::post('form', 'FormController@store')->name('home.form.store');
 
 
+// ---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
+Route::get('getClientDues', 'PaymentController@getClientDues');
+Route::get('updateTransactionConsent', 'PaymentController@updateTransactionConsent');
+Route::get('deleteTransaction', 'PaymentController@deleteTransaction');
 Route::get('history/payment', 'PaymentController@paymentHistory')->name('payment.history');
 Route::get('history/payment/beta', 'PaymentController@paymentHistoryBeta')->name('payment.history.beta');
 Route::get('history/payment/data', 'PaymentController@paymentHistoryData')->name('payment.history.data');
-
 Route::get('payment/verification/{payment}', 'PaymentController@verification')->name('payment.verification');
 Route::get('payment/disapprove/{payment}', 'PaymentController@disapprove')->name('payment.disapprove');
-
 Route::get('payment/cheque/verification/{payment_type}', 'PaymentController@chequeDissapproved')->name('payment.cheque.dissaproved');
-
 Route::post('payment/cheque/verification', 'PaymentController@chequeApproved')->name('payment.cheque.verification');
-
 Route::get('payment/online/verification/{payment_type}', 'PaymentController@onlineDissapproved')->name('payment.online.dissaproved');
-
 Route::get('payment/bkash-salman/verification/{payment_type}', 'PaymentController@bkashSalmanDissapproved')->name('payment.bkash.salman.dissaproved');
-
 Route::get('payment/bkash-corporate/verification/{payment_type}', 'PaymentController@bkashCorporateDissapproved')->name('payment.bkash.corporate.dissaproved');
-
 Route::post('payment/online/verification', 'PaymentController@onlineApproved')->name('payment.online.verification');
-
 Route::post('payment/bkash-salman/verification', 'PaymentController@bkashSalmanApproved')->name('payment.bkash.salman.verification');
-
 Route::post('payment/bkash-corporate/verification', 'PaymentController@bkashCorporateApproved')->name('payment.bkash.corporate.verification');
-
 Route::get('payment/generate-invoice/{payment}', 'PaymentController@generateInvoice')->name('payment.generate.invoice');
-
 Route::get('payment/statement/account', 'PaymentController@statement')->name('payment.statement');
 Route::get('payment/show/statement/{payment_id}', 'PaymentController@showStatement')->name('payment.show.statement');
-
 Route::get('payment/incomes/expenses/approve/{income_expenes_id}/{approve}', 'PaymentController@recheck')->name('payment.recheck');
-
 Route::get('payment/bank/account', 'PaymentController@bankAccount')->name('payment.bank.account');
 Route::get('payment/account/detials/{account}', 'PaymentController@accountDetails')->name('payment.account.detials');
 Route::post('payment/account/transfer', 'PaymentController@transfer')->name('payment.account.transfer');
-
 Route::get('payment/create/incomes', 'PaymentController@createIncome')->name('payment.income');
 Route::post('payment/store/incomes', 'PaymentController@storeIncomesAndExpenses')->name('payment.store.income.and.expenses');
-
 Route::get('payment/create/expenses', 'PaymentController@createExpense')->name('payment.expense');
-
 Route::get('payment/incomes/expenses', 'PaymentController@showIncomesAndExpenses')->name('payment.show.income.and.expenses');
-
 Route::get('payment/advance/incomes', 'PaymentController@showAdvanceIncomes')->name('payment.show.advance.incomes');
-
 Route::post('update/advance/income/expense', 'PaymentController@updateAdvanceIncomeExpense')->name('payment.update.advance.income.expense');
-
 Route::get('payment/advance/expenses', 'PaymentController@showAdvanceExpenses')->name('payment.show.advance.expenses');
-
 Route::post('payment/update/incomes/expenses', 'PaymentController@updateIncomesAndExpenses')->name('payment.update.income.and.expenses');
 Route::post('payment/delete/incomes/expenses/', 'PaymentController@deleteIncomeAndExpenses')->name('payment.delete.income.and.expenses');
 Route::get('payment/clear/due/{payment}', 'PaymentController@clearDue')->name('payment.clear.due');
-
 Route::post('payment/types', 'PaymentController@types')->name('payment.types');
-Route::get('payment/acknowledgement/thank-you', function() {
-	return view('payments.acknowledgement');
-})->name('payment.acknowledgement');
+Route::view('payment/acknowledgement/thank-you', 'payments.acknowledgement')->name('payment.acknowledgement');
 Route::get('payment/structure/client/{payment_type_id}/{type}', 'PaymentController@structureClient')->name('payment.structure.client');
-
 Route::get('payment/income/pdf', 'PaymentController@generateIncomePDF')->name('payment.income.pdf');
 Route::get('payment/expense/pdf', 'PaymentController@generateExpensePDF')->name('payment.expense.pdf');
 Route::get('payment/income/expense/pdf', 'PaymentController@generateIncomeExpensePDF')->name('payment.income.expense.pdf');
-
-
 Route::get('payment/client/refund', 'PaymentController@clientRefund')->name('payment.client.refund');
 Route::get('payment/client/refund/history', 'PaymentController@clientRefundHistory')->name('payment.client.refund.history');
 Route::get('payment/client/refund/delete/{payment_id}', 'PaymentController@clientRefundDelete')->name('payment.client.refund.delete');
-
-
 Route::post('payment/store/client/refund', 'PaymentController@storeClientRefund')->name('payment.store.client.refund');
 Route::get('payment/client/dues', 'PaymentController@clientDues')->name('payment.client.dues');
 Route::get('payment/client/dues/detials/{payment_id}', 'PaymentController@clientDuesDetails')->name('payment.client.dues.details');
@@ -283,80 +239,71 @@ Route::post('payment/client/dues/payment/store', 'PaymentController@storeDuePaym
 Route::get('payment/client/dues/history', 'PaymentController@dueHistory')->name('payment.client.dues.history');
 Route::get('payment/client/dues/pdf/{payment_id}', 'PaymentController@generateDuePDF')->name('payment.client.dues.pdf');
 Route::get('payment/client/payment/recheck/{payment_id}', 'PaymentController@recheckPayment')->name('payment.client.payment.recheck');
-
-
-
 Route::get('payment/client/unverified/cheque', 'PaymentController@unverifiedCheques')->name('payment.client.unverified.cheques');
 Route::get('payment/client/online/payments', 'PaymentController@onlinePayments')->name('payment.client.online.payments');
 Route::get('payment/client/pay-gic/payments', 'PaymentController@payGICPayments')->name('payment.client.pay_gic.payments');
 Route::get('payment/client/pay-gic-ssl/payments', 'PaymentController@payGICSSLPayments')->name('payment.client.pay_gic_ssl.payments');
-
-
 Route::get('payment/client/unverified/bkash-salman', 'PaymentController@unverifiedBkashSalman')->name('payment.client.unverified.bkash_salman');
-
 Route::get('payment/client/unverified/bkash-corporate', 'PaymentController@unverifiedBkashCorporate')->name('payment.client.unverified.bkash_corporate');
-
-
-
-
-
 Route::get('payment/client/recheck/{payment_type_id}', 'PaymentController@recheckPaymentType')->name('payment.client.recheck.payment_type');
 Route::get('payment/client/recheck/types/list', 'PaymentController@recheckPaymentTypeList')->name('payment.client.recheck.types.list');
-
 Route::get('payment/client/edit/types/{payment_type_id}', 'PaymentController@editPaymentType')->name('payment.client.edit.types.list');
 Route::post('payment/client/update/types/', 'PaymentController@updatePaymentType')->name('payment.client.update.type');
 Route::post('payment/client/delete/reissue/', 'PaymentController@deleteAndReissue')->name('payment.client.delete.and.reissue');
-
 Route::post('payment/delete/payment', 'PaymentController@deletePayment')->name('payment.delete');
-
 Route::post('payment/update/cheque-info', 'PaymentController@updateChequeInfo')->name('payment.update.cheque.info');
 Route::post('payment/update/bkash-salman-info', 'PaymentController@updateBkashSalmanInfo')->name('payment.update.bkash.salman.info');
 Route::post('payment/update/bkash-corporate-info', 'PaymentController@updateBkashCorporateInfo')->name('payment.update.bkash.corporate.info');
 Route::post('payment/update/online-info', 'PaymentController@updateOnlineInfo')->name('payment.update.online.info');
-
 Route::get('payment/notes/{client_id}', 'PaymentController@paymentNotes')->name('payment.notes');
 Route::post('payment/store/notes', 'PaymentController@storePaymentNotes')->name('payment.store.notes');
 Route::post('payment/delete/note', 'PaymentController@deletePaymentNote')->name('payment.delete.note');
 Route::post('payment/edit/note', 'PaymentController@editPaymentNote')->name('payment.edit.note');
 Route::post('payment/update/note', 'PaymentController@updatePaymentNote')->name('payment.update.note');
-
-
 Route::get('getPaymentInfo', 'PaymentController@getPaymentInfo');
 Route::get('getClientPaymentId', 'PaymentController@getClientPaymentId');
-Route::get('getClientInfo', 'UserController@getClientInfo');
 Route::get('getChequeInfo', 'PaymentController@getChequeInfo');
 Route::get('getOnlineInfo', 'PaymentController@getOnlineInfo');
 Route::get('findNoteInfo', 'PaymentController@findNoteInfo');
 Route::get('findIncomeAndExpenses', 'PaymentController@findIncomeAndExpenses');
-Route::get('getReminderData', 'ReminderController@getReminderData');
 
 
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-
-Route::get('invoice/opening/{client_id}', 'InvoiceController@opening')->name('invoice.opening');
-
-
-
+Route::get('getClientInfo', 'UserController@getClientInfo');
 Route::get('myclients/{user_id}', 'UserController@myclients')->name('user.clients');
 Route::get('user/{user_id}', 'UserController@edit')->name('user.edit');
 Route::post('user/update', 'UserController@update')->name('user.update');
 
 
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Route::get('getReminderData', 'ReminderController@getReminderData');
+Route::post('reminders/delete', 'ReminderController@delete')->name('reminders.delete');
+
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Route::get('invoice/opening/{client_id}', 'InvoiceController@opening')->name('invoice.opening');
+
+
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 Route::get('step/delete/{step_id}', 'StepController@delete')->name('step.delete');
 
 
-
-Route::get('/', function () {
-    return view('welcome');
-})->name('main');
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
+Route::view('/', 'welcome')->name('main');
+Route::view('thank-you', 'file.acknowledgement')->name('thanks');
 
-Route::get('thank-you', function () {
-    	return view('file.acknowledgement');
-})->name('thanks');
+
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 Route::get('reports', 'ReportController@index')->name('reports.index');
@@ -365,32 +312,36 @@ Route::post('reports/monthly', 'ReportController@monthly')->name('reports.monthl
 Route::post('reports/our-current-clients', 'ReportController@ourCurrentClients')->name('reports.our_current_clients');
 
 
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 Route::resource('gcalendar', 'gCalendarController');
 Route::get('appointment/{client_id}', 'gCalendarController@setAppointment')->name('appointment.client');
 Route::get('oauth', 'gCalendarController@oauth')->name('oauthCallback');
 Route::get('email/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendEmail')->name('email');
 Route::get('sms/{rm_id}/{client_id}/{appointment_id}', 'gCalendarController@sendSMS')->name('sms');
 
+
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 Route::get('/clear-cache', function() {
     Artisan::call('cache:clear');
     return "Cache is cleared";
 });
 
-Route::post('reminders/delete', 'ReminderController@delete')->name('reminders.delete');
 
-// ------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 Route::get('salaries/set-employees', 'SalaryController@setEmployees')->name('salaries.set_employees');
 Route::get('salaries/set-variables', 'SalaryController@setVariables')->name('salaries.set_variables');
 Route::get('salaries/set-rms', 'SalaryController@setRMs')->name('salaries.set_rms');
 Route::post('salaries/store-employees', 'SalaryController@storeEmployees')->name('salaries.store_employees');
 
-// -------------------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 Route::post('data/users', 'TestController@getUsers')->name('dataProcessing');
-
-// Route::resource('ajax-crud', 'AjaxCrudController');
-
-Route::post('ajax-crud/update', 'AjaxCrudController@update')->name('ajax-crud.update');
-
-Route::get('ajax-crud/destroy/{id}', 'AjaxCrudController@destroy');
+Route::get('test', 'TestController@test')->name('test');

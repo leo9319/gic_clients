@@ -211,9 +211,14 @@ var filterByDate = function(column, startDate, endDate) {
                         @else
 
                         <td>
-                          <a href="{{ route('payment.recheck', [$transaction->id, 0]) }}" class="label label-success">Approve</a>
 
-                          <a href="{{ route('payment.recheck', [$transaction->id, -1]) }}" class="label label-danger">Disapprove</a>
+{{--                           <a href="{{ route('payment.recheck', [$transaction->id, 0]) }}" class="label label-success">Approve</a> --}}
+{{-- 
+                          <a href="{{ route('payment.recheck', [$transaction->id, -1]) }}" class="label label-danger">Disapprove</a> --}}
+
+                          <a id="{{ $transaction->id }}" class="label label-success consent">Approve</a>
+                          <a id="{{ $transaction->id }}" class="label label-danger consent">Disapprove</a>
+
                         </td>
 
                         @endif
@@ -247,11 +252,8 @@ var filterByDate = function(column, startDate, endDate) {
                       @if(Auth::user()->user_role == 'admin')
 
                       <td>
-                        {{-- <a href="{{ route('payment.delete.income.and.expenses', $transaction->id) }}" class="btn btn-danger btn-sm button2">Delete</a> --}}
 
-                        <a href="#" onclick="deleteTransaction(this)" id="{{ $transaction->id }}" class="btn btn-danger btn-sm button2">Delete</a>
-
-                        {{-- <button type="button" id class="btn btn-danger btn-sm button2" onclick="deleteEntry(this)">Delete</button> --}}
+                        <a href="JavaScript:Void(0);" onclick="deleteTransaction(this)" id="{{ $transaction->id }}" class="btn btn-danger btn-sm button2">Delete</a>
 
 
                       </td>
@@ -493,17 +495,88 @@ var filterByDate = function(column, startDate, endDate) {
   }
 
   function deleteTransaction(elem) {
-    var transaction_id = elem.id;
+    var transactionId = elem.id;
 
-    document.getElementById('income-expense-id').value = transaction_id;
+    // document.getElementById('income-expense-id').value = transaction_id;
 
-    $("#delete-transaction").modal();
+    var confirmation = confirm('Are you sure you want to delete this transaction?');
+
+    if(confirmation) {
+
+      $.ajax({
+        type: 'get',
+        url: '{!!URL::to('deleteTransaction')!!}',
+        data: {'transaction_id':transactionId},
+        success:function(status){
+
+          var parent = $("#"+transactionId).parent().parent();
+
+          parent.empty();
+
+          // alert('deleted');
+
+          // var parent = $("#"+transactionId).parent();
+
+          // parent.empty();
+
+          // parent.append(element);
+
+        },
+
+      });
+
+    }
+
+    // $("#delete-transaction").modal();
 
   }
 
-  function approve() {
-    alert('test');
-  }
+  $('.consent').on('click', function (e) {
+
+   var transactionId = $(this).attr("id");
+   var buttonText = $(this).text();
+   var status = -1;
+
+   if(buttonText == 'Approve') {
+    status = 0;
+   } else {
+    status = -1;
+   }
+
+   // alert(transactionId);
+
+   $.ajax({
+      type: 'get',
+      url: '{!!URL::to('updateTransactionConsent')!!}',
+      data: {'trasaction_id':transactionId, 'status':status},
+      success:function(status){
+
+        var parent = $("#"+transactionId).parent();
+
+        parent.empty();
+
+        if(status == 0) {
+
+          element = '<p class="text-success"><b>Approved</b></p>';
+
+        } else {
+
+          element = '<p class="text-danger"><b>Disapproved</b></p>';
+
+        }
+
+        parent.append(element);
+
+      },
+
+    });
+
+   // alert(ButtonText);
+
+   // $("#" + transactionId).text('Save');
+
+   // alert(transactionId); 
+  });  
 
 </script>
 

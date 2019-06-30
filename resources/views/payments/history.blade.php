@@ -1,5 +1,4 @@
 @extends('layouts.master')
-@section('url', $previous)
 @section('title', 'Payment History')
 @section('content')
 @section('header_scripts')

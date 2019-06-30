@@ -294,16 +294,16 @@
                            <span>Statement of Accounts</span></a>
                      </li>
 
-                     <li>
+{{--                      <li>
                         <a href="{{ route('payment.history') }}" class="">
                            <i class="fa fa-credit-card"></i>
                            <span>Client Payment History</span></a>
-                     </li>
+                     </li> --}}
 
                      <li>
                         <a href="{{ route('payment.history.beta') }}" class="">
                            <i class="fa fa-credit-card"></i>
-                           <span>Client Payment History (BETA)</span></a>
+                           <span>Client Payment History</span></a>
                      </li>
 
                      @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')

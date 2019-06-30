@@ -160,7 +160,7 @@
 				<h2>Payment Structure</h2>
 				<hr>
 
-				@foreach($payment_types as $index => $payment_type)
+				@forelse($payment_types as $index => $payment_type)
 					@if($payment_type->payment_type == 'cash')
 
 						<div class="form-group">
@@ -319,6 +319,7 @@
 						</div>
 
 						<input type="hidden" name="payment[{{ $index }}][bank_charge]" value={{ $payment_type->bank_charge }}>
+						<input type="hidden" name="payment[{{ $index }}][bkash_corporate_verified]" value={{ $payment_type->bkash_corporate_verified }}>
 
 						<hr>
 
@@ -353,6 +354,7 @@
 						</div>
 
 						<input type="hidden" name="payment[{{ $index }}][bank_charge]" value={{ $payment_type->bank_charge }}>
+						<input type="hidden" name="payment[{{ $index }}][bkash_salman_verified]" value={{ $payment_type->bkash_salman_verified }}>
 
 						<hr>
 
@@ -425,6 +427,7 @@
 
 
 						<input type="hidden" name="payment[{{ $index }}][bank_charge]" value={{ $payment_type->bank_charge }}>
+						<input type="hidden" name="payment[{{ $index }}][online_verified]" value={{ $payment_type->online_verified }}>
  
 
 					</div>
@@ -454,6 +457,7 @@
 					</div>
 
 					<input type="hidden" name="payment[{{ $index }}][bank_charge]" value={{ $payment_type->bank_charge }}>
+					<input type="hidden" name="payment[{{ $index }}][online_verified]" value={{ $payment_type->online_verified }}>
 
 					{{-- Pay GIC SSL --}}
 
@@ -482,11 +486,14 @@
 					</div>
 
 					<input type="hidden" name="payment[{{ $index }}][bank_charge]" value={{ $payment_type->bank_charge }}>
+					<input type="hidden" name="payment[{{ $index }}][online_verified]" value={{ $payment_type->online_verified }}>
 
 					@endif
 
+				@empty
 
-				@endforeach
+
+				@endforelse
 
 				<div class="form-group">
 					{{ Form::submit('Update', ['class'=>'btn btn-primary btn-block button2']) }}
@@ -506,110 +513,6 @@
 @section('footer_scripts')
 
 <script type="text/javascript">
-
-	function addPaymentOptions(elem) {
-
-		if (elem.value == 'card') {
-
-			var html = '<label>Card Type:</label> <select class="select2 form-control" name="payment[{{$index}}][card_type]" onchange="addCardCharge(this)"> <option value="visa">Visa</option> <option value="master">Master</option> <option value="amex">Amex</option> <option value="nexus">Nexus</option> <option value="other">Other</option> </select> <br> <div id="other-card-container"></div> <label>Banks Card:</label> <select class="select2 form-control" name="banks_card"> <option value="other">Other</option> <option value="city">City Bank</option> </select> <br> <label>Name on card:</label> <input type="text" name="payment[{{$index}}][name_on_card]" placeholder="Name on card" class="form-control" required> <br> <label>Card Number (Last 4 Digits Only):</label> <input type="text" name="payment[{{$index}}][card_number]" maxlength="4" placeholder="Card Number" class="form-control" required> <br> <label>Expiry Date:</label> <input type="text" name="payment[{{$index}}][expiry_date]" placeholder="Expiry Date" class="form-control"> <br> <label>Select Card/POS Machine:</label> <select class="select2 form-control" name="payment[{{$index}}][pos_machine]" onchange="addBankName(this)"> <option value="city">City</option> <option value="brac">BRAC</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="dbbl">DBBL</option> </select> <br> <label>Approval Code:</label> <input type="text" name="payment[{{$index}}][approval_code]" placeholder="Approval Code" class="form-control" required> <br>';
-
-			$('#payment-container').empty();
-        	$('#payment-container').append(html);
-
-		} else if (elem.value == 'cash') {
-
-			var html = '<label>Cash Deposited To:</label> <select class="select2 form-control" name="payment[{{$index}}][bank_name]"> <option value="scb">SCB</option> <option value="city">City Bank</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br>';
-
-			$('#payment-container').empty();
-			$('#payment-container').append(html);
-
-		} else if (elem.value == 'cheque') {
-
-			var html = '<label>Cheque Deposited To:</label> <select class="select2 form-control" name="payment[{{$index}}][bank_name]" onchange="addBankName(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <label>Cheque Number:</label> <input type="text" name="payment[{{$index}}][cheque_number]" placeholder="Cheque Number" class="form-control"> <br> ';
-
-			$('#payment-container').empty();
-			$('#payment-container').append(html);
-
-		} else if (elem.value == 'bkash_corporate') {
-
-			var html = '<label>GIC Deposit Bank Name:</label> <input type="text" name="payment[{{$index}}][bank_name]" placeholder="GIC Deposit Bank Name" class="form-control" value="scb" readonly> <br> <label>Phone Number</label> <input type="text" name="payment[{{$index}}][phone_number]" placeholder="Phone Number" class="form-control"> <br>';
-
-			$('#payment-container').empty();
-			$('#payment-container').append(html);
-
-		} else if (elem.value == 'bkash_salman') {
-
-			var html = '<label>GIC Deposit Bank Name:</label> <input type="text" name="payment[{{$index}}][bank_name]" placeholder="GIC Deposit Bank Name" class="form-control" value="salman bkash" readonly> <br> <label>Phone Number</label> <input type="text" name="payment[{{$index}}][phone_number]" placeholder="Phone Number" class="form-control"> <br>';
-
-			$('#payment-container').empty();
-			$('#payment-container').append(html);
-
-		} else if (elem.value == 'upay') {
-
-			var html = '<label>GIC Deposit Bank Name:</label> <select class="select2 form-control" name="payment[{{$index}}][bank_name]" onchange="addBankName(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <label>Phone Number</label> <input type="text" name="payment[{{$index}}][phone_number]" placeholder="Phone Number" class="form-control"> <br> ';
-
-			$('#payment-container').empty();
-			$('#payment-container').append(html);
-
-		} else if(elem.value == 'online') {
-
-			var html = '<label>Select Bank:</label> <select class="select2 form-control" name="payment[{{$index}}][bank_name]" onchange="addCardCharge(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select><br>';
-
-			$('#payment-container').empty();
-			$('#payment-container').append(html);
-
-		} else {
-
-			$('#payment-container').empty();
-
-		}
-	}
-	
-	function getSteps(elem) {
-
-		var program_id = elem.value;
-		var option = '';
-
-		$.ajax({
-			type: 'get',
-			url: '{!!URL::to('findProgramStep')!!}',
-			data: {'program_id':program_id},
-			success:function(data) {
-
-
-
-				for(var i = 0; i < data.length; i++) {
-
-					option += '<option value="'+data[i].id+'">'+data[i].step_name+'</option>';
-
-				}
-
-				document.getElementById('step-number').innerHTML = option;
-
-			},
-
-		});
-	}
-
-	function sumOfTotal() {
-		var openingFee = document.getElementById("file-opening-fee").value;
-		var embassyStudentFee = document.getElementById("embassy-student-fee").value;
-		var serviceSolicitorFee = document.getElementById("service-solicitor-fee").value;
-		var otherFee = document.getElementById("other-fee").value;
-
-		var totalAmount =  parseInt(openingFee) + parseInt(embassyStudentFee) + parseInt(serviceSolicitorFee) + parseInt(otherFee);
-
-		document.getElementById("total-amount").value = totalAmount;
-	}
-
-	$(document).ready(function() {
-		
-		$(".select2").select2({
-			placeholder: 'Select a value', 
-			allowClear: true
-		});
-		
-	});
 
 	$(function(){
 	  $(':input[type=number]').on('mousewheel',function(e){ $(this).blur(); });

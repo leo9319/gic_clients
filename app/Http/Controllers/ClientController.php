@@ -38,8 +38,8 @@ class ClientController extends Controller
     public function index()
     {
         $data['active_class'] = 'clients';
-        $data['clients'] = User::userRole('client')->get();
-        $data['counselors'] = User::userRole('counselor')->get();
+        $data['clients']      = User::userRole('client')->get();
+        $data['counselors']   = User::userRole('counselor')->get();
 
         return view('clients.index', $data);
     }
@@ -113,9 +113,9 @@ class ClientController extends Controller
     public function mytasks($step_id, $client_id)
     {
         $data['active_class'] = 'my-tasks';
-        $data['all_tasks'] = ClientTask::getClientTask($step_id, $client_id);
-        $data['step'] = Step::find($step_id);
-        $data['client'] = User::find($client_id);
+        $data['all_tasks']    = ClientTask::getClientTask($step_id, $client_id);
+        $data['step']         = Step::find($step_id);
+        $data['client']       = User::find($client_id);
 
         return view('clients.tasks', $data);
     }

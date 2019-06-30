@@ -38,7 +38,9 @@ class PaymentController extends Controller
     public function __construct() 
     {
         $this->middleware('auth');
+        $this->middleware('role:admin')->only('edit', 'destroy');
         $this->middleware('role:admin,accountant')->only('bankAccount', 'accountDetails', 'recheck', 'clientRefund');
+
     }
 
 
@@ -125,34 +127,34 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        $client_id = $request->session()->get('client_id');
-        $program_id = $request->session()->get('program_id');
-        $step_id = $request->session()->get('step_id');
-        $receipt_id = $request->session()->get('receipt_id');
-        $location = $request->session()->get('location');
-        $opening_fee = $request->session()->get('opening_fee');
-        $embassy_student_fee = $request->session()->get('embassy_student_fee');
+        $client_id             = $request->session()->get('client_id');
+        $program_id            = $request->session()->get('program_id');
+        $step_id               = $request->session()->get('step_id');
+        $receipt_id            = $request->session()->get('receipt_id');
+        $location              = $request->session()->get('location');
+        $opening_fee           = $request->session()->get('opening_fee');
+        $embassy_student_fee   = $request->session()->get('embassy_student_fee');
         $service_solicitor_fee = $request->session()->get('service_solicitor_fee');
-        $other = $request->session()->get('other');
-        $comments = $request->session()->get('comments');
-        $created_at = $request->session()->get('created_at');
+        $other                 = $request->session()->get('other');
+        $comments              = $request->session()->get('comments');
+        $created_at            = $request->session()->get('created_at');
 
         $payment = Payment::updateOrCreate(
             [
-                'client_id' => $client_id,
-                'program_id' => $program_id,
-                'step_id' => $step_id
+                'client_id'             => $client_id,
+                'program_id'            => $program_id,
+                'step_id'               => $step_id
             ],
             [
-                'receipt_id' => $receipt_id,
-                'location' => $location,
-                'opening_fee' => $opening_fee,
-                'embassy_student_fee' => $embassy_student_fee,
+                'receipt_id'            => $receipt_id,
+                'location'              => $location,
+                'opening_fee'           => $opening_fee,
+                'embassy_student_fee'   => $embassy_student_fee,
                 'service_solicitor_fee' => $service_solicitor_fee,
-                'other' => $other,
-                'created_by' => Auth::user()->id,
-                'comments' => $comments,
-                'created_at' => $created_at,
+                'other'                 => $other,
+                'created_by'            => Auth::user()->id,
+                'comments'              => $comments,
+                'created_at'            => $created_at,
             ]);
 
 
@@ -161,22 +163,22 @@ class PaymentController extends Controller
         $payment_id = $payment->id;
 
         for ($i=0; $i < $counter + 1; $i++) { 
-            $charge = 0;
-            $cheque_verified = 1;
-            $online_verified = 1;
-            $bkash_salman_verified = 1;
+            $charge                   = 0;
+            $cheque_verified          = 1;
+            $online_verified          = 1;
+            $bkash_salman_verified    = 1;
             $bkash_corporate_verified = 1;
-            $payment_type = Input::get('payment_type-' . $i);
-            $bank_deposited = Input::get('bank_name-' . $i);
-            $after_charge = 0;
+            $payment_type             = Input::get('payment_type-' . $i);
+            $bank_deposited           = Input::get('bank_name-' . $i);
+            $after_charge             = 0;
 
             if($payment_type == 'card') {
 
-                $POS_machine = Input::get('pos_machine-' . $i);
-                $city_bank = Input::get('city_bank-' . $i);
-                $card_type = Input::get('card_type-' . $i);
-                $charge = 0;
-                $bank_deposited = Input::get('bank_name-' . $i);
+                $POS_machine          = Input::get('pos_machine-' . $i);
+                $city_bank            = Input::get('city_bank-' . $i);
+                $card_type            = Input::get('card_type-' . $i);
+                $charge               = 0;
+                $bank_deposited       = Input::get('bank_name-' . $i);
 
                 switch ($POS_machine) {
 
@@ -265,26 +267,26 @@ class PaymentController extends Controller
             }
 
             PaymentType::create([
-                'payment_id' => $payment_id,
-                'payment_type' => $payment_type,
-                'card_type' => Input::get('card_type-' . $i),
-                'name_on_card' => Input::get('name_on_card-' . $i),
-                'card_number' => Input::get('card_number-' . $i),
-                'expiry_date' => Input::get('expiry_date-' . $i),
-                'pos_machine' => Input::get('pos_machine-' . $i),
-                'approval_code' => Input::get('approval_code-' . $i),
-                'phone_number' => Input::get('phone_number-' . $i),
-                'cheque_number' => Input::get('cheque_number-' . $i),
-                'bank_name' => $bank_deposited,
-                'cheque_verified' => $cheque_verified,
-                'online_verified' => $online_verified,
-                'bkash_salman_verified' => $bkash_salman_verified,
+                'payment_id'               => $payment_id,
+                'payment_type'             => $payment_type,
+                'card_type'                => Input::get('card_type-' . $i),
+                'name_on_card'             => Input::get('name_on_card-' . $i),
+                'card_number'              => Input::get('card_number-' . $i),
+                'expiry_date'              => Input::get('expiry_date-' . $i),
+                'pos_machine'              => Input::get('pos_machine-' . $i),
+                'approval_code'            => Input::get('approval_code-' . $i),
+                'phone_number'             => Input::get('phone_number-' . $i),
+                'cheque_number'            => Input::get('cheque_number-' . $i),
+                'bank_name'                => $bank_deposited,
+                'cheque_verified'          => $cheque_verified,
+                'online_verified'          => $online_verified,
+                'bkash_salman_verified'    => $bkash_salman_verified,
                 'bkash_corporate_verified' => $bkash_corporate_verified,
-                'bank_charge' => $charge,
-                'amount_paid' => Input::get('total_amount-' . $i),
-                'amount_received' => $after_charge,
-                'deposit_date' => Input::get('deposit_date-' . $i),
-                'created_at' => $created_at,
+                'bank_charge'              => $charge,
+                'amount_paid'              => Input::get('total_amount-' . $i),
+                'amount_received'          => $after_charge,
+                'deposit_date'             => Input::get('deposit_date-' . $i),
+                'created_at'               => $created_at,
             ]);
             
         }
@@ -294,10 +296,10 @@ class PaymentController extends Controller
         if($request->due_date) {
 
             $total_paid = PaymentType::where('payment_id', $payment->id)->sum('amount_paid');
-            $dues = $request->total_amount - $total_paid;
+            $dues       = $request->total_amount - $total_paid;
 
             Payment::find($payment_id)->update([
-                'dues' => $dues,
+                'dues'     => $dues,
                 'due_date' => Input::get('due_date'),
             ]);
         }
@@ -434,14 +436,14 @@ class PaymentController extends Controller
                                   ->get();
 
         $data['locations'] = [
-            'dhaka' => 'Dhaka', 
+            'dhaka'      => 'Dhaka', 
             'chittagong' => 'Chittagong',
-            'cox_bazar' => 'Cox\'s bazar',
-            'sylhet' => 'Sylhet',
-            'khulna' => 'Khulna',
-            'comilla' => 'Comilla',
-            'noakhali' => 'Noakhali',
-            'rajshahi' => 'Rajshahi',
+            'cox_bazar'  => 'Cox\'s bazar',
+            'sylhet'     => 'Sylhet',
+            'khulna'     => 'Khulna',
+            'comilla'    => 'Comilla',
+            'noakhali'   => 'Noakhali',
+            'rajshahi'   => 'Rajshahi',
          ];
 
         return view('payments.edit', $data);
@@ -498,6 +500,7 @@ class PaymentController extends Controller
             $approval_code =  isset($value['approval_code']) ? $value['approval_code'] : NULL;
             $cheque_number =  isset($value['cheque_number']) ? $value['cheque_number'] : NULL;
             $cheque_verified =  isset($value['cheque_verified']) ? $value['cheque_verified'] : 1;
+            $online_verified =  isset($value['online_verified']) ? $value['online_verified'] : 1;
             $bkash_salman_verified =  isset($value['bkash_salman_verified']) ? $value['bkash_salman_verified'] : 1;
             $bkash_corporate_verified =  isset($value['bkash_corporate_verified']) ? $value['bkash_corporate_verified'] : 1;
             $bank_name =  isset($value['bank_name']) ? $value['bank_name'] : NULL;
@@ -522,6 +525,7 @@ class PaymentController extends Controller
                 'phone_number' => $phone_number,
                 'cheque_number' => $cheque_number,
                 'bank_name' => $bank_name,
+                'online_verified' => $online_verified,
                 'cheque_verified' => $cheque_verified,
                 'bkash_salman_verified' => $bkash_salman_verified,
                 'bkash_corporate_verified' => $bkash_corporate_verified,
@@ -599,8 +603,36 @@ class PaymentController extends Controller
     public function paymentHistoryBeta()
     {
         $data['active_class'] = 'payments';
+        $user_role = Auth::user()->user_role;
 
-        return view('payments.admin.history_beta', $data);
+
+        if($user_role == 'rm') {
+
+            $rm_id = Auth::user()->id;
+            $client_ids = RmClient::where('rm_id', $rm_id)->pluck('client_id');
+            $data['payments'] = Payment::whereIn('client_id', $client_ids)->orderBy('created_at', 'desc')->get();
+
+            return view('payments.history', $data);
+
+        } else if($user_role == 'counselor'){
+
+            $counselor_id = Auth::user()->id;
+            $client_ids = CounsellorClient::where('counsellor_id', $counselor_id)->pluck('client_id');
+            $data['payments'] = Payment::whereIn('client_id', $client_ids)->orderBy('created_at', 'desc')->get();
+
+            return view('payments.history', $data);
+
+        } else if($user_role == 'accountant') {
+
+            return view('payments.accountant.history_beta', $data);
+
+        } else if($user_role == 'admin') {
+
+            return view('payments.admin.history_beta', $data);
+
+        }
+
+        return view('payments.history_beta', $data);
     }
 
     public function paymentHistoryData()
@@ -682,6 +714,12 @@ class PaymentController extends Controller
 
 
             return datatables()->of($payments)
+                    ->addColumn('comments', function($data){
+
+                        $button = $data->comments.' '.'<i id="'.$data->id.'" class="fa fa-edit" onclick="editNote(this)"></i></td> ';
+
+                        return $button;
+                    })
                     ->addColumn('action', function($data){
 
                         $button = '<a href="'.url('payment/generate-invoice/'.$data->id).'" class="btn btn-info btn-sm button2">Generate Invoice</a>';
@@ -706,7 +744,7 @@ class PaymentController extends Controller
 
                         return $button;
                     })
-                    ->rawColumns(['action', 'view_details', 'edit', 'delete'])
+                    ->rawColumns(['comments', 'action', 'view_details', 'edit', 'delete'])
                     ->make(true);
         }
         return view('ajax_index');
@@ -1444,20 +1482,20 @@ class PaymentController extends Controller
     public function showIncomesAndExpenses() 
     {
         $data['active_class'] = 'payment';
-        $data['previous'] = URL::to('/dashboard');
+        $data['previous']     = URL::to('/dashboard');
 
         $data['transactions'] = IncomeExpense::orderBy('recheck', 'DESC')->get();
 
         $data['bank_accounts'] = [
-            'cash' => 'Cash',
-            'scb' => 'SCB',
-            'city' => 'City Bank',
-            'dbbl' => 'DBBL',
-            'ebl' => 'EBL',
-            'ucb' => 'UCB',
-            'brac' => 'BRAC',
-            'agrani' => 'Agrani Bank',
-            'icb' => 'ICB',
+            'cash'           => 'Cash',
+            'scb'            => 'SCB',
+            'city'           => 'City Bank',
+            'dbbl'           => 'DBBL',
+            'ebl'            => 'EBL',
+            'ucb'            => 'UCB',
+            'brac'           => 'BRAC',
+            'agrani'         => 'Agrani Bank',
+            'icb'            => 'ICB',
             'salman account' => 'Salman Account',
             'kamran account' => 'Kamran Account'
          ];
@@ -2347,15 +2385,33 @@ class PaymentController extends Controller
 
     public function getClientDues(Request $request)
     {
-        $user           = User::find($request->client_id);
+        $user            = User::find($request->client_id);
 
-        $invoice_amount = $user->getTotalInvoiceAmount();
+        $invoice_amount  = $user->getTotalInvoiceAmount();
 
-        $amount_paid    = $user->getTotalVerifiedAmountPaid();
+        $amount_paid     = $user->getTotalVerifiedAmountPaid();
 
-        $dues           = $invoice_amount - $amount_paid;
+        $amount_refunded = $user->getTotalRefunds();
+
+        $dues            = $invoice_amount - $amount_paid - $amount_refunded;
 
         return $dues;
+    }
+
+    public function updateTransactionConsent(Request $request)
+    {
+        IncomeExpense::find($request->trasaction_id)->update(['recheck' => $request->status]);
+
+        $status = $request->status;
+
+        return $status;
+    }
+
+    public function deleteTransaction(Request $request)
+    {
+        IncomeExpense::find($request->transaction_id)->delete();
+
+        return 1;
     }
 
     public function array_sort_by_column(&$array, $column, $direction = SORT_ASC) {

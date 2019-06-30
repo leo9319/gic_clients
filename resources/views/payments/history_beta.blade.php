@@ -66,8 +66,6 @@
                   <th width="20%">Comments</th>
                   <th width="20%">Action</th>
                   <th width="20%">View Details</th>
-                  <th width="20%">Edit</th>
-                  <th width="20%">Delete</th>
               </tr>
           </thead>
       </table>
@@ -203,14 +201,6 @@
             }, {
                 data: 'view_details',
                 name: 'view_details',
-                orderable: false
-            }, {
-                data: 'edit',
-                name: 'edit',
-                orderable: false
-            }, {
-                data: 'delete',
-                name: 'delete',
                 orderable: false
             }, ]
         });

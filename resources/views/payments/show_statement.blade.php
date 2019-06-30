@@ -88,7 +88,8 @@
 	    <table class="table">
 	    
 	      <tr>
-	          <th>Program Name</th>
+	          <th>Date</th>
+            <th>Program Name</th>
 	          <th>Step Name</th>
 	          <th>Bank Name</th>
 	          <th>Amount Refunded</th>
@@ -97,7 +98,8 @@
 	      @foreach($refunds as $refund)
 
 	      <tr class="item-row">
-	       <td>{{ $refund->payment->programInfo->program_name }}</td>
+	       <td>{{ Carbon\Carbon::parse($refund->payment->programInfo->created_at)->format('d-M-y') }}</td>
+         <td>{{ $refund->payment->programInfo->program_name }}</td>
 	       <td>{{ $refund->payment->stepInfo->step_name }}</td>
 	       <td>{{ strtoupper($refund->bank_name) }}</td>
 	       <td>{{ number_format($refund->amount_paid) }}</td>

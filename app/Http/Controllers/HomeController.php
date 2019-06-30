@@ -416,4 +416,9 @@ class HomeController extends Controller
         return redirect()->back();
     }
 
+    public function activateMaintenanceMode()
+    {
+        touch(storage_path().'/framework/down');
+    }
+
 }

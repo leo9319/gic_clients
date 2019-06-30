@@ -93,6 +93,18 @@ class User extends Authenticatable
 
     }
 
+    public function getTotalRefunds()
+    {
+
+        $payment_ids = Payment::where('client_id', $this->id)->pluck('id');                            
+        $refunds     = PaymentType::whereIn('payment_id', $payment_ids)
+                                    ->where('refund_payment', '=', 1)
+                                    ->sum('amount_paid');
+
+        return $refunds;
+
+    }
+
     public function getTotalInvoiceAmount()
     {
         $all_payments = Payment::where('client_id', $this->id)->get();

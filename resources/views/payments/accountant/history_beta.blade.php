@@ -63,11 +63,9 @@
                   <th width="20%">Invoice Amount</th>
                   <th width="20%">Amount Paid</th>
                   <th width="20%">Due Amount</th>
-                  <th width="20%">Comments</th>
+                  <th width="20%">Notes</th>
                   <th width="20%">Action</th>
                   <th width="20%">View Details</th>
-                  <th width="20%">Edit</th>
-                  <th width="20%">Delete</th>
               </tr>
           </thead>
       </table>
@@ -100,8 +98,70 @@
   </div>
 </div>
 
+<div id="edit-note" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Notes</h4>
+      </div>
+      {{ Form::open(['route'=>'payment.update.note']) }}
+      <div class="modal-body">
+
+          {{-- Hidden Fields --}}
+
+            {{ Form::hidden('payment_id', null, ['id'=>'note-payment-id']) }}
+
+          {{-- End --}}
+        
+          <div class="form-group">
+
+            {{ Form::label('notes') }}
+            {{ Form::textarea('comments', null, ['class'=>'form-control', 'id'=>'notes']) }}
+            
+          </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-info">Update</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+      {{ Form::close() }}
+    </div>
+
+  </div>
+</div>
+
 
 @section('footer_scripts')
+
+<script type="text/javascript">
+  
+function editNote(elem) {
+  var payment_id = elem.id;
+
+  $.ajax({
+      type: 'get',
+      url: '{!!URL::to('getPaymentInfo')!!}',
+      data: {'payment_id':payment_id},
+      success:function(data){
+
+        document.getElementById('note-payment-id').value = payment_id;
+        document.getElementById('notes').value = data.comments;
+
+        $('#edit-note').modal();
+      },
+      error:function(){
+        alert('failed to execute the command');
+      }
+    });
+
+  
+}
+
+</script>
 
 <script>
     $(document).ready(function() {
@@ -203,14 +263,6 @@
             }, {
                 data: 'view_details',
                 name: 'view_details',
-                orderable: false
-            }, {
-                data: 'edit',
-                name: 'edit',
-                orderable: false
-            }, {
-                data: 'delete',
-                name: 'delete',
                 orderable: false
             }, ]
         });
