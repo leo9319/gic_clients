@@ -47,41 +47,47 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $data['previous'] = URL::to('/');
-        $client_id = Auth::user()->id; 
+        $data['active_class']               = 'dashboard';
+        $client_id                          = Auth::user()->id; 
+        $data['number_of_clients']          = User::userRole('client')->get()->count();
+        // $data['number_of_rms']              = User::userRole('rm')->get()->count();
+        $data['number_of_accountants']      = User::userRole('accountant')->get()->count();
+        $data['number_of_counsellor']       = User::userRole('counselor')->get()->count();
+        $data['todays_payments']            = Payment::whereDate('created_at', Carbon::today())->count();
+        $user_role                          = Auth::user()->user_role;
 
-        $data['active_class'] = 'dashboard';
-        $data['number_of_clients'] = User::userRole('client')->get()->count();
-        $data['number_of_rms'] = User::userRole('rm')->get()->count();
-        $data['number_of_accountants'] = User::userRole('accountant')->get()->count();
-        $data['number_of_counsellor'] = User::userRole('counselor')->get()->count();
+        if ($user_role == 'client') {
 
-        if (Auth::user()->user_role == 'client') {
+            $data['appointments']           = Appointment::where('client_id', $client_id)
+                                             ->where('app_date', '>=', Carbon::now()->format('Y-m-d'))
+                                             ->get();
 
-            $data['appointments'] = Appointment::where('client_id', $client_id)->where('app_date', '>=', Carbon::now()->format('Y-m-d'))->get();
-
-            $programs = ClientProgram::where('client_id', $client_id); 
-            $data['programs'] = $programs->get();
-            $data['program_count'] = $programs->count();
-            $data['rm_client_count'] = RmClient::where('client_id', $client_id)->count();
+            $programs                       = ClientProgram::where('client_id', $client_id); 
+            $data['programs']               = $programs->get();
+            $data['program_count']          = $programs->count();
+            $data['rm_client_count']        = RmClient::where('client_id', $client_id)->count();
             $data['counselor_client_count'] = CounsellorClient::where('client_id', $client_id)->count();
             $completion_array = [];
             
-            $client_program_steps = ClientProgram::where('client_id', $client_id)->pluck('steps', 'program_id')->toArray(); 
+            $client_program_steps           = ClientProgram::where('client_id', $client_id)
+                                              ->pluck('steps', 'program_id')
+                                              ->toArray(); 
 
             foreach ($client_program_steps as $program => $steps) {
 
                 foreach (json_decode($steps) as $step) {
-                    $all_task_count = 0;
+                    $all_task_count      = 0;
                     $complete_task_count = 0;
 
-                    $all_tasks =  ClientTask::where([
-                        'step_id' => $step,
+                    $all_tasks = ClientTask::where([
+                        'step_id'   => $step,
                         'client_id' => $client_id,
                     ]);
 
-                    $all_task_count +=  $all_tasks->count();
-                    $complete_task_count += $all_tasks->where('status', 'complete')->count();
+                    $all_task_count      += $all_tasks->count();
+                    $complete_task_count += $all_tasks
+                                            ->where('status', 'complete')
+                                            ->count();
                 }
 
                 if($all_task_count != 0) {
@@ -89,42 +95,52 @@ class HomeController extends Controller
                 } else {
                     $completion_array[$program] = 0;
                 }
-
                 
             }
 
-            $data['program_progresses'] = $completion_array;
-            $client_all_tasks = ClientTask::where('client_id', $client_id);
-            $data['client_tasks'] = $client_all_tasks->where('status', '!=', 'incomplete')->limit(5)->get();
-            $data['client_incomplete_tasks'] = ClientTask::where('client_id', $client_id)->where('status', '=', 'incomplete')->limit(5)->get();
-            $data['task_count'] = $client_all_tasks->count();
+            $data['program_progresses']      = $completion_array;
+            $client_all_tasks                = ClientTask::where('client_id', $client_id);
+
+            $data['client_tasks']            = $client_all_tasks
+                                               ->where('status', '!=', 'incomplete')
+                                               ->limit(5)
+                                               ->get();
+
+            $data['client_incomplete_tasks'] = ClientTask::where('client_id', $client_id)
+                                               ->where('status', '=', 'incomplete')
+                                               ->limit(5)
+                                               ->get();
+
+            $data['task_count']              = $client_all_tasks
+                                               ->count();
 
             return view('dashboard.client', $data);
         }
 
-        elseif(Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm') {
+        elseif($user_role == 'counselor' || $user_role == 'rm') {
 
-            $user_id = Auth::user()->id;
-            $todays_date = Carbon::now();
-            $data['appointments'] = Appointment::where([
+            $user_id                  = Auth::user()->id;
+            $todays_date              = Carbon::now();
+    
+            $data['appointments']     = Appointment::where([
                                         'appointer_id' => $user_id,
-                                        'app_date' => $todays_date->format('y-m-d')
+                                        'app_date'     => $todays_date->format('y-m-d')
                                     ])->get();
             
             $target = $data['target'] = Target::getUserTarget($user_id);
 
-            if (Auth::user()->user_role == 'counselor') {
+            if ($user_role == 'counselor') {
 
                 $data['files_opened_this_month'] = CounsellorClient::fileOpenedThisMonth($user_id);
-                $data['total_files_opened'] = CounsellorClient::totalFilesOpened($user_id);
-                $data['department_target'] = DepartmentTarget::getCurrentMonthTarget('counseling');
+                $data['total_files_opened']      = CounsellorClient::totalFilesOpened($user_id);
+                $data['department_target']       = DepartmentTarget::getCurrentMonthTarget('counseling');
 
             }
             else {
 
                 $data['files_opened_this_month'] = RmClient::fileOpenedThisMonth($user_id);
-                $data['total_files_opened'] = RmClient::totalFilesOpened($user_id); 
-                $data['department_target'] = DepartmentTarget::getCurrentMonthTarget('processing');
+                $data['total_files_opened']      = RmClient::totalFilesOpened($user_id); 
+                $data['department_target']       = DepartmentTarget::getCurrentMonthTarget('processing');
 
             }
 
@@ -132,11 +148,22 @@ class HomeController extends Controller
         }
         
         else {
-            $data['recent_clients'] = Payment::orderBy('created_at', 'desc')->limit(5)->get();
-            $data['appointments'] = Appointment::limit(5)->where('app_date', '>', Carbon::now())->get();
-            $data['targets'] = Target::limit(5)->orderBy('month_year', 'asc')->get();
-            $data['payments'] = Payment::latest('created_at')->limit(5)->get();
-            $data['registered_today'] = User::whereDate('created_at', Carbon::today())->count();
+
+           $data['recent_clients']               = Payment::leftJoin('steps', 'payments.step_id', '=', 'steps.id')
+                                                   ->where('steps.order', 1)
+                                                   ->latest('payments.created_at')
+                                                   ->limit(5)
+                                                   ->get();
+
+            $data['appointments']                = Appointment::limit(5)->where('app_date', '>', Carbon::now())->get();
+
+            $data['targets']                     = Target::limit(5)
+                                                   ->orderBy('achieved', 'desc')
+                                                   ->whereMonth('created_at', '=', Carbon::now()->month)
+                                                   ->get();
+
+            $data['payments']                    = Payment::latest('created_at')->limit(5)->get();
+            $data['registered_today']            = User::whereDate('created_at', Carbon::today())->count();
 
             return view('dashboard.admin', $data);
         }

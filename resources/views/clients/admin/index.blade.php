@@ -58,6 +58,7 @@
                   <th>Email</th>
                   <th>Status</th>
                   <th>Action</th>
+                  <th>Action</th>
                </tr>
             </thead>
             <tbody>
@@ -71,6 +72,13 @@
                   <td>
                      <a href="{{ route('client.action', $client->id) }}" class="btn btn-outline-warning button2">View Actions</a>
                   </td>
+                  <td>
+
+                    <a href="{{ route('client.edit.ind', $client->id) }}" type="button" class="btn btn-secondary btn-sm"><span class="fa fa-edit fa-xs"></span></a>
+
+                    <button type="button" class="btn btn-danger btn-sm" id="{{ $client->id }}" onclick="deleteClient(this)"><span class="fa fa-trash fa-xs"></span></button>
+
+                  </td>
                </tr>
                @endforeach
             </tbody>
@@ -81,6 +89,7 @@
                   <th>Phone</th>
                   <th>Email</th>
                   <th>Status</th>
+                  <th>Action</th>
                   <th>Action</th>
                </tr>
             </tfoot>
@@ -141,6 +150,31 @@
 {!! Form::close() !!} 
 
 
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Warning!</h4>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this client?</p>
+        {{ Form::open(['route' => 'client.destroy']) }}
+
+          {{ Form::hidden('client_id', null, ['id'=>'client-id']) }}
+        
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-default">Yes</button>
+        {{ Form::close() }}
+        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 @endsection
 
 
@@ -157,5 +191,14 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/select/1.2.7/js/dataTables.select.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script>
+
+<script type="text/javascript">
+  
+function deleteClient(elem){
+  document.getElementById('client-id').value = elem.id
+  $('#myModal').modal();
+}
+
+</script>
 
 @endsection

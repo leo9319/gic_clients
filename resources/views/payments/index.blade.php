@@ -46,91 +46,120 @@
 
 		<div class="panel-footer">
 
-			{{-- {{ Form::open(['autocomplete = off']) }} --}}
 			{{ Form::open(['route'=>'payment.types']) }}
 
-			<label>Date:</label>
-			<input type="text" placeholder="Date" name="date" id="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}">
+			<div class="form-group">
 
-			<br>
+				<label>Date:</label>
 
-			<label>Location:</label>
-			{!! Form::select('location', $locations, null, ['class' => 'form-control']) !!}
-			<br>
-			
+				<input type="text" placeholder="Date" name="date" id="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}">
+				
+			</div>
 
-			<label>Client ID:</label>
+			<div class="form-group">
 
-			<select class="select2 form-control" name="client_code" onchange="checkClientInfo(this)">
+				<label>Location:</label>
 
-				<option value="0">No Client Selected</option>
+				{!! Form::select('location', $locations, null, ['class' => 'form-control']) !!}
 
-				@foreach($clients as $client)
+			</div>
 
-					<option value="{{ $client->id }}">{{ $client->client_code }}</option>
+			<div class="form-group">
 
-				@endforeach
+				<label>Client ID:</label>
 
-			</select>
+				<select class="select2 form-control" name="client_code" onchange="checkClientInfo(this)">
 
-			<br><br>
+					<option value="0">No Client Selected</option>
 
-			<label>Choose Client:</label>
+					@foreach($clients as $client)
 
-			<select class="select2 form-control" name="client_id" id="client-name" onchange="checkClientProgram(this)">
+						<option value="{{ $client->id }}">{{ $client->client_code }}</option>
 
-				<option value="0">No Client Selected</option>
+					@endforeach
 
-			</select>
+				</select>
 
-			<br><br>
+			</div>
 
-			<label>Select Program:</label>
+			<div class="form-group">
 
-			<select class="select2 form-control" name="program_id" id="programs" onchange="checkProgramStep(this)">
+				<label>Choose Client:</label>
 
-			</select>
+				<select class="select2 form-control" name="client_id" id="client-name" onchange="checkClientProgram(this)">
 
-			<br><br>
+					<option value="0">No Client Selected</option>
 
-			<label>Select Step:</label>
+				</select>
 
-			<select class="select2 form-control" name="step_id" id="step-number">
+			</div>
 
-			</select>
+			<div class="form-group">
 
-			<br><br>
+				<label>Select Program:</label>
 
-			<label>Initial Assessment fee:</label>
+				<select class="select2 form-control" name="program_id" id="programs" onchange="checkProgramStep(this)">
 
-			<input type="number" id="file-opening-fee" class="form-control" placeholder="Initial Assessment fee" name="opening_fee" value="0" onkeyup="sumOfTotal()">
+				</select>
 
-			<br>
+			</div>
 
-			<label>Lawyer Fees/ Service Charges:</label>
 
-			<input type="number" id="embassy-student-fee" class="form-control" placeholder="Embassy/Student fee" onkeyup="sumOfTotal()"  value="0" name="embassy_student_fee">
+			<div class="form-group">
 
-			<br>
+				<label>Select Step:</label>
 
-			<label>Government / Third party fees:</label>
+				<select class="select2 form-control" name="step_id" id="step-number">
 
-			<input type="number" id="service-solicitor-fee" class="form-control" placeholder="Service / Solicitor Charge" name="service_solicitor_fee"  value="0" onkeyup="sumOfTotal()">
+				</select>
 
-			<br>
+			</div>
 
-			<label>Other fee:</label>
+			<div class="form-group">
 
-			<input type="number" id="other-fee" class="form-control" placeholder="Other Fee" name="other"  value="0" onkeyup="sumOfTotal()">
+				<label>Initial Assessment fee:</label>
 
-			<br>
+				<input type="number" id="file-opening-fee" class="form-control" placeholder="Initial Assessment fee" name="opening_fee" onkeyup="sumOfTotal()">
 
-			<label>Notes:</label>
-			<textarea class="form-control" name="comments"></textarea>
+			</div>
 
-			<br>
+			<div class="form-group">
 
-			<input id="proceed-to-payment" class="btn btn-primary btn-block button2" type="submit" name="" value="Proceed to Payment">
+				<label>Lawyer Fees/ Service Charges:</label>
+
+				<input type="number" id="embassy-student-fee" class="form-control" placeholder="Embassy/Student fee" onkeyup="sumOfTotal()" name="embassy_student_fee">
+
+			</div>
+
+			<div class="form-group">
+
+				<label>Government / Third party fees:</label>
+
+				<input type="number" id="service-solicitor-fee" class="form-control" placeholder="Service / Solicitor Charge" name="service_solicitor_fee" onkeyup="sumOfTotal()">
+
+			</div>
+
+			<div class="form-group">
+
+				<label>Other fee:</label>
+
+				<input type="number" id="other-fee" class="form-control" placeholder="Other Fee" name="other" onkeyup="sumOfTotal()">
+
+			</div>
+
+			<div class="form-group">
+
+				<label>Notes:</label>
+				
+				<textarea class="form-control" name="comments"></textarea>
+
+			</div>
+
+			<div class="form-group">
+
+				<input id="proceed-to-payment" class="btn btn-primary btn-block button2" type="submit" name="" value="Proceed to Payment">
+
+			</div>
 
 			{{ Form::close() }}
 

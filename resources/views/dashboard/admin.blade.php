@@ -1,9 +1,5 @@
 @extends('layouts.master')
-
-@section('url', $previous)
-
 @section('title', 'Dashboard')
-
 @section('content')
 
 <div class="container-fluid">
@@ -11,8 +7,6 @@
    <div class="panel panel-headline">
 
       <div class="panel-heading">
-
-         {{-- <span class="h3">Overview | </span><span>{{ Carbon\Carbon::now()->format('jS F, Y') }}</span> --}}
 
          <h3 class="panel-title">Overview</h3>
 
@@ -41,7 +35,7 @@
 
             </div>
 
-            <div class="col-md-3">
+{{--             <div class="col-md-3">
 
                <div class="metric">
 
@@ -51,6 +45,23 @@
 
                      <span class="number">{{ $number_of_rms }}</span>
                      <span class="title">RMs</span>
+
+                  </p>
+
+               </div>
+
+            </div> --}}
+
+            <div class="col-md-3">
+
+               <div class="metric">
+
+                  <span class="icon"><i class="fa fa-sitemap"></i></span>
+
+                  <p>
+
+                     <span class="number">{{ $todays_payments }}</span>
+                     <span class="title">Today's Payments</span>
 
                   </p>
 
@@ -224,10 +235,9 @@
                   <thead>
 
                      <tr>
-
+                        <th>Date Opened</th>
                         <th>Customer ID.</th>
                         <th>Name</th>
-                        <th>Date Opened</th>
                         <th>View Profile</th>
 
                      </tr>
@@ -239,10 +249,10 @@
                      @foreach($recent_clients as $index => $recent_client)
 
                      <tr>
-
+   
+                        <td>{{ Carbon\Carbon::parse($recent_client->userInfo->created_at ?? '00-00-00')->format('d-M-Y') ?? 'N/A' }}</td>
                         <td>{{ $recent_client->userInfo->client_code ?? 'Client Removed' }}</td>
                         <td>{{ $recent_client->userInfo->name ?? 'Client Removed' }}</td>
-                        <td>{{ Carbon\Carbon::parse($recent_client->userInfo->created_at ?? '00-00-00')->format('d-M-Y') ?? 'N/A' }}</td>
                         <td>
                            <a href="{{ route('client.profile', $recent_client->client_id) }}"><span class="label label-primary">VIEW PROFILE</span></a>
                         </td>

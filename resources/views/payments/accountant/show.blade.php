@@ -173,7 +173,6 @@
       <th><b>Bank Charge</b></th>
       <th><b>Amount Received</b></th>
       <th><b>Action</b></th>
-      <th><b>Action</b></th>
       <th><b>Status</b></th>
     </tr>
   </thead>
@@ -188,10 +187,6 @@
 
         <a  href="{{ route('payment.structure.client', [$payment_type->id, $payment_type->payment_type]) }}" class="btn btn-info btn-sm">View Details</a>
 
-      </th>
-
-      <th>
-        <a href="{{ route('payment.client.recheck.payment_type', $payment_type->id) }}" class="btn btn-danger btn-sm">Recheck</a>
       </th>
 
       <th>

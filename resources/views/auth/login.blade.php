@@ -20,7 +20,11 @@
       <div class="login">
           <img src="img/GIC-Logo.png" height="80">
       </div>
-      <div class="eula">By logging in you agree to the ridiculously long terms that you didn't bother to read</div>
+      <div class="eula">
+        <p>By logging in you agree to the ridiculously long terms that you didn't bother to read</p>
+        <a href="{{ route('password.request') }}" id="forgot-password">Forgot Your Password?</a>
+      </div>
+
     </div>
     <div class="right">
       <svg viewBox="0 0 320 300">

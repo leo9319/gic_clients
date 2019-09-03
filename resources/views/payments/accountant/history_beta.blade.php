@@ -239,7 +239,8 @@ function editNote(elem) {
                 data: 'invoice_amount',
                 name: 'invoice_amount',
                 render: function(data) {
-                  return data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                  // return data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                  return data;
                 }
             }, {
                 data: 'amount_paid',

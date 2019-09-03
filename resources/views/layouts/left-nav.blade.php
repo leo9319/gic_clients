@@ -319,7 +319,7 @@
 
                      @endif
 
-                     @if(Auth::user()->user_role == 'accountant')
+                     @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
 
                      <li>
                         <a href="{{ route('payment.index') }}" class="">
@@ -420,7 +420,8 @@
 
             @endif
 
-            @if(Auth::user()->user_role == 'admin')
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant'|| Auth::user()->user_role == 'backend')
+            
             <li>
                <a href="{{ route('reports.index') }}" class="{{ $active_class == 'reports' ? 'active' : '' }}">
                   <i class="fa fa-folder-open"></i>
@@ -428,6 +429,7 @@
             </li>
 
             @endif
+
 
             @if (Auth::user()->user_role == 'admin')
 

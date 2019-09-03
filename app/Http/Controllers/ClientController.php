@@ -41,7 +41,21 @@ class ClientController extends Controller
         $data['clients']      = User::userRole('client')->get();
         $data['counselors']   = User::userRole('counselor')->get();
 
-        return view('clients.index', $data);
+        if(Auth::user()->user_role == 'admin') {
+
+            return view('clients.admin.index', $data);
+
+        } else if(Auth::user()->user_role == 'backend') {
+
+            return view('clients.backend.index', $data);
+
+        } else {
+
+            return view('clients.index', $data);
+
+        }
+
+        
     }
 
     /**
@@ -123,9 +137,9 @@ class ClientController extends Controller
     public function spousetasks($step_id, $client_id)
     {
         $data['active_class'] = 'my-tasks';
-        $data['all_tasks'] = SpouseTask::getSpouseTask($step_id, $client_id);
-        $data['step'] = Step::find($step_id);
-        $data['client'] = User::find($client_id);
+        $data['all_tasks']    = SpouseTask::getSpouseTask($step_id, $client_id);
+        $data['step']         = Step::find($step_id);
+        $data['client']       = User::find($client_id);
 
         return view('clients.spouse_tasks', $data);
     }
@@ -133,22 +147,22 @@ class ClientController extends Controller
     public function storeIndividualTask(Request $request, $step_id, $client_id)
     {
         Task::create([
-            'task_name'=> $request->task_name,
-            'form_name'=> $request->form_name,
-            'file_upload'=> $request->file_upload
+            'task_name'   => $request->task_name,
+            'form_name'   => $request->form_name,
+            'file_upload' => $request->file_upload
         ]);
 
         $task = Task::where([
-            'task_name'=> $request->task_name,
-            'form_name'=> $request->form_name,
-            'file_upload'=> $request->file_upload,
+            'task_name'   => $request->task_name,
+            'form_name'   => $request->form_name,
+            'file_upload' => $request->file_upload,
         ])->first();
 
         ClientTask::create([
-            'client_id' => $client_id,
-            'step_id' => $step_id,
-            'task_id' => $task->id,
-            'deadline' => $request->deadline,
+            'client_id'   => $client_id,
+            'step_id'     => $step_id,
+            'task_id'     => $task->id,
+            'deadline'    => $request->deadline,
         ]);
 
         return redirect()->back();
@@ -157,22 +171,22 @@ class ClientController extends Controller
     public function storeSpouseIndividualTask(Request $request, $step_id, $client_id)
     {
         Task::create([
-            'task_name'=> $request->task_name,
-            'form_name'=> $request->form_name,
-            'file_upload'=> $request->file_upload
+            'task_name'   => $request->task_name,
+            'form_name'   => $request->form_name,
+            'file_upload' => $request->file_upload
         ]);
 
         $task = Task::where([
-            'task_name'=> $request->task_name,
-            'form_name'=> $request->form_name,
-            'file_upload'=> $request->file_upload,
+            'task_name'   => $request->task_name,
+            'form_name'   => $request->form_name,
+            'file_upload' => $request->file_upload,
         ])->first();
 
         SpouseTask::create([
-            'client_id' => $client_id,
-            'step_id' => $step_id,
-            'task_id' => $task->id,
-            'deadline' => $request->deadline,
+            'client_id'   => $client_id,
+            'step_id'     => $step_id,
+            'task_id'     => $task->id,
+            'deadline'    => $request->deadline,
         ]);
 
         return redirect()->back();
@@ -180,11 +194,11 @@ class ClientController extends Controller
 
     public function mySteps($program_id, $client_id)
     {
-        $data['active_class'] = 'my-tasks';
+        $data['active_class']   = 'my-tasks';
         $data['assigned_steps'] = ClientProgram::assignedSteps($program_id, $client_id);
-        $data['client'] = User::find($client_id);
-        $data['steps'] = Step::getProgramAllStep($program_id);
-        $data['program'] = Program::find($program_id);
+        $data['client']         = User::find($client_id);
+        $data['steps']          = Step::getProgramAllStep($program_id);
+        $data['program']        = Program::find($program_id);
 
         return view('clients.steps', $data);
 
@@ -192,11 +206,11 @@ class ClientController extends Controller
 
     public function spouseSteps($program_id, $client_id)
     {
-        $data['active_class'] = 'my-tasks';
+        $data['active_class']   = 'my-tasks';
         $data['assigned_steps'] = ClientProgram::assignedSteps($program_id, $client_id);
-        $data['client'] = User::find($client_id);
-        $data['steps'] = Step::getProgramAllStep($program_id);
-        $data['program'] = Program::find($program_id);
+        $data['client']         = User::find($client_id);
+        $data['steps']          = Step::getProgramAllStep($program_id);
+        $data['program']        = Program::find($program_id);
 
         return view('clients.spouse_steps', $data);
 
@@ -204,8 +218,8 @@ class ClientController extends Controller
 
     public function storeSteps(Request $request, $program_id, $client_id)
     {
-        $step_array = [];
-        $step_id = (integer)$request->step_id;
+        $step_array      = [];
+        $step_id         = (integer)$request->step_id;
         $client_programs = ClientProgram::assignedSteps($program_id, $client_id);
 
         if ($client_programs->count() > 0) {
@@ -220,29 +234,33 @@ class ClientController extends Controller
 
         ClientProgram::updateOrCreate(
             ['client_id' => $client_id, 'program_id' => $program_id],
-            ['steps' => json_encode($step_array)]
+            ['steps'     => json_encode($step_array)]
         );
 
         $program_tasks = Task::getUserTasks($step_id, 'client');
 
         foreach ($program_tasks as $program_task) {
+
             ClientTask::updateOrCreate(
-                ['client_id' => $client_id, 'step_id' => $step_id, 'task_id' => $program_task->id],
+                [
+                    'client_id' => $client_id, 
+                    'step_id'   => $step_id, 
+                    'task_id'   => $program_task->id],
                 [
                     'client_id' => $client_id,
-                    'step_id' => $step_id,
-                    'task_id' => $program_task->id,
-                    'deadline' => Carbon::now()->addDays($program_task->duration),
+                    'step_id'   => $step_id,
+                    'task_id'   => $program_task->id,
+                    'deadline'  => Carbon::now()->addDays($program_task->duration),
                 ]
             );
         }
 
         
-        $all_rms = RmClient::getAssignedRms($client_id);
+        $all_rms        = RmClient::getAssignedRms($client_id);
         $all_counselors = CounsellorClient::assignedCounselor($client_id);
 
         $program_tasks_for_rm = Task::where([
-            'step_id' => $step_id,
+            'step_id'     => $step_id,
             'assigned_to' => 'rm',
         ])->get();
 
@@ -251,17 +269,17 @@ class ClientController extends Controller
                 CounselorRmTask::updateOrCreate(
                     [
                         'client_id' => $client_id,
-                        'user_id' => $rm->rm_id,
-                        'step_id' => $step_id,
-                        'task_id' => $program_task_for_rm->id,
+                        'user_id'   => $rm->rm_id,
+                        'step_id'   => $step_id,
+                        'task_id'   => $program_task_for_rm->id,
                     ],
                     [
                         'client_id' => $client_id,
-                        'user_id' => $rm->rm_id,
-                        'step_id' => $step_id,
-                        'task_id' => $program_task_for_rm->id,
-                        'deadline' => Carbon::now()->addDays($program_task_for_rm->duration),
-                        'priority' => $program_task_for_rm->priority,
+                        'user_id'   => $rm->rm_id,
+                        'step_id'   => $step_id,
+                        'task_id'   => $program_task_for_rm->id,
+                        'deadline'  => Carbon::now()->addDays($program_task_for_rm->duration),
+                        'priority'  => $program_task_for_rm->priority,
                 ]   );
             }
         } 
@@ -276,17 +294,17 @@ class ClientController extends Controller
                 CounselorRmTask::updateOrCreate(
                     [
                         'client_id' => $client_id,
-                        'user_id' => $counselor->counsellor_id,
-                        'step_id' => $step_id,
-                        'task_id' => $program_task_for_counselor->id,
+                        'user_id'   => $counselor->counsellor_id,
+                        'step_id'   => $step_id,
+                        'task_id'   => $program_task_for_counselor->id,
                     ],
                     [
                         'client_id' => $client_id,
-                        'user_id' => $counselor->counsellor_id,
-                        'step_id' => $step_id,
-                        'task_id' => $program_task_for_counselor->id,
-                        'deadline' => Carbon::now()->addDays($program_task_for_counselor->duration),
-                        'priority' => $program_task_for_counselor->priority,
+                        'user_id'   => $counselor->counsellor_id,
+                        'step_id'   => $step_id,
+                        'task_id'   => $program_task_for_counselor->id,
+                        'deadline'  => Carbon::now()->addDays($program_task_for_counselor->duration),
+                        'priority'  => $program_task_for_counselor->priority,
                     ]);
             }
         }
@@ -298,10 +316,10 @@ class ClientController extends Controller
     public function myPrograms($client_id)
     {
         $data['active_class'] = 'my-tasks';
-        $data['client'] = User::where('id', $client_id)->first();
-        $data['programs'] = ClientProgram::programs($client_id);
+        $data['client']       = User::where('id', $client_id)->first();
+        $data['programs']     = ClientProgram::programs($client_id);
         $data['all_programs'] = Program::all();
-        $user_role = Auth::user()->user_role;
+        $user_role            = Auth::user()->user_role;
 
         if($user_role == 'admin') { 
             return view('clients.admin.myprograms', $data); 
@@ -320,8 +338,8 @@ class ClientController extends Controller
     public function spousePrograms($client_id)
     {
         $data['active_class'] = 'spouse';
-        $data['programs'] = ClientProgram::programs($client_id);
-        $data['client'] = User::find($client_id);
+        $data['programs']     = ClientProgram::programs($client_id);
+        $data['client']       = User::find($client_id);
         $data['all_programs'] = Program::all();
 
         $spouse = ClientFileInfo::where('client_id', $client_id)->first();
@@ -346,8 +364,12 @@ class ClientController extends Controller
         $step = Step::getProgramFirstStep($request->program_id);
 
         ClientProgram::updateOrCreate(
-            ['client_id' => $client_id, 'program_id' => $request->program_id],
-            ['steps' => json_encode(array($step->id))]
+            [
+                'client_id'  => $client_id, 
+                'program_id' => $request->program_id],
+            [
+                'steps'      => json_encode(array($step->id))
+            ]
         );
 
         // // Just assigning the program
@@ -361,10 +383,9 @@ class ClientController extends Controller
 
     public function profile($client_id)
     {
-        $data['active_class'] = 'rms';
-        $data['client'] = User::find($client_id);
-        $data['client_programs'] = ClientProgram::where('client_id', $client_id)->get();
-
+        $data['active_class']       = 'rms';
+        $data['client']             = User::find($client_id);
+        $data['client_programs']    = ClientProgram::where('client_id', $client_id)->get();
         $data['program_progresses'] = $this->clientProgramProgress($client_id);
 
         // Time to get the appointments:
@@ -408,12 +429,10 @@ class ClientController extends Controller
 
         }
 
-        
-
         krsort($timeline);
 
         $data['timelines'] = $timeline;
-        $data['previous'] = url()->previous();
+        $data['previous']  = url()->previous();
 
         return view('profile.index', $data);
     }
@@ -422,15 +441,15 @@ class ClientController extends Controller
     {
         if ($request->check_all) {
             DB::table('client_group_tasks')->where([
-                    'client_id' => $client_id,
+                    'client_id'  => $client_id,
                     'program_id' => $program_id
-            ])->update(['status'=>'complete']);
+            ])->update(['status' =>'complete']);
         } 
         else {
             DB::table('client_group_tasks')->where([
-                    'client_id' => $client_id,
+                    'client_id'  => $client_id,
                     'program_id' => $program_id
-            ])->update(['status'=>'pending']);
+            ])->update(['status' =>'pending']);
         }
 
         return redirect()->back();
@@ -448,10 +467,10 @@ class ClientController extends Controller
 
     public function assignCounsellor($client_id)
     {
-        $data['active_class'] = 'clients';
+        $data['active_class']        = 'clients';
         $data['assigned_councelors'] = CounsellorClient::where('client_id', $client_id)->get();
-        $data['client'] = User::find($client_id);
-        $data['counselors'] = User::where('user_role', 'counselor')->get();
+        $data['client']              = User::find($client_id);
+        $data['counselors']          = User::where('user_role', 'counselor')->get();
  
         return view('clients.assign_councellors', $data);
     }
@@ -460,8 +479,8 @@ class ClientController extends Controller
     {
         $data['active_class'] = 'clients';
         $data['assigned_rms'] = RmClient::where('client_id', $client_id)->get();
-        $data['client'] = User::find($client_id);
-        $data['rms'] = User::where('user_role', 'rm')->get();
+        $data['client']       = User::find($client_id);
+        $data['rms']          = User::where('user_role', 'rm')->get();
  
         return view('clients.assign_rms', $data);
     }
@@ -548,8 +567,8 @@ class ClientController extends Controller
     public function assingedCounselor($client_id)
     {
         $data['active_class'] = 'client-tasks';
-        $data['client'] = User::find($client_id);
-        $data['counselors'] = CounsellorClient::assignedCounselor($client_id);
+        $data['client']       = User::find($client_id);
+        $data['counselors']   = CounsellorClient::assignedCounselor($client_id);
 
         return view('clients.assigned_counselor', $data);
     }
@@ -557,8 +576,8 @@ class ClientController extends Controller
     public function assingedRm($client_id)
     {
         $data['active_class'] = 'client-tasks';
-        $data['client'] = User::find($client_id);
-        $data['rms'] = RmClient::assignedRm($client_id);
+        $data['client']       = User::find($client_id);
+        $data['rms']          = RmClient::assignedRm($client_id);
 
         return view('clients.assigned_rm', $data);
     }
@@ -572,10 +591,10 @@ class ClientController extends Controller
 
     public function clientEdit($client_id) 
     {
-        $data['client'] = User::find($client_id);
-        $data['programs'] = Program::all();
-        $data['client_add'] = ClientFileInfo::where('client_id', $client_id)->first();
-        $data['client_programs'] = ClientProgram::where('client_id', $client_id)->get();
+        $data['client']            = User::find($client_id);
+        $data['programs']          = Program::all();
+        $data['client_add']        = ClientFileInfo::where('client_id', $client_id)->first();
+        $data['client_programs']   = ClientProgram::where('client_id', $client_id)->get();
         $data['adddional_numbers'] = DB::table('additional_client_numbers')->where('client_id', $client_id)->get();
 
         return view('users.edit', $data);
@@ -589,34 +608,34 @@ class ClientController extends Controller
 
             $validatedData = $request->validate([
                 'client_code' => 'required|unique:users,client_code,'.$client_id,
-                'email' => 'unique:users,email,'.$client_id,
-                'password' => 'required|string|min:6|confirmed',
+                'email'       => 'unique:users,email,'.$client_id,
+                'password'    => 'required|string|min:6|confirmed',
             ]);
 
             
             User::find($client_id)->update([
                 'client_code' => $request->client_code,
-                'name' => $request->name,
-                'mobile' => $request->mobile,
-                'email' => $request->email,
-                'status' => $request->status,
-                'password' => bcrypt($request->password),
+                'name'        => $request->name,
+                'mobile'      => $request->mobile,
+                'email'       => $request->email,
+                'status'      => $request->status,
+                'password'    => bcrypt($request->password),
             ]);
 
         } else {
 
             $validatedData = $request->validate([
                 'client_code' => 'required|unique:users,client_code,'.$client_id,
-                'email' => 'unique:users,email,'.$client_id,
+                'email'       => 'unique:users,email,'.$client_id,
             ]);
 
             
             User::find($client_id)->update([
                 'client_code' => $request->client_code,
-                'name' => $request->name,
-                'mobile' => $request->mobile,
-                'email' => $request->email,
-                'status' => $request->status,
+                'name'        => $request->name,
+                'mobile'      => $request->mobile,
+                'email'       => $request->email,
+                'status'      => $request->status,
             ]);
 
         }

@@ -42,7 +42,7 @@ class RmClient extends Model
 
     public static function fileOpenedThisMonth($rm_id)
     {
-        return static::where('rm_id', $rm_id)->whereMonth('created_at', '=', Carbon::now()->month)->get();;
+        return static::where('rm_id', $rm_id)->whereMonth('created_at', '=', Carbon::now()->month)->get();
     }
 
     public static function totalFilesOpened($rm_id)

@@ -58,6 +58,7 @@
                   <th>Email</th>
                   <th>Status</th>
                   <th>Action</th>
+                  <th>Action</th>
                </tr>
             </thead>
             <tbody>
@@ -71,6 +72,11 @@
                   <td>
                      <a href="{{ route('client.action', $client->id) }}" class="btn btn-outline-warning button2">View Actions</a>
                   </td>
+                  <td>
+
+                    <a href="{{ route('client.edit.ind', $client->id) }}" type="button" class="btn btn-secondary btn-sm"><span class="fa fa-edit fa-xs"></span></a>
+
+                  </td>
                </tr>
                @endforeach
             </tbody>
@@ -81,6 +87,7 @@
                   <th>Phone</th>
                   <th>Email</th>
                   <th>Status</th>
+                  <th>Action</th>
                   <th>Action</th>
                </tr>
             </tfoot>
