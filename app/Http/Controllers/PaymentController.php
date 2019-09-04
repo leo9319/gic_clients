@@ -1537,15 +1537,15 @@ class PaymentController extends Controller
         ])->get();
 
         $data['bank_accounts'] = [
-            'cash' => 'Cash',
-            'scb' => 'SCB',
-            'city' => 'City Bank',
-            'dbbl' => 'DBBL',
-            'ebl' => 'EBL',
-            'ucb' => 'UCB',
-            'brac' => 'BRAC',
-            'agrani' => 'Agrani Bank',
-            'icb' => 'ICB',
+            'cash'           => 'Cash',
+            'scb'            => 'SCB',
+            'city'           => 'City Bank',
+            'dbbl'           => 'DBBL',
+            'ebl'            => 'EBL',
+            'ucb'            => 'UCB',
+            'brac'           => 'BRAC',
+            'agrani'         => 'Agrani Bank',
+            'icb'            => 'ICB',
             'salman account' => 'Salman Account',
             'kamran account' => 'Kamran Account'
          ];

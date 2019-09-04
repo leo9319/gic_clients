@@ -160,19 +160,11 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Location</th>
 
-                  @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
-
                   <th>Verification</th>
 
                   <th>Action</th>
 
-                  @endif
-
-                  @if(Auth::user()->user_role == 'admin')
-
                   <th>Action</th>
-
-                  @endif
 
                </tr>
 
@@ -186,82 +178,44 @@ var filterByDate = function(column, startDate, endDate) {
 
                       <td>{{ Carbon\Carbon::parse($transaction->created_at)->format('d-M-Y') }}</td>
 
+                      <td>{{ ucfirst($transaction->payment_type) }}</td>
+
+                      <td>{{ number_format($transaction->total_amount) }}</td>
+
+                      <td>{{ $transaction->description }}</td>
+
+                      <td>{{ strtoupper($transaction->bank_name) }}</td>
+
+                      <td>{{ ucfirst($transaction->location) }}</td>
+
+
+                      @if($transaction->recheck == 0)
+
+                        <td><p class="text-success"><b>Approved</b></p></td>
+
+                      @elseif($transaction->recheck == -1)
+
+                        <td><p class="text-danger"><b>Disapproved</b></p></td>
+
+                      @else
+
                       <td>
 
-                        {{ ucfirst($transaction->payment_type) }}
+                        <a id="{{ $transaction->id }}" class="label label-success consent">Approve</a>
+                        <a id="{{ $transaction->id }}" class="label label-danger consent">Disapprove</a>
 
                       </td>
 
-
-                      <td>{{ number_format($transaction->total_amount) }}</td>
-                      <td>{{ $transaction->description }}</td>
-                      <td>{{ strtoupper($transaction->bank_name) }}</td>
-                      <td>{{ ucfirst($transaction->location) }}</td>
-
-                      @if(Auth::user()->user_role == 'admin')
-
-                        @if($transaction->recheck == 0)
-
-                          <td><p class="text-success"><b>Approved</b></p></td>
-
-                        @elseif($transaction->recheck == -1)
-
-                          <td><p class="text-danger"><b>Disapproved</b></p></td>
-
-                        @else
-
-                        <td>
-
-{{--                           <a href="{{ route('payment.recheck', [$transaction->id, 0]) }}" class="label label-success">Approve</a> --}}
-{{-- 
-                          <a href="{{ route('payment.recheck', [$transaction->id, -1]) }}" class="label label-danger">Disapprove</a> --}}
-
-                          <a id="{{ $transaction->id }}" class="label label-success consent">Approve</a>
-                          <a id="{{ $transaction->id }}" class="label label-danger consent">Disapprove</a>
-
-                        </td>
-
-                        @endif
-
                       @endif
 
-                      @if(Auth::user()->user_role == 'accountant')
 
-                        @if($transaction->recheck == 0)
-
-                          <td><p class="text-success"><b>Approved</b></p></td>
-
-                        @elseif($transaction->recheck == -1)
-
-                          <td><p class="text-danger"><b>Disapproved</b></p></td>
-
-                        @else
-
-                          <td><p class="text-warning"><b>Pending</b></p></td>
-
-                        @endif
-
-                      @endif
-
-                      @if(Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'admin')
-
-                        <td><a href="#" name="{{$transaction->id}}" onclick="editTransaction(this)"><i class="fa fa-edit"></i> Edit</a></td>
-
-                      @endif
-
-                      @if(Auth::user()->user_role == 'admin')
+                      <td><a href="#" name="{{$transaction->id}}" onclick="editTransaction(this)"><i class="fa fa-edit"></i> Edit</a></td>
 
                       <td>
 
                         <a href="JavaScript:Void(0);" onclick="deleteTransaction(this)" id="{{ $transaction->id }}" class="btn btn-danger btn-sm button2">Delete</a>
 
-
                       </td>
-
-
-
-                      @endif
-
 
                     </tr>
 
@@ -285,19 +239,11 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Location</th>
 
-                  @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
-
                   <th>Verification</th>
 
                   <th>Action</th>
 
-                  @endif
-
-                  @if(Auth::user()->user_role == 'admin')
-
                   <th>Action</th>
-
-                  @endif
 
                </tr>
 
@@ -513,21 +459,11 @@ var filterByDate = function(column, startDate, endDate) {
 
           parent.empty();
 
-          // alert('deleted');
-
-          // var parent = $("#"+transactionId).parent();
-
-          // parent.empty();
-
-          // parent.append(element);
-
         },
 
       });
 
     }
-
-    // $("#delete-transaction").modal();
 
   }
 
@@ -543,7 +479,6 @@ var filterByDate = function(column, startDate, endDate) {
     status = -1;
    }
 
-   // alert(transactionId);
 
    $.ajax({
       type: 'get',
@@ -571,11 +506,6 @@ var filterByDate = function(column, startDate, endDate) {
 
     });
 
-   // alert(ButtonText);
-
-   // $("#" + transactionId).text('Save');
-
-   // alert(transactionId); 
   });  
 
 </script>

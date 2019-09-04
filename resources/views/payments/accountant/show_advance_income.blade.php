@@ -162,8 +162,6 @@ var filterByDate = function(column, startDate, endDate) {
 
                   <th>Location</th>
 
-                  <th>Action</th>
-
                   <th>Verification</th>
 
                </tr>
@@ -190,8 +188,6 @@ var filterByDate = function(column, startDate, endDate) {
 
                       <td>{{ ucfirst($transaction->location) }}</td>
 
-                      <td><a href="#" id="{{ $transaction->id }}" onclick="clearAmount(this)" class="label label-info">Clear Amount</a></td>
-
                       @if($transaction->recheck == 0)
 
                         <td><p class="text-success"><b>Approved</b></p></td>
@@ -200,9 +196,13 @@ var filterByDate = function(column, startDate, endDate) {
 
                         <td><p class="text-danger"><b>Disapproved</b></p></td>
 
+                      @else
+
+                        <td><p class="text-warning"><b>Pending</b></p></td>
+
                       @endif
 
-                      <td>
+     {{--                  <td>
 
                         @if($transaction->recheck == 1)
                           <p class="text-success"><b>Approved</b></p>
@@ -212,7 +212,7 @@ var filterByDate = function(column, startDate, endDate) {
                           <p class="text-warning"><b>Pending</b></p>
                          @endif
 
-                      </td>
+                      </td> --}}
 
                      
 
@@ -239,8 +239,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Deposited to</th>
 
                   <th>Location</th>
-
-                  <th>Action</th>
 
                   <th>Verification</th>
 
