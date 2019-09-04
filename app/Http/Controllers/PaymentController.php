@@ -1528,6 +1528,29 @@ class PaymentController extends Controller
         return view('payments.show_income_and_expenses', $data);
     }
 
+    public function editIncomesAndExpenses(IncomeExpense $income_expense)
+    {
+        $data['active_class']   = 'incomes-expenses';
+        $data['clients']        = User::userRole('client')->where('status', 'active')->get();
+        $data['income_expense'] = $income_expense;
+
+        $data['bank_accounts'] = [
+            'cash'           => 'Cash',
+            'scb'            => 'SCB',
+            'city'           => 'City Bank',
+            'dbbl'           => 'DBBL',
+            'ebl'            => 'EBL',
+            'ucb'            => 'UCB',
+            'brac'           => 'BRAC',
+            'agrani'         => 'Agrani Bank',
+            'icb'            => 'ICB',
+            'salman account' => 'Salman Account',
+            'kamran account' => 'Kamran Account'
+         ];
+
+        return view('payments.admin.edit_income_and_expenses', $data);
+    }
+
     public function showAdvanceIncomes()
     {
         $data['active_class'] = 'payments';
@@ -1623,21 +1646,18 @@ class PaymentController extends Controller
 
     public function updateIncomesAndExpenses(Request $request)
     {
-        $date_timestamp = Carbon::parse($request->date)->toDateTimeString();
-
-        $amount = $request->amount;
-
-        IncomeExpense::find($request->payment_id)->update([
-            'bank_name' => $request->bank_name,
-            'location' => $request->location,
-            'total_amount' => $amount,
-            'recheck' => 1,
-            'description' => $request->description,
+        IncomeExpense::find($request->id)->update([
+            'payment_type'    => $request->payment_type,
+            'total_amount'    => $request->amount,
+            'bank_name'       => $request->bank_name,
+            'location'        => $request->location,
+            'recheck'         => 1,
+            'description'     => $request->description,
             'advance_payment' => $request->advance_payment,
-            'created_at' => $date_timestamp,
+            'created_at'      => Carbon::parse($request->date)->toDateTimeString()
         ]);
 
-        return redirect()->back();
+        return redirect()->back()->with('message', 'Transaction has been updated!');
     }
 
     public function deleteIncomeAndExpenses(Request $request)

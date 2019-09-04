@@ -209,7 +209,7 @@ var filterByDate = function(column, startDate, endDate) {
                       @endif
 
 
-                      <td><a href="#" name="{{$transaction->id}}" onclick="editTransaction(this)"><i class="fa fa-edit"></i> Edit</a></td>
+                      <td><a href="{{ route('payment.edit.income.and.expenses', $transaction->id) }}" target="_blank"><i class="fa fa-edit"></i> Edit</a></td>
 
                       <td>
 
@@ -258,7 +258,7 @@ var filterByDate = function(column, startDate, endDate) {
 </div>
 
 <!-- Modal -->
-<div id="editTransaction" class="modal fade" role="dialog">
+{{-- <div id="editTransaction" class="modal fade" role="dialog">
 
   <div class="modal-dialog">
 
@@ -349,7 +349,7 @@ var filterByDate = function(column, startDate, endDate) {
 
   </div>
 
-</div>
+</div> --}}
 
 <div id="delete-transaction" class="modal fade" role="dialog">
   <div class="modal-dialog">
@@ -401,44 +401,44 @@ var filterByDate = function(column, startDate, endDate) {
       return [year, month, day].join('-');
   }
   
-  function editTransaction(elem) {
+  // function editTransaction(elem) {
 
-    var id = elem.name;
+  //   var id = elem.name;
 
-    $.ajax({
+  //   $.ajax({
 
-        type: 'get',
-        url: '{!!URL::to('findIncomeAndExpenses')!!}',
-        data: {'id':id},
+  //       type: 'get',
+  //       url: '{!!URL::to('findIncomeAndExpenses')!!}',
+  //       data: {'id':id},
 
-        success:function(data){
+  //       success:function(data){
 
-          document.getElementById('date').value = formatDate(data.created_at);
-          document.getElementById('payment-id').value = data.id;
-          document.getElementById('type').value = data.payment_type;
-          document.getElementById("amount").value = data.total_amount;
-          document.getElementById("description").innerHTML = data.description;
-          document.getElementById("bank_name").value = data.bank_name;
-          document.getElementById("location").value = data.location;
+  //         document.getElementById('date').value = formatDate(data.created_at);
+  //         document.getElementById('payment-id').value = data.id;
+  //         document.getElementById('type').value = data.payment_type;
+  //         document.getElementById("amount").value = data.total_amount;
+  //         document.getElementById("description").innerHTML = data.description;
+  //         document.getElementById("bank_name").value = data.bank_name;
+  //         document.getElementById("location").value = data.location;
 
-          if(data.advance_payment == 'yes') {
-            document.getElementById("advance-payment-yes").checked = true;
-          } else {
-            document.getElementById("advance-payment-no").checked = true;
-          }
+  //         if(data.advance_payment == 'yes') {
+  //           document.getElementById("advance-payment-yes").checked = true;
+  //         } else {
+  //           document.getElementById("advance-payment-no").checked = true;
+  //         }
 
-        },
+  //       },
 
-        error:function(){
-          alert('failure');
-        }
+  //       error:function(){
+  //         alert('failure');
+  //       }
 
-      }); 
+  //     }); 
 
 
-    $("#editTransaction").modal();
+  //   $("#editTransaction").modal();
 
-  }
+  // }
 
   function deleteTransaction(elem) {
     var transactionId = elem.id;
