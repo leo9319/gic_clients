@@ -1554,8 +1554,9 @@ class PaymentController extends Controller
     public function showAdvanceIncomes()
     {
         $data['active_class'] = 'payments';
+
         $data['transactions'] = IncomeExpense::orderBy('recheck', 'DESC')->where([
-            'payment_type' => 'income',
+            'payment_type'    => 'income',
             'advance_payment' => 'yes',
         ])->get();
 
@@ -1592,8 +1593,9 @@ class PaymentController extends Controller
     public function showAdvanceExpenses()
     {
         $data['active_class'] = 'payments';
+
         $data['transactions'] = IncomeExpense::orderBy('recheck', 'DESC')->where([
-            'payment_type' => 'expense',
+            'payment_type'    => 'expense',
             'advance_payment' => 'yes',
         ])->get();
 

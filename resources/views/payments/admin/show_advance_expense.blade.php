@@ -2,7 +2,7 @@
 
 @extends('layouts.master')
 
-@section('title', 'Income and Expense')
+@section('title', 'Advance Expense')
 
 @section('content')
 
@@ -110,7 +110,7 @@ var filterByDate = function(column, startDate, endDate) {
 
     <div class="panel-body">
 
-      <h2>Advance Incomes</h2>
+      <h2>Advance Expenses</h2>
 
       <div class="pull-right">
         <a href="{{ route('payment.income.pdf') }}" class="btn btn-success btn-sm">View All Incomes</a>
@@ -214,9 +214,8 @@ var filterByDate = function(column, startDate, endDate) {
 
                       @endif
 
-
                       <td>
-                        <a href="#" name="{{$transaction->id}}" onclick="editTransaction(this)"><i class="fa fa-edit"></i> Edit</a>
+                        <a href="{{ route('payment.edit.income.and.expenses', $transaction->id) }}" target="_blank"><i class="fa fa-edit"></i> Edit</a>
                       </td>
 
                       <td>
@@ -268,85 +267,6 @@ var filterByDate = function(column, startDate, endDate) {
 </div>
 
 <!-- Modal -->
-<div id="editTransaction" class="modal fade" role="dialog">
-
-  <div class="modal-dialog">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-
-      <div class="modal-header">
-
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-
-        <h4 class="modal-title">Edit Transaction</h4>
-
-      </div>
-
-      <div class="modal-body">
-
-        {{ Form::open(['route' => 'payment.update.income.and.expenses']) }}
-
-        {!! Form::hidden('type', null, ['id' => 'type']) !!}
-        {!! Form::hidden('payment_id', null, ['id' => 'payment-id']) !!}
-
-        <div class="form-group">
-
-          {!! Form::label('Date:') !!}
-        
-          {!! Form::date('date', date('Y-m-d'), ['id' => 'date', 'class' => 'form-control']) !!}
-
-        </div>
-
-        <div class="form-group">
-
-          {!! Form::label('Amount:') !!}
-        
-          {!! Form::number('amount', null, ['Placeholder'=>'Amount', 'id' => 'amount', 'class' => 'form-control', 'required']) !!}
-
-        </div>
-
-        <div class="form-group">
-
-          {!! Form::label('Description:') !!}
-        
-          {!! Form::textarea('description', null, ['id' => 'description', 'class' => 'form-control']) !!}
-
-        </div>
-
-        <div class="form-group">
-
-          {!! Form::label('Account Name:') !!}
-        
-          {!! Form::select('bank_name', $bank_accounts, null, ['id' => 'bank_name', 'class' => 'form-control']) !!}
-
-        </div>
-
-        <div class="form-group">
-
-          {!! Form::label('Location:') !!}
-        
-          {!! Form::select('location', ['dhaka'=>'Dhaka', 'chittagong'=>'Chittagong'], null, ['id' => 'location', 'class' => 'form-control']) !!}
-
-        </div>
-
-        </div>
-
-      <div class="modal-footer">
-
-        <button type="submit" class="btn btn-info">Update</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-
-        {{ Form::close() }}
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
 <div id="delete-transaction" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
@@ -443,38 +363,6 @@ var filterByDate = function(column, startDate, endDate) {
       return [year, month, day].join('-');
   }
   
-  function editTransaction(elem) {
-
-    var id = elem.name;
-
-    $.ajax({
-
-        type: 'get',
-        url: '{!!URL::to('findIncomeAndExpenses')!!}',
-        data: {'id':id},
-
-        success:function(data){
-
-          document.getElementById('date').value = formatDate(data.created_at);
-          document.getElementById('payment-id').value = data.id;
-          document.getElementById('type').value = data.payment_type;
-          document.getElementById("amount").value = Math.abs(data.total_amount);
-          document.getElementById("description").innerHTML = data.description;
-          document.getElementById("bank_name").value = data.bank_name;
-          document.getElementById("location").value = data.location;
-        },
-
-        error:function(){
-          alert('failure');
-        }
-
-      }); 
-
-
-    $("#editTransaction").modal();
-
-  }
-
   function deleteTransaction(elem) {
     var transaction_id = elem.id;
 
