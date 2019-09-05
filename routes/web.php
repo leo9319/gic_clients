@@ -215,13 +215,8 @@ Route::post('payment/account/transfer', 'PaymentController@transfer')->name('pay
 Route::get('payment/create/incomes', 'PaymentController@createIncome')->name('payment.income');
 Route::post('payment/store/incomes', 'PaymentController@storeIncomesAndExpenses')->name('payment.store.income.and.expenses');
 Route::get('payment/create/expenses', 'PaymentController@createExpense')->name('payment.expense');
-
-
 Route::get('payment/incomes/expenses', 'PaymentController@showIncomesAndExpenses')->name('payment.show.income.and.expenses');
 Route::get('payment/incomes/expenses/{income_expense}/edit', 'PaymentController@editIncomesAndExpenses')->name('payment.edit.income.and.expenses');
-
-
-
 Route::get('payment/advance/incomes', 'PaymentController@showAdvanceIncomes')->name('payment.show.advance.incomes');
 Route::post('update/advance/income/expense', 'PaymentController@updateAdvanceIncomeExpense')->name('payment.update.advance.income.expense');
 Route::get('payment/advance/expenses', 'PaymentController@showAdvanceExpenses')->name('payment.show.advance.expenses');

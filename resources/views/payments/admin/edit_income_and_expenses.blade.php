@@ -84,7 +84,6 @@
 
 		        </div>
 
-
 				<div class="form-group">
 
 					{!! Form::label('advance_payment:') !!}
