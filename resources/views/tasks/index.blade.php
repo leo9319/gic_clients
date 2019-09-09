@@ -1,8 +1,8 @@
+{{-- Admin --}}
+
 @extends('layouts.master')
 
 @section('title', 'Tasks')
-
-@section('url', $previous)
 
 @section('content')
 

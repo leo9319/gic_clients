@@ -24,69 +24,119 @@ class TargetController extends Controller
 
     public function department()
     {
-        $data['previous'] = URL::to('/dashboard');
         $data['active_class'] = 'department-targets';
-        $data['targets'] = DepartmentTarget::all();
+        $data['targets']      = DepartmentTarget::all();
         
         return view('targets.department', $data);
     }
 
     public function rm()
     {
-        $data['previous'] = url()->previous();
-        
+        $data['previous']     = url()->previous();
         $data['active_class'] = 'set-targets';
-        $data['rms'] = User::userRole('rm')->get();
+        $data['rms']          = User::userRole('rm')->get();
 
         return view('targets.rm', $data);
     }
 
     public function counselor()
     {
+        $data['previous']     = url()->previous();
         $data['active_class'] = 'set-targets';
-        $data['counselors'] = User::userRole('counselor')->get();
-        $data['previous'] = url()->previous();
-
+        $data['counselors']   = User::userRole('counselor')->get();
+        
         return view('targets.counselor', $data);
     }
 
     public function setTarget($user_id)
     {
-        $data['previous'] = URL::to('/target/counselor');
+        $data['previous']     = URL::to('/target/counselor');
         $data['active_class'] = 'set-targets';
-        $data['records'] = Target::where('user_id', $user_id)->orderBy('month_year','DESC')->get();
-        $data['user'] = User::find($user_id);
+        $data['records']      = Target::where('user_id', $user_id)->orderBy('month_year','DESC')->get();
+        $data['user']         = User::find($user_id);
 
         return view('targets.set_targets', $data);
     }
 
     public function storeDepartmentTarget(Request $request)
     {
-        DepartmentTarget::updateOrCreate(
+        // return $request->all();
+
+        $validatedData = $request->validate([
+            'department'    => 'required',
+            'duration_type' => 'required',
+            'target'        => 'required',
+        ]);
+
+        $duration_type = $request->duration_type;
+
+        if ($duration_type == 'range') {
+
+            DepartmentTarget::updateOrCreate(
             [
                 'department' => $request->department,
-                'month' => $request->month . '-01'
+                'start_date' => $request->start_date,
+                'end_date'   => $request->end_date,
+            ],
+            [
+                'target'     => $request->target
+            ]);
+
+        } elseif($duration_type == 'month') {
+
+            DepartmentTarget::updateOrCreate(
+            [
+                'department' => $request->department,
+                'month'      => $request->month . '-01'
             ],
             [
                 'department' => $request->department,
-                'month' => $request->month . '-01',
-                'target' => $request->target
+                'month'      => $request->month . '-01',
+                'target'     => $request->target
             ]);
+
+        } else {
+
+            return 0;
+
+        }
 
         return redirect()->back();
     }
 
     public function storeTarget(Request $request, $user_id)
     {
-        $data['user_id'] = $user_id;
-        $data['target'] = $request->target;
+        $data['user_id']    = $user_id;
+        $data['target']     = $request->target;
         $data['month_year'] = $request->month_year . '-01';
 
         Target::updateOrCreate(
-            ['user_id' => $data['user_id'], 'month_year' => $data['month_year']],
-            ['target' => $request->target]
+            [
+                'user_id'    => $data['user_id'], 
+                'month_year' => $data['month_year']],
+            [
+                'target'     => $request->target
+            ]
         );
 
         return redirect()->back();
+    }
+
+    public function show(User $user)
+    {
+        $data['active_class'] = 'my-targets';
+
+        if($user->user_role == 'rm') {
+
+            $data['department_targets'] = DepartmentTarget::where('department', 'processing')->get();
+
+        } else {
+
+            $data['department_targets'] = DepartmentTarget::where('department', 'counseling')->get();
+
+        }
+
+        return view('targets.show', $data);
+        
     }
 }

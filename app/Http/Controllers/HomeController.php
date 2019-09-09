@@ -36,7 +36,7 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin')->only('users', 'updateUserRole');
+        $this->middleware('role:admin,operation')->only('users', 'updateUserRole');
         $this->middleware('role:admin,counselor,rm')->only('createUser', 'storeUser');
     }
 
@@ -50,7 +50,6 @@ class HomeController extends Controller
         $data['active_class']               = 'dashboard';
         $client_id                          = Auth::user()->id; 
         $data['number_of_clients']          = User::userRole('client')->get()->count();
-        // $data['number_of_rms']              = User::userRole('rm')->get()->count();
         $data['number_of_accountants']      = User::userRole('accountant')->get()->count();
         $data['number_of_counsellor']       = User::userRole('counselor')->get()->count();
         $data['todays_payments']            = Payment::whereDate('created_at', Carbon::today())->count();
@@ -177,27 +176,36 @@ class HomeController extends Controller
     public function users()
     {
         $data['active_class'] = 'users';
-        $data['users'] = User::gicStaffs();
+        $data['users']        = User::gicStaffs();
+        $data['user_roles']   = DB::table('user_roles')->pluck('role_name', 'role_name');
 
-        return view('users.index', $data);
+        if(Auth::user()->user_role == 'admin') {
+
+            return view('users.index', $data);
+
+        } elseif(Auth::user()->user_role == 'operation') {
+
+            return view('users.operation.index', $data);
+
+        }
+
+        abort(500);
+
+        
     }
 
     public function updateUserRole(Request $request, $id)
     {
-        $roles = array('N/A', 'admin', 'rm', 'accountant', 'backend', 'counselor', 'client');
-
-        $assigned_role = $roles[$request->user_role_id];
-        
-        DB::table('users')->where('id', $id)->update(['user_role' => $assigned_role]);
+        DB::table('users')->where('id', $id)->update(['user_role' => $request->user_role]);
         
         return redirect()->back();
     }
 
     public function createUser()
     {
-        $data['rms'] = User::where('user_role', 'rm')->get();
+        $data['rms']        = User::where('user_role', 'rm')->get();
         $data['counselors'] = User::where('user_role', 'counselor')->get();
-        $data['programs'] = Program::latest('updated_at')->get();
+        $data['programs']   = Program::latest('updated_at')->get();
 
         $last_entry = User::userRole('client')->where('client_code', 'like', 'CSM-%')->orderBy('client_code', 'desc')->first();
         
@@ -248,11 +256,11 @@ class HomeController extends Controller
             }
         }
 
-        $file_info['creator_id'] = Auth::user()->id;
-        $file_info['spouse_name'] = $request->spouse_name;
-        $file_info['address'] = $request->address;
+        $file_info['creator_id']        = Auth::user()->id;
+        $file_info['spouse_name']       = $request->spouse_name;
+        $file_info['address']           = $request->address;
         $file_info['country_of_choice'] = json_encode($request->country_of_choice);
-        $file_info['client_id'] = $user->id;
+        $file_info['client_id']         = $user->id;
 
         ClientFileInfo::create($file_info);
 

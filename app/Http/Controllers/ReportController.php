@@ -18,7 +18,7 @@ class ReportController extends Controller
     {
         $this->middleware('auth');
         $this->middleware('role:admin')->only('profitAndLoss');
-        $this->middleware('role:admin,accountant,backend')->only('index', 'monthly', 'ourCurrentClients');
+        $this->middleware('role:admin,accountant,backend,operation')->only('index', 'monthly', 'ourCurrentClients');
     }
     
     public function index()

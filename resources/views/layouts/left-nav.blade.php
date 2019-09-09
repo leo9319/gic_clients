@@ -31,6 +31,13 @@
                </li>
 
                <li>
+                  <a href="{{ route('target.show', Auth::user()->id) }}" class="{{ $active_class == 'my-targets' ? 'active' : '' }}">
+                     <i class="fas fa-bullseye"></i>
+                     <span>My Targets</span>
+                  </a>
+               </li>
+
+               <li>
                   <a href="{{ route('client.appointment', Auth::user()->id) }}" class="{{ $active_class == 'my-appointments' ? 'active' : '' }}">
                      <i class="fa fa-calendar"></i>
                      <span>My Appointments</span>
@@ -154,7 +161,7 @@
             </li>
             @endif
 
-            @if(Auth::user()->user_role == 'admin')
+            @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'operation')
                <li>
                <a href="#subStaff" data-toggle="collapse" class="collapsed {{ $active_class == 'assigend_clients' ? 'active' : '' }}"><i class="fa fa-sitemap"></i> <span>Assigned Clients</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
                <div id="subStaff" class="collapse ">
@@ -186,7 +193,7 @@
             </li>
             @endif
 
-            @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'backend'|| Auth::user()->user_role == 'client')
+            @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'operation' || Auth::user()->user_role == 'backend'|| Auth::user()->user_role == 'client')
 
             <li>
 
@@ -196,6 +203,7 @@
 
                      @if(Auth::user()->user_role != 'admin')
                      @if(Auth::user()->user_role != 'backend')
+                     @if(Auth::user()->user_role != 'operation')
 
                      <li>
                         <a href="{{ route('client.appointment', Auth::user()->id) }}" class="">
@@ -203,6 +211,7 @@
                            <span>My Appointments</span></a>
                      </li>     
 
+                     @endif
                      @endif
                      @endif
 
@@ -272,7 +281,7 @@
 
             @endif
 
-            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'backend')
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'operation' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'backend')
 
             <li>
                <a href="#subPayments" data-toggle="collapse" class="collapsed {{ $active_class == 'payments' ? 'active' : '' }}"><i class="fa fa-credit-card"></i> <span>Payments</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
@@ -319,7 +328,7 @@
 
                      @endif
 
-                     @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
+                     @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'operation' || Auth::user()->user_role == 'accountant')
 
                      <li>
                         <a href="{{ route('payment.index') }}" class="">
@@ -420,7 +429,7 @@
 
             @endif
 
-            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant'|| Auth::user()->user_role == 'backend')
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'operation' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'backend')
             
             <li>
                <a href="{{ route('reports.index') }}" class="{{ $active_class == 'reports' ? 'active' : '' }}">
@@ -431,7 +440,7 @@
             @endif
 
 
-            @if (Auth::user()->user_role == 'admin')
+            @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'operation')
 
                <li>
                   <a href="{{ route('client.index') }}" class="{{ $active_class == 'clients' ? 'active' : '' }}">
@@ -445,34 +454,6 @@
                      <i class="fa fa-user-circle"></i>
                      <span>GIC Staffs</span>
                   </a>
-               </li>
-
-               <li>
-                  <a href="#subSalary" data-toggle="collapse" class="collapsed {{ $active_class == 'salary' ? 'active' : '' }}"><i class="far fa-money-bill-alt"></i> <span>GIC Salary</span> <i class="icon-submenu lnr lnr-chevron-left"></i></a>
-
-                  <div id="subSalary" class="collapse ">
-                     <ul class="nav">
-
-                        <li>
-                           <a href="#" class="">
-                              <i class="fas fa-hand-holding-usd"></i>
-                              <span>View/Generate</span></a>
-                        </li>
-
-                        <li>
-                           <a href="#" class="">
-                              <i class="fas fa-calculator"></i>
-                              <span>Monthly Calculations</span></a>
-                        </li>
-
-                        <li>
-                           <a href="{{ route('salaries.set_variables') }}" class="">
-                              <i class="fas fa-cogs"></i>
-                              <span>Set Variables</span></a>
-                        </li>
-                        
-                     </ul>
-                  </div>
                </li>
 
             @endif

@@ -17,14 +17,14 @@ class CounselorController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin')->only('index');
+        $this->middleware('role:admin,operation')->only('index');
     }
     
     public function index()
     {
-        $data['previous'] = URL::to('/dashboard');
+        $data['previous']     = URL::to('/dashboard');
         $data['active_class'] = 'assigend_clients';
-        $data['counselors'] = User::userRole('counselor')->get();
+        $data['counselors']   = User::userRole('counselor')->get();
 
         return view('counselors.index', $data);
     }

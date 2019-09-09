@@ -639,7 +639,7 @@ class PaymentController extends Controller
 
             return view('payments.history', $data);
 
-        } else if($user_role == 'accountant') {
+        } else if($user_role == 'accountant' || $user_role == 'operation') {
 
             return view('payments.accountant.history_beta', $data);
 
@@ -1759,21 +1759,21 @@ class PaymentController extends Controller
 
     public function clientRefund()
     {
-        $data['previous'] = URL::to('/dashboard');
+        $data['previous']     = URL::to('/dashboard');
         $data['active_class'] = 'payments';
-        $data['clients'] = User::userRole('client')->where('status', 'active')->get();
-        $data['programs'] = Program::all();
+        $data['clients']      = User::userRole('client')->where('status', 'active')->get();
+        $data['programs']     = Program::all();
 
         $data['bank_accounts'] = [
-            'cash' => 'CASH',
-            'scb' => 'SCB',
-            'city' => 'CITY',
-            'dbbl' => 'DBBL',
-            'ebl' => 'EBL',
-            'ucb' => 'UCB',
-            'brac' => 'BRAC',
-            'agrani' => 'AGRANI',
-            'icb' => 'ICB',
+            'cash'           => 'CASH',
+            'scb'            => 'SCB',
+            'city'           => 'CITY',
+            'dbbl'           => 'DBBL',
+            'ebl'            => 'EBL',
+            'ucb'            => 'UCB',
+            'brac'           => 'BRAC',
+            'agrani'         => 'AGRANI',
+            'icb'            => 'ICB',
             'salman account' => 'Salman Account',
             'kamran account' => 'Kamran Account'
          ];
@@ -1865,7 +1865,7 @@ class PaymentController extends Controller
             $client_ids       = RmClient::where('rm_id', $rm_id)->pluck('client_id');
             $data['all_dues'] = Payment::whereIn('client_id', $client_ids)->where('dues', '>', 0)->get();
 
-        } else if($user->user_role == 'admin' || $user->user_role == 'accountant' || $user->user_role == 'backend'){
+        } else if($user->user_role == 'admin' || $user->user_role == 'accountant' || $user->user_role == 'operation' || $user->user_role == 'backend'){
 
             $data['all_dues'] = Payment::all();
 
@@ -1879,14 +1879,14 @@ class PaymentController extends Controller
 
     public function clientDuesDetails(Payment $payment_id)
     {
-        $data['previous'] = URL::to('/dashboard');
-        $data['active_class'] = 'payments';
-        $data['payment'] = $payment_id;
-
-        $data['program_fee'] = $payment_id->opening_fee + 
-                               $payment_id->embassy_student_fee + 
-                               $payment_id->service_solicitor_fee + 
-                               $payment_id->other;
+        $data['previous']      = URL::to('/dashboard');
+        $data['active_class']  = 'payments';
+        $data['payment']       = $payment_id;
+ 
+        $data['program_fee']   = $payment_id->opening_fee + 
+                                 $payment_id->embassy_student_fee + 
+                                 $payment_id->service_solicitor_fee + 
+                                 $payment_id->other;
 
         $data['payment_types'] = PaymentType::where('payment_id', $payment_id->id)
                                  ->where('cheque_verified', '=', 1)

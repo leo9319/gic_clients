@@ -92,13 +92,7 @@ $(document).ready( function () {
 
               {{ Form::open(['route'=>['users.update.role', $user->id]]) }}
 
-              {!! Form::select('user_role_id', [
-              '1' => 'Admin',
-              '2' => 'Rm',
-              '3' => 'Accountant',
-              '4' => 'Backend',
-              '5' => 'Counsellor',
-              ], null, ['class' => 'form-control'])
+              {!! Form::select('user_role', $user_roles, null, ['class' => 'form-control'])
               !!}
 
             </td>
@@ -110,8 +104,6 @@ $(document).ready( function () {
             <td>
 
               <button type="button" class="btn btn-secondary" id="{{ $user->id }}" onclick="editUser(this)"><span class="fa fa-edit fa-xs"></span></button>
-
-              {{-- <a href="{{ route('delete.user',  $user->id) }}" type="button" class="btn btn-danger"><span class="fa fa-trash fa-xs"></span></a> --}}
 
               <button type="button" class="btn btn-danger btn-sm" id="{{ $user->id }}" onclick="deleteClient(this)"><span class="fa fa-trash fa-xs"></span></button>
 
@@ -198,14 +190,7 @@ $(document).ready( function () {
             <div class="form-group">
 
               {!! Form::label('user_role', 'User Role: ') !!}
-              {!! Form::select('user_role', [
-              'rm' => 'RM',
-              'counselor' => 'Counselor',
-              'accountant' => 'Accountant',
-              'backend' => 'Backend',
-              'operation' => 'Operation',
-              'backend' => 'Backend',
-              ], null, ['class'=>'form-control']) !!}
+              {!! Form::select('user_role', $user_roles, null, ['class'=>'form-control']) !!}
 
             </div>
 
@@ -294,15 +279,7 @@ $(document).ready( function () {
             <div class="form-group">
 
               {!! Form::label('user_role', 'User Role: ') !!}
-              {!! Form::select('user_role', [
-                'admin' => 'Admin',
-                'rm' => 'RM',
-                'counselor' => 'Counselor',
-                'accountant' => 'Accountant',
-                'backend' => 'Backend',
-                'operation' => 'Operation',
-                'backend' => 'Backend',
-              ], null, ['id'=>'user-role-edit', 'class'=>'form-control']) !!}
+              {!! Form::select('user_role', $user_roles, null, ['id'=>'user-role-edit', 'class'=>'form-control']) !!}
 
             </div>
 

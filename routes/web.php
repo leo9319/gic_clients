@@ -115,7 +115,7 @@ Route::get('getClientName', 'ClientController@getClientName');
 
 Route::get('home', 'HomeController@home')->name('home');
 Route::get('dashboard', 'HomeController@index')->name('dashboard');
-Route::get('users', 'HomeController@users')->name('users')->middleware('role:admin');
+Route::get('users', 'HomeController@users')->name('users')->middleware('role:admin,operation');
 Route::get('user-create', 'HomeController@createUser')->name('user.create');
 Route::post('user-create', 'HomeController@storeUser')->name('user.store');
 Route::post('users/{id}', 'HomeController@updateUserRole')->name('users.update.role')->middleware('role:admin');
@@ -149,6 +149,7 @@ Route::post('program/edit', 'ProgramController@editProgram')->name('edit.program
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
+Route::get('target/{user}', 'TargetController@show')->name('target.show');
 Route::get('target/department', 'TargetController@department')->name('target.department');
 Route::get('target/rm', 'TargetController@rm')->name('target.rm');
 Route::get('target/counselor', 'TargetController@counselor')->name('target.counselor');

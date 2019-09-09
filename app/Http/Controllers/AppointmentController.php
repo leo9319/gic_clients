@@ -80,7 +80,7 @@ class AppointmentController extends Controller
 
             return view('appointment.client_appointments', $data);
 
-        } elseif(Auth::user()->user_role == 'rm' | Auth::user()->user_role == 'counselor') {
+        } elseif(Auth::user()->user_role == 'rm' || Auth::user()->user_role == 'counselor') {
 
             $appointer_id         = Auth::user()->id;
             $data['appointments'] = Appointment::getUsersAppointments($appointer_id);
