@@ -6,7 +6,6 @@
 
 @section('header_scripts')
 
-
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
 <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
@@ -19,29 +18,29 @@
         $tableSel.dataTable({
 
             "ordering": false,
-            dom: 'Bfrtip',
-            buttons: [
-                'csv',
-                'excel', {
-                    extend: 'print',
-                    text: 'Print all (not just selected)',
-                    exportOptions: {
-                        modifier: {
-                            selected: null
-                        }
-                    }
-                }, {
-                    text: 'Select all',
-                    action: function() {
-                        this.rows().select();
-                    }
-                }, {
-                    text: 'Select none',
-                    action: function() {
-                        this.rows().deselect();
-                    }
-                }
-            ],
+            // dom: 'Bfrtip',
+            // buttons: [
+            //     'csv',
+            //     'excel', {
+            //         extend: 'print',
+            //         text: 'Print all (not just selected)',
+            //         exportOptions: {
+            //             modifier: {
+            //                 selected: null
+            //             }
+            //         }
+            //     }, {
+            //         text: 'Select all',
+            //         action: function() {
+            //             this.rows().select();
+            //         }
+            //     }, {
+            //         text: 'Select none',
+            //         action: function() {
+            //             this.rows().deselect();
+            //         }
+            //     }
+            // ],
             select: true
         });
 
@@ -56,7 +55,7 @@
 
         <div class="panel-body">
 
-            <h2>Reminders</h2> 
+            <h2>My Targets</h2> 
 
             @if ($errors->any())
 
@@ -74,67 +73,51 @@
 
         <div class="panel-footer">
 
-            <table id="reminders" class="table table-striped table-bordered" style="width:100%">
+            <table id="my-targets" class="table table-striped table-bordered" style="width:100%">
 
                 <thead>
 
-                	<th>Date Created</th>
+                	<th>Month</th>
 
-                    <th>Client Code</th>
-
-                    <th>Client Name</th>
-
-                    <th>Mobile</th>
-
-                    <th>Email</th>
+                    <th>Start Date</th>
 
                     <th>End Date</th>
 
-                    <th>Status</th>
+                    <th>Target</th>
 
-                    <th>Action</th>
-
-                    <th>Action</th>
+                    <th>Target Achieved</th>
 
                 </thead>
 
                 <tbody>
 
+                    @foreach($department_targets as $department_target)
+
                     <tr>
 
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                        <td>{{ Carbon\Carbon::parse($department_target->month)->format('F') }}</td>
+                        <td>{{ $department_target->start_date ?? '-' }}</td>
+                        <td>{{ $department_target->end_date ?? '-' }}</td>
+                        <td>{{ $department_target->target }}</td>
+                        <td></td>
 
                     </tr>
+
+                    @endforeach
 
                 </tbody>
 
                 <tfoot>
 
-                    <th>Date Created</th>
+                    <th>Month</th>
 
-                    <th>Client Code</th>
-
-                    <th>Client Name</th>
-
-                    <th>Mobile</th>
-
-                    <th>Email</th>
+                    <th>Start Date</th>
 
                     <th>End Date</th>
 
-                    <th>Status</th>
+                    <th>Target</th>
 
-                    <th>Action</th>
-
-                    <th>Action</th>
+                    <th>Target Achieved</th>
 
                 </tfoot>
 

@@ -144,17 +144,22 @@
                      <li>
                         <a href="{{ route('target.department') }}" class="{{ $active_class == 'department-targets' ? 'active' : '' }}">
                            <i class="fa fa-bullseye"></i> 
-                           <span>Department Targets</span></a>
+                           <span>Department Target</span></a>
                      </li>
                      <li>
                         <a href="{{ route('target.rm') }}" class="{{ $active_class == 'set-targets' ? 'active' : '' }}">
                            <i class="fa fa-bullseye"></i> 
-                           <span>RMs</span></a>
+                           <span>RM Target</span></a>
                      </li>
                      <li>
                         <a href="{{ route('target.counselor') }}" class="{{ $active_class == 'set-targets' ? 'active' : '' }}">
                            <i class="fa fa-bullseye"></i> 
-                           <span>Counselors</span></a>
+                           <span>Counselor Target</span></a>
+                     </li>
+                     <li>
+                        <a href="{{ route('target.setting') }}" class="{{ $active_class == 'set-targets' ? 'active' : '' }}">
+                           <i class="fas fa-cogs"></i> 
+                           <span>Target Settings</span></a>
                      </li>
                   </ul>
                </div>

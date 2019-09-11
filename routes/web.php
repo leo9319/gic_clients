@@ -149,13 +149,14 @@ Route::post('program/edit', 'ProgramController@editProgram')->name('edit.program
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-Route::get('target/{user}', 'TargetController@show')->name('target.show');
+Route::get('target/show/{user}', 'TargetController@show')->name('target.show');
 Route::get('target/department', 'TargetController@department')->name('target.department');
 Route::get('target/rm', 'TargetController@rm')->name('target.rm');
 Route::get('target/counselor', 'TargetController@counselor')->name('target.counselor');
 Route::get('set/target/{user_id}', 'TargetController@setTarget')->name('set.target');
 Route::post('target/{user_id}', 'TargetController@storeTarget')->name('store.target');
 Route::post('target/department/set', 'TargetController@storeDepartmentTarget')->name('target.department.store');
+Route::get('target/setting', 'TargetController@targetSetting')->name('target.setting');
 
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------

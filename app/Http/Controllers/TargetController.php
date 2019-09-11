@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Target;
 use App\User;
+use App\Program;
 use App\DepartmentTarget;
 use Illuminate\Http\Request;
 use Carbon;
@@ -60,8 +61,6 @@ class TargetController extends Controller
 
     public function storeDepartmentTarget(Request $request)
     {
-        // return $request->all();
-
         $validatedData = $request->validate([
             'department'    => 'required',
             'duration_type' => 'required',
@@ -138,5 +137,13 @@ class TargetController extends Controller
 
         return view('targets.show', $data);
         
+    }
+
+    public function targetSetting()
+    {
+        $data['active_class'] = 'set-targets';
+        $data['programs']     = Program::all();
+
+        return view('targets.target_settings', $data);
     }
 }
