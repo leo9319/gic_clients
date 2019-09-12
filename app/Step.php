@@ -22,4 +22,9 @@ class Step extends Model
     {
     	return static::where(['program_id' => $program_id, 'order' => $order])->first();
     }
+
+    public function target()
+    {
+        return $this->hasOne('App\TargetSetting');
+    }
 }

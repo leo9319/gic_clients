@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Target;
 use App\User;
 use App\Program;
+use App\Payment;
 use App\DepartmentTarget;
+use App\TargetSetting;
 use Illuminate\Http\Request;
 use Carbon;
 use URL;
@@ -20,7 +22,7 @@ class TargetController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('role:admin')->only('department', 'rm', 'counselor');
+        $this->middleware('role:admin')->only('department', 'rm', 'counselor', 'targetSetting');
     }
 
     public function department()
@@ -123,19 +125,26 @@ class TargetController extends Controller
 
     public function show(User $user)
     {
-        $data['active_class'] = 'my-targets';
+        // return Payment::all();
 
-        if($user->user_role == 'rm') {
+         $month_and_year = Payment::get()->groupBy(function($d) {
+             return Carbon\Carbon::parse($d->created_at)->format('Y');
+         });
 
-            $data['department_targets'] = DepartmentTarget::where('department', 'processing')->get();
+         return $month_and_year;
+        // $data['active_class'] = 'my-targets';
 
-        } else {
+        // if($user->user_role == 'rm') {
 
-            $data['department_targets'] = DepartmentTarget::where('department', 'counseling')->get();
+        //     $data['department_targets'] = DepartmentTarget::where('department', 'processing')->get();
 
-        }
+        // } else {
 
-        return view('targets.show', $data);
+        //     $data['department_targets'] = DepartmentTarget::where('department', 'counseling')->get();
+
+        // }
+
+        // return view('targets.show', $data);
         
     }
 
@@ -145,5 +154,24 @@ class TargetController extends Controller
         $data['programs']     = Program::all();
 
         return view('targets.target_settings', $data);
+    }
+
+    public function storeTargetSetting(Request $request)
+    {
+        $targets = $request->all();
+
+        foreach ($targets as $key => $target) {
+
+            if($key != '_token') {
+
+                TargetSetting::updateOrCreate(
+                    ['step_id' => $key],
+                    ['rm_count' => $target['rm_count'], 'counselor_count' => $target['counselor_count']],
+                );
+            }
+            
+        }
+
+        return redirect()->back()->with(['success' => 'Target setting updated!']);
     }
 }
