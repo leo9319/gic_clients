@@ -451,6 +451,14 @@ class HomeController extends Controller
         return redirect()->back();
     }
 
+    public function blockUser(Request $request)
+    {
+        // return $request->all();
+        User::find($request->user_id)->update(['login_status' => $request->login_status]);
+
+        return redirect()->back();
+    }
+
     public function activateMaintenanceMode()
     {
         touch(storage_path().'/framework/down');

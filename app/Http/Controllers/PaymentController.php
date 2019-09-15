@@ -1322,6 +1322,8 @@ class PaymentController extends Controller
                                        ->where('bkash_corporate_verified', 1)
                                        ->get();
 
+        $payment_histories         = $data['payment_histories'];
+
         $data['incomes_and_expenses'] = IncomeExpense::where([
             'bank_name' => $account,
             'recheck'   => 0,

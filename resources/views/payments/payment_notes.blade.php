@@ -24,7 +24,7 @@ $(document).ready( function () {
 
 		<div class="panel-footer">
 
-			@if(Auth::user()->user_role == 'admin')
+			@if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'operation')
 
         	<a href="#" data-toggle="modal" data-target="#addNotes" class="btn btn-success pull-right button2" style="margin: 10px">Add Note</a>
 
@@ -37,7 +37,7 @@ $(document).ready( function () {
 	                  <th>Date</th>
 	                  <th>Description</th>
 	                  <th>Amount</th>
-	                  @if(Auth::user()->user_role == 'admin')
+	                  @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'operation')
 
 	                  	<th class="text-center">Edit</th>
 	                  	<th class="text-center">Delete</th>
@@ -52,7 +52,7 @@ $(document).ready( function () {
 	                  <th>Description</th>
 	                  <th>Amount</th>
 
-	                  @if(Auth::user()->user_role == 'admin')
+	                  @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'operation')
 
 	                  	<th class="text-center">Edit</th>
 	                  	<th class="text-center">Delete</th>
@@ -68,7 +68,7 @@ $(document).ready( function () {
 	            		<td>{{ $note->description }}</td>
 	            		<td>{{ number_format($note->amount) }}</td>
 
-	            		@if(Auth::user()->user_role == 'admin')
+	            		@if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'operation')
 
 	            		<td>
 	            			<button type="button" class="btn btn-defualt btn-block" id="{{ $note->id }}" onclick="editNote(this)"><span class="fa fa-edit"></span></button>

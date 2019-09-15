@@ -333,7 +333,7 @@
 
                      @endif
 
-                     @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'operation' || Auth::user()->user_role == 'accountant')
+                     @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
 
                      <li>
                         <a href="{{ route('payment.index') }}" class="">

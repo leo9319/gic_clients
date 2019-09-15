@@ -68,6 +68,8 @@ $(document).ready( function () {
 
             <th>Action</th>
 
+            <th>Action</th>
+
           </tr>
 
         </thead>
@@ -109,6 +111,20 @@ $(document).ready( function () {
 
             </td>
 
+            <td>
+
+              @if($user->login_status)
+              
+              <button id="{{ $user->id }}" class="btn btn-danger btn-sm" onclick="changeUserLoginStatus(this, 0)">Block User</button>
+
+              @else
+
+              <button id="{{ $user->id }}" class="btn btn-success btn-sm" onclick="changeUserLoginStatus(this, 1)">Unblock User</button>
+
+              @endif
+
+            </td>
+
           </tr>
           @endforeach
 
@@ -129,6 +145,8 @@ $(document).ready( function () {
           <th>User Role</th>
 
           <th>Assign Role</th>
+
+          <th>Action</th>
 
           <th>Action</th>
 
@@ -337,6 +355,32 @@ $(document).ready( function () {
   </div>
 </div>
 
+<div id="userLoginStatus" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title text-center">Warning!</h4>
+      </div>
+      <div class="modal-body">
+        <p class="text-center">Are you sure?</p>
+        {{ Form::open(['route' => 'block.user']) }}
+
+          {{ Form::hidden('user_id', null, ['id'=>'login-user-id']) }}
+          {{ Form::hidden('login_status', null, ['id'=>'login-status']) }}
+        
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-default">Yes</button>
+        {{ Form::close() }}
+        <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 
 <script type="text/javascript">
   
@@ -375,8 +419,14 @@ $(document).ready( function () {
   }
 
   function deleteClient(elem){
-    document.getElementById('user-id').value = elem.id
+    document.getElementById('user-id').value = elem.id;
     $('#myModal').modal();
+  }
+
+  function changeUserLoginStatus(elem, status) {
+    document.getElementById('login-user-id').value = elem.id;
+    document.getElementById('login-status').value = status;
+    $('#userLoginStatus').modal();
   }
 
 </script>

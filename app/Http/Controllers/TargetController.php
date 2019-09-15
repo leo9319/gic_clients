@@ -27,8 +27,8 @@ class TargetController extends Controller
 
     public function department()
     {
-        $data['active_class'] = 'department-targets';
-        $data['targets']      = DepartmentTarget::all();
+        $data['active_class']       = 'department-targets';
+        $data['department_targets'] = DepartmentTarget::all();
         
         return view('targets.department', $data);
     }

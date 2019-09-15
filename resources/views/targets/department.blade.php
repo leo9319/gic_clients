@@ -7,10 +7,9 @@
    <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
    <script>
       $(document).ready( function () {
-          $('#department').DataTable({
+          $('#department-targets').DataTable({
             'columnDefs' : [
                {
-                  'searchable' : false,
                   'targets' : 2
                }
             ]
@@ -34,48 +33,18 @@
    @endif
 
    <div class="panel">
+
       <div class="panel-heading">
-         <h2 class="panel-title text-center"><b>Set Department Target:</b></h2>
+         <h3 class="panel-title">Department Targets</h3>
       </div>
+
+      <button type="button" class="btn btn-success pull-right button2" style="margin: 25px" data-toggle="modal" data-target="#addTarget">
+        Add Target
+      </button>
+
       <div class="panel-body">
-         {{ Form::open(['route' => 'target.department.store', 'autocomplete' => 'off']) }}
 
-            <div class="form-group">
-               {{ Form::label('Select Department:') }}
-               {{ Form::Select('department', ['processing' => 'Processing', 'counseling' => 'Counseling'], null, ['class' => 'form-control']) }}
-            </div>
-
-            <div class="form-group">
-               {{ Form::label('Target Type:') }}
-               {{ Form::select('duration_type', ['' => 'Select an option', 'month' => 'Month Range', 'range' => 'Date Range'], null, ['class' => 'form-control', 'onchange' => 'onTargetSelect(this)']) }}
-            </div>
-
-            <div id="date-container"></div>
-
-            <div class="form-group">
-               {{ Form::label('Set Target:') }}
-               <input type="number" name="target" class="form-control" required="required">
-            </div>
-
-            <br>
-
-            <div class="form-group">
-               {{ Form::submit('Submit', ['class'=>'btn btn-info btn-block button2']) }}
-            </div>
-
-         {{ Form::close() }}
-      </div>
-   </div>
-
-   <div class="panel">
-      <div class="panel-heading">
-         <h3 class="panel-title">Department::Targets</h3>
-         <div class="right">
-            <button type="button" class="btn-toggle-collapse"><i class="lnr lnr-chevron-up"></i></button>
-         </div>
-      </div>
-      <div class="panel-body">
-         <table id="rms" class="table table-striped">
+         <table id="department-targets" class="table table-striped table-bordered">
             <thead>
                <tr>
                   <th>Department</th>
@@ -83,22 +52,85 @@
                   <th>Start Date</th>
                   <th>End Date</th>
                   <th>Target</th>
+                  <th>Target Achieved</th>
                </tr>
             </thead>
             <tbody>
-                  @foreach($targets as $target)
+                  @foreach($department_targets as $department_target)
                   <tr>
-                     <th>{{ ucfirst($target->department) }}</th>
-                     <th>{{ $target->month ? Carbon\Carbon::parse($target->month)->format('M Y') : '-' }}</th>
-                     <th>{{ $target->start_date ? Carbon\Carbon::parse($target->start_date)->format('d-M-Y') : '-' }}</th>
-                     <th>{{ $target->end_date ? Carbon\Carbon::parse($target->end_date)->format('d-M-Y') : '-' }}</th>
-                     <th>{{ $target->target }}</th>
+                     <th>{{ ucfirst($department_target->department) }}</th>
+
+                     <th>{{ $department_target->month ? Carbon\Carbon::parse($department_target->month)->format('M Y') : '-' }}</th>
+
+                     <th>{{ $department_target->start_date ? Carbon\Carbon::parse($department_target->start_date)->format('d-M-Y') : '-' }}</th>
+
+                     <th>{{ $department_target->end_date ? Carbon\Carbon::parse($department_target->end_date)->format('d-M-Y') : '-' }}</th>
+
+                     <th>{{ $department_target->target }}</th>
+
+                     <th>{{ $department_target->getTargetAchieved($department_target->department, $department_target->month, $department_target->start_date, $department_target->end_date) }}</th>
                   </tr>
                   @endforeach
             </tbody>
+            <thead>
+               <tr>
+                  <th>Department</th>
+                  <th>Month</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Target</th>
+                  <th>Target Achieved</th>
+               </tr>
+            </thead>
          </table>
+
       </div>
    </div>
+</div>
+
+<!-- Add Target Modal -->
+<div class="modal fade" id="addTarget" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add Target</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+
+      {{ Form::open(['route' => 'target.department.store', 'autocomplete' => 'off']) }}
+
+         <div class="form-group">
+            {{ Form::label('Select Department:') }}
+            {{ Form::Select('department', ['processing' => 'Processing', 'counseling' => 'Counseling'], null, ['class' => 'form-control']) }}
+         </div>
+
+         <div class="form-group">
+            {{ Form::label('Target Type:') }}
+            {{ Form::select('duration_type', ['' => 'Select an option', 'month' => 'Month Range', 'range' => 'Date Range'], null, ['class' => 'form-control', 'onchange' => 'onTargetSelect(this)']) }}
+         </div>
+
+         <div id="date-container"></div>
+
+         <div class="form-group">
+            {{ Form::label('Set Target:') }}
+            <input type="number" name="target" class="form-control" required="required">
+         </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+
+      {{ Form::close() }}
+    </div>
+  </div>
 </div>
 
 @section('footer_scripts')

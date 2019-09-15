@@ -123,6 +123,7 @@ Route::post('update-staff', 'HomeController@customStaffRegisterUpdate')->name('s
 Route::post('register-staff', 'HomeController@customStaffRegisterStore')->name('staff.store');
 Route::get('getUserInformation', 'HomeController@getUserInformation');
 Route::post('user/delete', 'HomeController@deletUser')->name('delete.user');
+Route::post('user/block', 'HomeController@blockUser')->name('block.user');
 Route::get('shut/the/application/down', 'HomeController@activateMaintenanceMode')->name('maintenance.mode')->middleware('role:admin');
 
 
