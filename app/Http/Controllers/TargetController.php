@@ -33,34 +33,6 @@ class TargetController extends Controller
         return view('targets.department', $data);
     }
 
-    public function rm()
-    {
-        $data['previous']     = url()->previous();
-        $data['active_class'] = 'set-targets';
-        $data['rms']          = User::userRole('rm')->get();
-
-        return view('targets.rm', $data);
-    }
-
-    public function counselor()
-    {
-        $data['previous']     = url()->previous();
-        $data['active_class'] = 'set-targets';
-        $data['counselors']   = User::userRole('counselor')->get();
-        
-        return view('targets.counselor', $data);
-    }
-
-    public function setTarget($user_id)
-    {
-        $data['previous']     = URL::to('/target/counselor');
-        $data['active_class'] = 'set-targets';
-        $data['records']      = Target::where('user_id', $user_id)->orderBy('month_year','DESC')->get();
-        $data['user']         = User::find($user_id);
-
-        return view('targets.set_targets', $data);
-    }
-
     public function storeDepartmentTarget(Request $request)
     {
         $validatedData = $request->validate([
@@ -103,6 +75,48 @@ class TargetController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function showDepartmentTargetDetails(DepartmentTarget $department_target)
+    {
+        $data['active_class'] = 'department-targets';
+        $data['department']   = $department_target->department;
+        
+        if ($department_target->month) {
+            $data['payments'] = Payment::getMonthyPayment($department_target->month);
+        } else {
+            $data['payments'] = Payment::getPaymentWithDateRange($department_target->start_date, $department_target->end_date);
+        }
+
+        return view('targets.target_details', $data);
+    }
+
+    public function rm()
+    {
+        $data['previous']     = url()->previous();
+        $data['active_class'] = 'set-targets';
+        $data['rms']          = User::userRole('rm')->get();
+
+        return view('targets.rm', $data);
+    }
+
+    public function counselor()
+    {
+        $data['previous']     = url()->previous();
+        $data['active_class'] = 'set-targets';
+        $data['counselors']   = User::userRole('counselor')->get();
+        
+        return view('targets.counselor', $data);
+    }
+
+    public function setTarget($user_id)
+    {
+        $data['previous']     = URL::to('/target/counselor');
+        $data['active_class'] = 'set-targets';
+        $data['records']      = Target::where('user_id', $user_id)->orderBy('month_year','DESC')->get();
+        $data['user']         = User::find($user_id);
+
+        return view('targets.set_targets', $data);
     }
 
     public function storeTarget(Request $request, $user_id)

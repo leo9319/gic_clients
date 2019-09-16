@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+use Carbon;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -63,6 +64,18 @@ class Payment extends Model
                         $this->other;
 
         return $total_amount;
+    }
+
+    public static function getMonthyPayment($month_and_year)
+    {
+        return static::whereMonth('created_at', Carbon\Carbon::parse($month_and_year)->month)
+                          ->whereYear('created_at', Carbon\Carbon::parse($month_and_year)->year)
+                          ->get();
+    }
+
+    public static function getPaymentWithDateRange($start_date, $end_date)
+    {
+        return static::whereBetween('created_at', [$start_date, $end_date])->get();
     }
     
 

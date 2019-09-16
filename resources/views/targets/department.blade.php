@@ -52,7 +52,8 @@
                   <th>Start Date</th>
                   <th>End Date</th>
                   <th>Target</th>
-                  <th>Target Achieved</th>
+                  <th>Achieved</th>
+                  <th>Action</th>
                </tr>
             </thead>
             <tbody>
@@ -69,6 +70,7 @@
                      <th>{{ $department_target->target }}</th>
 
                      <th>{{ $department_target->getTargetAchieved($department_target->department, $department_target->month, $department_target->start_date, $department_target->end_date) }}</th>
+                     <th><a href="{{ route('target.department.details', $department_target->id) }}" class="btn btn-info button2">View Details</a></th>
                   </tr>
                   @endforeach
             </tbody>
@@ -79,7 +81,8 @@
                   <th>Start Date</th>
                   <th>End Date</th>
                   <th>Target</th>
-                  <th>Target Achieved</th>
+                  <th>Achieved</th>
+                  <th>Action</th>
                </tr>
             </thead>
          </table>

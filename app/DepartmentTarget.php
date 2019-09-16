@@ -17,32 +17,27 @@ class DepartmentTarget extends Model
     	])->first();
     }
 
-    public function getTargetAchieved($department, $month_year, $start_date, $end_date)
+    public function getTargetAchieved($department, $month_and_year, $start_date, $end_date)
     {
-    	$target_achieved = 0;
+        $target_achieved = 0;
 
-    	if($month_year) {
+        if($month_and_year) {
+            $payments = Payment::getMonthyPayment($month_and_year);
+        } else {
+            $payments = Payment::getPaymentWithDateRange($start_date, $end_date);
+        }
 
-    		$steps = Payment::whereMonth('created_at', Carbon::parse($month_year)->month)
-    				 ->whereYear('created_at', Carbon::parse($month_year)->year)->get();
+        foreach ($payments as $key => $payment) {
+            if($payment->totalAmount() == $payment->totalApprovedPayment->sum('amount_paid')) {
+                if ($department == 'counseling') {
+                    $target_achieved += $payment->stepInfo->target->counselor_count;
+                } else {
+                    $target_achieved += $payment->stepInfo->target->rm_count;
+                }
+            }
+        }
 
-		    foreach ($steps as $key => $step) {
-
-		    	if ($department == 'counseling') {
-		    		$target_achieved += $step->stepInfo->target->counselor_count;
-		    	} else {
-		    		$target_achieved += $step->stepInfo->target->rm_count;
-		    	}
-		    	
-		    }
-
-			return $target_achieved;
-
-    	} else {
-
-    		return 'N/A';
-
-    	}
+        return $target_achieved;
     	
     }
 }

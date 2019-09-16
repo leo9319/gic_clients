@@ -19,9 +19,11 @@ class TestController extends Controller
 {
     public function test()
     {
-    	$users = DB::table('users')
-                ->where('status', 'active')
-                ->dd();
+    	$payment = Payment::find(9);
+
+        return $payment->stepInfo->target->hasTarget();
+
+
 
 
         // $orders = DB::table('orders')
