@@ -5,7 +5,7 @@ use App\ClientTask;
 use Faker\Provider\cs_CZ\DateTime;
 use App\User;
 use App\Reminder;
-use App\Payment;
+use App\Target;
 use App\CounsellorClient;
 use Auth;
 use Carbon\Carbon;
@@ -19,9 +19,9 @@ class TestController extends Controller
 {
     public function test()
     {
-    	$payment = Payment::find(9);
+    	$target = Target::find(3);
 
-        return $payment->stepInfo->target->hasTarget();
+        return $target->getIndividualTargetAchieved($target->user_id, $target->month_year, $target->start_date, $target->end_date);
 
 
 

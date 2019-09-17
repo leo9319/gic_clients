@@ -70,6 +70,7 @@
                      <th>{{ $department_target->target }}</th>
 
                      <th>{{ $department_target->getTargetAchieved($department_target->department, $department_target->month, $department_target->start_date, $department_target->end_date) }}</th>
+                     
                      <th><a href="{{ route('target.department.details', $department_target->id) }}" class="btn btn-info button2">View Details</a></th>
                   </tr>
                   @endforeach

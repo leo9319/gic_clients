@@ -30,9 +30,9 @@ class DepartmentTarget extends Model
         foreach ($payments as $key => $payment) {
             if($payment->totalAmount() == $payment->totalApprovedPayment->sum('amount_paid')) {
                 if ($department == 'counseling') {
-                    $target_achieved += $payment->stepInfo->target->counselor_count;
+                    $target_achieved += $payment->stepInfo->targetSetting->counselor_count;
                 } else {
-                    $target_achieved += $payment->stepInfo->target->rm_count;
+                    $target_achieved += $payment->stepInfo->targetSetting->rm_count;
                 }
             }
         }

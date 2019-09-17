@@ -111,9 +111,8 @@ class TargetController extends Controller
 
     public function setTarget($user_id)
     {
-        $data['previous']     = URL::to('/target/counselor');
         $data['active_class'] = 'set-targets';
-        $data['records']      = Target::where('user_id', $user_id)->orderBy('month_year','DESC')->get();
+        $data['targets']      = Target::where('user_id', $user_id)->orderBy('month_year','DESC')->get();
         $data['user']         = User::find($user_id);
 
         return view('targets.set_targets', $data);
@@ -121,18 +120,43 @@ class TargetController extends Controller
 
     public function storeTarget(Request $request, $user_id)
     {
-        $data['user_id']    = $user_id;
-        $data['target']     = $request->target;
-        $data['month_year'] = $request->month_year . '-01';
+        $validatedData = $request->validate([
+            'duration_type' => 'required',
+            'target'        => 'required',
+        ]);
 
-        Target::updateOrCreate(
-            [
-                'user_id'    => $data['user_id'], 
-                'month_year' => $data['month_year']],
-            [
-                'target'     => $request->target
-            ]
-        );
+        $duration_type = $request->duration_type;
+
+        if ($duration_type == 'range') {
+
+            Target::updateOrCreate(
+                [
+                    'user_id'    => $user_id, 
+                    'start_date' => $request->start_date,
+                    'end_date'   => $request->end_date,
+                ],
+                [
+                    'target'     => $request->target
+                ]
+            );
+
+        } elseif($duration_type == 'month') {
+
+            Target::updateOrCreate(
+                [
+                    'user_id'    => $user_id, 
+                    'month_year' => $request->month . '-01',
+                ],
+                [
+                    'target'     => $request->target
+                ]
+            );
+
+        } else {
+
+            return 0;
+
+        }
 
         return redirect()->back();
     }
@@ -179,7 +203,7 @@ class TargetController extends Controller
             if($key != '_token') {
 
                 TargetSetting::updateOrCreate(
-                    ['step_id' => $key],
+                    ['step_id'  => $key],
                     ['rm_count' => $target['rm_count'], 'counselor_count' => $target['counselor_count']],
                 );
             }

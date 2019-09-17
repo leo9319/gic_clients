@@ -7,17 +7,12 @@ use Carbon\Carbon;
 
 class Target extends Model
 {
-    protected $fillable = ['user_id', 'target', 'achieved', 'month_year'];
+    protected $fillable = ['user_id', 'target', 'achieved', 'month_year', 'start_date', 'end_date'];
 
     public function userInfo()
     {
     	return $this->hasMany('App\User', 'id', 'user_id');
     }
-
-    // public static function userCurrentMonthTarget($user_id)
-    // {
-    //     return static::where('user_id', $user_id)->whereDate('month_year', Carbon::parse()->format('Y-m-01'))->get();
-    // }
 
     public static function getUserTarget($user_id)
     {
@@ -49,5 +44,33 @@ class Target extends Model
                 ['achieved' => 1]
             );
         }
+    }
+
+    public function getIndividualTargetAchieved($user_id, $month_and_year, $start_date, $end_date)
+    {
+        $target_achieved = 0;
+        $rms = [];
+
+        if($month_and_year) {
+            $payments = Payment::getMonthyPayment($month_and_year);
+        } else {
+            $payments = Payment::getPaymentWithDateRange($start_date, $end_date);
+        }
+
+        foreach ($payments as $key => $payment) {
+            if($payment->totalAmount() == $payment->totalApprovedPayment->sum('amount_paid')) {
+
+                if (in_array($user_id, $payment->user->getAssignedRms->pluck('rm_id')->toArray())) {
+                    $target_achieved += $payment->stepInfo->targetSetting->rm_count;
+                } else {
+                    //
+                }
+
+                
+            }
+        }
+
+        return $target_achieved;
+        
     }
 }

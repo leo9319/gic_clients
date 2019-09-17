@@ -142,7 +142,7 @@
                 <tbody>
 
                     @foreach($payments as $payment)
-                    @if($payment->stepInfo->target->hasTarget($department))
+                    @if($payment->stepInfo->targetSetting->hasTarget($department))
                     @if($payment->totalAmount() == $payment->totalApprovedPayment->sum('amount_paid'))
                     <tr>
                         <td>{{ Carbon\Carbon::parse($payment->created_at)->format('d-M-y') }}</td>
