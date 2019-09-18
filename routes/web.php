@@ -158,6 +158,7 @@ Route::get('set/target/{user_id}', 'TargetController@setTarget')->name('set.targ
 Route::post('target/{user_id}', 'TargetController@storeTarget')->name('store.target');
 Route::post('target/department/set', 'TargetController@storeDepartmentTarget')->name('target.department.store');
 Route::get('target/department/details/{department_target}', 'TargetController@showDepartmentTargetDetails')->name('target.department.details');
+Route::get('target/individual/details/{target}', 'TargetController@showIndividualTargetDetails')->name('target.individual.details');
 Route::get('target/setting', 'TargetController@targetSetting')->name('target.setting');
 Route::post('store/target/setting', 'TargetController@storeTargetSetting')->name('target.setting.store');
 

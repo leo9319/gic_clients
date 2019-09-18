@@ -14,6 +14,11 @@ class Target extends Model
     	return $this->hasMany('App\User', 'id', 'user_id');
     }
 
+    public function user()
+    {
+        return $this->hasOne('App\User', 'id', 'user_id');
+    }
+
     public static function getUserTarget($user_id)
     {
         return static::where('user_id', $user_id);
@@ -48,8 +53,9 @@ class Target extends Model
 
     public function getIndividualTargetAchieved($user_id, $month_and_year, $start_date, $end_date)
     {
+        $user            = User::find($user_id);
         $target_achieved = 0;
-        $rms = [];
+        $rms             = [];
 
         if($month_and_year) {
             $payments = Payment::getMonthyPayment($month_and_year);
@@ -59,18 +65,19 @@ class Target extends Model
 
         foreach ($payments as $key => $payment) {
             if($payment->totalAmount() == $payment->totalApprovedPayment->sum('amount_paid')) {
-
-                if (in_array($user_id, $payment->user->getAssignedRms->pluck('rm_id')->toArray())) {
-                    $target_achieved += $payment->stepInfo->targetSetting->rm_count;
+                if ($user->user_role == 'rm') {
+                    if (in_array($user_id, $payment->user->getAssignedRms->pluck('rm_id')->toArray())) {
+                        $target_achieved += $payment->stepInfo->targetSetting->rm_count;
+                    }
                 } else {
-                    //
+                    if (in_array($user_id, $payment->user->getAssignedCounselors->pluck('counsellor_id')->toArray())) {
+                        $target_achieved += $payment->stepInfo->targetSetting->counselor_count;
+                    }
                 }
-
-                
             }
         }
 
         return $target_achieved;
-        
+
     }
 }

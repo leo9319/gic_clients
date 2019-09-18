@@ -56,6 +56,7 @@
                      <th>End Date</th>
                      <th>Target</th>
                      <th>Achieved</th>
+                     <th>Action</th>
                  </tr>
 
              </thead>
@@ -72,6 +73,9 @@
                      <td>{{ $target->end_date ? Carbon\Carbon::parse($target->end_date)->format('d-M-Y') : '-' }}</td>
                      <td>{{ $target->target }}</td>
                      <td>{{ $target->getIndividualTargetAchieved($target->user_id, $target->month_year, $target->start_date, $target->end_date) }}</td>
+                     <td>
+                       <a href="{{ route('target.individual.details', $target->id) }}" class="btn btn-info button2">View Details</a>
+                     </td>
                  </tr>
 
                  @endforeach

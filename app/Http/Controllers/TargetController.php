@@ -91,6 +91,27 @@ class TargetController extends Controller
         return view('targets.target_details', $data);
     }
 
+    public function showIndividualTargetDetails(Target $target)
+    {
+        $data['active_class'] = 'set-targets';
+        $data['user_id'] = $target->user_id;
+        $month_and_year = $target->month_year;
+
+        if($target->month_year) {
+            $data['payments'] = Payment::getMonthyPayment($target->month_year);
+        } else {
+            $data['payments'] = Payment::getPaymentWithDateRange($target->start_date, $target->end_date);
+        }
+
+        if($target->user->user_role == 'rm') {
+            return view('targets.individual_rm_target_details', $data);
+        }
+
+        return view('targets.individual_counselor_target_details', $data);
+
+        
+    }
+
     public function rm()
     {
         $data['previous']     = url()->previous();
