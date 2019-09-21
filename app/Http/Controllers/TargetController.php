@@ -8,6 +8,7 @@ use App\Program;
 use App\Payment;
 use App\DepartmentTarget;
 use App\TargetSetting;
+use Auth;
 use Illuminate\Http\Request;
 use Carbon;
 use URL;
@@ -182,28 +183,13 @@ class TargetController extends Controller
         return redirect()->back();
     }
 
-    public function show(User $user)
+    public function show()
     {
-        // return Payment::all();
+        $data['active_class'] = 'my-targets';
+        $user                 = Auth::user();
+        $data['targets']      = Target::where('user_id', $user->id)->get();
 
-         $month_and_year = Payment::get()->groupBy(function($d) {
-             return Carbon\Carbon::parse($d->created_at)->format('Y');
-         });
-
-         return $month_and_year;
-        // $data['active_class'] = 'my-targets';
-
-        // if($user->user_role == 'rm') {
-
-        //     $data['department_targets'] = DepartmentTarget::where('department', 'processing')->get();
-
-        // } else {
-
-        //     $data['department_targets'] = DepartmentTarget::where('department', 'counseling')->get();
-
-        // }
-
-        // return view('targets.show', $data);
+        return view('targets.show', $data);
         
     }
 

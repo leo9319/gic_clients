@@ -31,7 +31,7 @@
                </li>
 
                <li>
-                  <a href="{{ route('target.show', Auth::user()->id) }}" class="{{ $active_class == 'my-targets' ? 'active' : '' }}">
+                  <a href="{{ route('target.show') }}" class="{{ $active_class == 'my-targets' ? 'active' : '' }}">
                      <i class="fas fa-bullseye"></i>
                      <span>My Targets</span>
                   </a>

@@ -78,28 +78,26 @@
                 <thead>
 
                 	<th>Month</th>
-
                     <th>Start Date</th>
-
                     <th>End Date</th>
-
                     <th>Target</th>
-
                     <th>Target Achieved</th>
+                    <th>Action</th>
 
                 </thead>
 
                 <tbody>
 
-                    @foreach($department_targets as $department_target)
+                    @foreach($targets as $target)
 
                     <tr>
 
-                        <td>{{ Carbon\Carbon::parse($department_target->month)->format('F') }}</td>
-                        <td>{{ $department_target->start_date ?? '-' }}</td>
-                        <td>{{ $department_target->end_date ?? '-' }}</td>
-                        <td>{{ $department_target->target }}</td>
-                        <td></td>
+                        <td>{{ $target->month_year ? Carbon\Carbon::parse($target->month_year)->format('F Y') : '-' }}</td>
+                        <td>{{ $target->start_date ?? '-' }}</td>
+                        <td>{{ $target->end_date ?? '-' }}</td>
+                        <td>{{ $target->target }}</td>
+                        <td>{{ $target->getIndividualTargetAchieved($target->user_id, $target->month_year, $target->start_date, $target->end_date)}}</td>
+                        <td><a href="{{ route('target.individual.details', $target->id) }}" class="btn btn-info button2">View Details</a></td>
 
                     </tr>
 
@@ -110,14 +108,11 @@
                 <tfoot>
 
                     <th>Month</th>
-
                     <th>Start Date</th>
-
                     <th>End Date</th>
-
                     <th>Target</th>
-
                     <th>Target Achieved</th>
+                    <th>Action</th>
 
                 </tfoot>
 

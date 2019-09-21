@@ -150,7 +150,7 @@ Route::post('program/edit', 'ProgramController@editProgram')->name('edit.program
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-Route::get('target/show/{user}', 'TargetController@show')->name('target.show');
+Route::get('target/show', 'TargetController@show')->name('target.show');
 Route::get('target/department', 'TargetController@department')->name('target.department');
 Route::get('target/rm', 'TargetController@rm')->name('target.rm');
 Route::get('target/counselor', 'TargetController@counselor')->name('target.counselor');
