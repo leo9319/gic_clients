@@ -273,6 +273,7 @@ Route::get('getChequeInfo', 'PaymentController@getChequeInfo');
 Route::get('getOnlineInfo', 'PaymentController@getOnlineInfo');
 Route::get('findNoteInfo', 'PaymentController@findNoteInfo');
 Route::get('findIncomeAndExpenses', 'PaymentController@findIncomeAndExpenses');
+Route::get('payment/bank/charges', 'PaymentController@bankCharges')->name('payment.bank.charges');
 
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------

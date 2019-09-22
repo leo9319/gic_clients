@@ -293,6 +293,14 @@
 
                <div id="subPayments" class="collapse ">
                   <ul class="nav">
+                     
+                     @if(Auth::user()->user_role == 'admin')
+                     <li>
+                        <a href="{{ route('payment.bank.charges') }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Bank Charges</span></a>
+                     </li>
+                     @endif
 
                      @if(Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant')
                      <li>

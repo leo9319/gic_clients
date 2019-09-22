@@ -18,6 +18,7 @@ use App\ClientTask;
 use App\SpouseTask;
 use App\PaymentType;
 use App\PaymentNote;
+use App\BankCharge;
 use App\IncomeExpense;
 use Carbon\Carbon;
 use Redirect;
@@ -73,6 +74,15 @@ class PaymentController extends Controller
     public function create()
     {
         //
+    }
+
+
+    public function bankCharges()
+    {
+        $data['active_class'] = 'payments';
+        $data['bank_charges'] = BankCharge::all();
+
+        return view('payments.admin.bank_charges', $data);
     }
 
     public function types(Request $request)
