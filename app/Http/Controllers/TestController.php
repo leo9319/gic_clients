@@ -19,18 +19,8 @@ class TestController extends Controller
 {
     public function test()
     {
-    	$target = Target::find(3);
-
-        return $target->getIndividualTargetAchieved($target->user_id, $target->month_year, $target->start_date, $target->end_date);
-
-
-
-
-        // $orders = DB::table('orders')
-        //         ->select('department', DB::raw('SUM(price) as total_sales'))
-        //         ->groupBy('department')
-        //         ->havingRaw('SUM(price) > ?', [2500])
-        //         ->get();
+        $data['active_class'] = 'payments';
+    	return view('test', $data);
 
     }
 

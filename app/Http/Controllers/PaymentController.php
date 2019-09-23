@@ -85,6 +85,11 @@ class PaymentController extends Controller
         return view('payments.admin.bank_charges', $data);
     }
 
+    public function storeBankCharges()
+    {
+        // store bank charge
+    }
+
     public function types(Request $request)
     {
         $validatedData = $request->validate([
