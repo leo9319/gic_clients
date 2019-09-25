@@ -274,6 +274,8 @@ Route::get('getOnlineInfo', 'PaymentController@getOnlineInfo');
 Route::get('findNoteInfo', 'PaymentController@findNoteInfo');
 Route::get('findIncomeAndExpenses', 'PaymentController@findIncomeAndExpenses');
 Route::get('payment/bank/charges', 'PaymentController@bankCharges')->name('payment.bank.charges');
+Route::get('payment/show/bank/charges', 'PaymentController@showBankCharges')->name('payment.show.bank.charges');
+Route::post('payment/edit/bank/charges/{id}', 'PaymentController@editBankCharges')->name('payment.edit.bank.charges');
 Route::get('payment/store/bank/charges', 'PaymentController@storeBankCharges')->name('payment.store.bank.charges');
 
 

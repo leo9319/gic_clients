@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Response;
 use App\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
@@ -76,6 +77,10 @@ class PaymentController extends Controller
         //
     }
 
+    public function showBankCharges()
+    {
+        return response(BankCharge::all()->jsonSerialize(), Response::HTTP_OK);
+    }
 
     public function bankCharges()
     {
@@ -85,9 +90,13 @@ class PaymentController extends Controller
         return view('payments.admin.bank_charges', $data);
     }
 
-    public function storeBankCharges()
+    public function editBankCharges(Request $request, $id)
     {
-        // store bank charge
+        BankCharge::find($id)->update([
+            'bank_charge' => $request->bank_charge
+        ]);
+
+        return response(null, Response::HTTP_OK);
     }
 
     public function types(Request $request)
@@ -169,8 +178,6 @@ class PaymentController extends Controller
         $created_at            = $request->session()->get('created_at');
 
 
-
-
         $payment = Payment::updateOrCreate(
             [
                 'client_id'             => $client_id,
@@ -193,6 +200,7 @@ class PaymentController extends Controller
         $counter = 0;
         $counter = $request->counter;
         $payment_id = $payment->id;
+        $bank_charges = BankCharge::all();
 
         for ($i=0; $i < $counter + 1; $i++) { 
             $charge                   = 0;
@@ -218,9 +226,14 @@ class PaymentController extends Controller
 
                         $bank_deposited = 'scb';
                         if($card_type == 'amex') {
-                            $charge = 2.5;
+                            $charge = $bank_charges->where('bank_name', 'city_bank_amex')->first()->bank_charge;
                         } else {
-                            $charge = ($city_bank == 'yes') ? 1 : 2;
+
+                            if($city_bank == 'yes') {
+                                $charge = $bank_charges->where('bank_name', 'city_bank')->first()->bank_charge;
+                            } else {
+                                $charge = $bank_charges->where('bank_name', 'city_bank_other')->first()->bank_charge;
+                            }
                         }
                         
                         break;
@@ -228,25 +241,25 @@ class PaymentController extends Controller
                     case 'brac':
 
                         $bank_deposited = 'brac';
-                        $charge = 1.4;
+                        $charge = $bank_charges->where('bank_name', 'brac_bank')->first()->bank_charge;
                         break;
 
                     case 'ebl':
                         
                         $bank_deposited = 'ebl';
-                        $charge = 1.5;
+                        $charge = $bank_charges->where('bank_name', 'ebl')->first()->bank_charge;
                         break;
 
                     case 'ucb':
                         
                         $bank_deposited = 'ucb';
-                        $charge = 1.5;
+                        $charge = $bank_charges->where('bank_name', 'ucb')->first()->bank_charge;
                         break;
 
                     case 'dbbl':
                         
                         $bank_deposited = 'dbbl';
-                        $charge = 1.5;
+                        $charge = $bank_charges->where('bank_name', 'dbbl')->first()->bank_charge;
                         break;
 
                     default:
@@ -263,26 +276,26 @@ class PaymentController extends Controller
 
             } else if($payment_type == 'upay') {
 
-                $charge = 1.5;
+                $charge = $bank_charges->where('bank_name', 'upay')->first()->bank_charge;
 
             } else if($payment_type == 'bkash_corporate') {
 
-                $charge = 1.5;
+                $charge = $bank_charges->where('bank_name', 'bkash_corporate')->first()->bank_charge;
                 $bkash_corporate_verified = -1;
 
             } else if($payment_type == 'bkash_salman') {
 
-                $charge = 2;
+                $charge = $bank_charges->where('bank_name', 'bkash_salman')->first()->bank_charge;
                 $bkash_salman_verified = -1;
 
             } else if($payment_type == 'pay_gic') {
 
-                $charge = 2.2;
+                $charge = $bank_charges->where('bank_name', 'pay_gic')->first()->bank_charge;
                 $online_verified = -1;
 
             } else if($payment_type == 'pay_gic_ssl') {
 
-                $charge = 3.5;
+                $charge = $bank_charges->where('bank_name', 'pay_gic_ssl')->first()->bank_charge;
                 $online_verified = -1;
 
             } else {
@@ -448,16 +461,16 @@ class PaymentController extends Controller
      */
     public function edit(Payment $payment)
     {
-        $data['previous'] = URL::to('/dashboard');
+        $data['previous']     = URL::to('/dashboard');
         $data['active_class'] = 'payments';
-        $data['payment'] = $payment;
+        $data['payment']      = $payment;
 
 
         $data['programs'] = DB::table('client_programs AS CP')
                             ->join('programs AS P', 'P.id', 'CP.program_id')
                             ->where('CP.client_id', $payment->client_id)->get();
 
-        $data['steps'] = Step::getProgramAllStep($payment->program_id);
+        $data['steps']    = Step::getProgramAllStep($payment->program_id);
 
         $data['payment_types'] = PaymentType::where('payment_id', $payment->id)
                                   ->where('cheque_verified', '!=', 0)

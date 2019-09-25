@@ -48,11 +48,11 @@
                </tr>
             </thead>
             <tbody>
-               <tr v-for="bank_charge in {{ $bank_charges }}">
-                  <td v-text="bank_charge.bank_name.toUpperCase().split('_').join(' ')"></td>
-                  <td v-text="bank_charge.bank_charge + ' %'"></td>
+               <tr v-for="bank in banks">
+                  <td v-text="bank.bank_name.toUpperCase().split('_').join(' ')"></td>
+                  <td v-text="bank.bank_charge + ' %'"></td>
                   <td>
-                     <button class="btn btn-info btn-sm btn-block" @click="onShowModal(bank_charge)">Edit</button>
+                     <button class="btn btn-info btn-sm btn-block" @click="onShowModal(bank)">Edit</button>
                   </td>
                </tr>
             </tbody>
@@ -83,11 +83,12 @@
                      <form method="POST" action="{{ route('payment.store.bank.charges') }}" @submit.prevent="onSubmit">
                         <div class="modal-body">
                            <label for="bank_charge">Bank Charge:</label>
-                           <input type="" class="form-control" id="bank-charge" v-model="bank_charge">
+                           <input type="hidden" class="form-control" id="id" v-model="id">
+                           <input type="text" class="form-control" id="bank-charge" v-model="bank_charge">
                         </div>
                         <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click="isActive = false">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="submit" class="btn btn-primary" @click="update">Save changes</button>
                      </form>
                         </div>
                   </div>
@@ -96,7 +97,6 @@
          </div>
       </transition>
    </div>
-   <button @click="isActive = true">Click</button>
 </div>
 
 
@@ -112,20 +112,42 @@ new Vue({
    data: {
       isActive: false,
       bank_name: '',
-      bank_charge: ''
+      banks: []
    },
    methods: {
       onShowModal(bank_charge) {
          this.isActive    = true;
          this.bank_name   = bank_charge.bank_name.toUpperCase().split('_').join(' ');
+         this.id          = bank_charge.id;
          this.bank_charge = bank_charge.bank_charge;
+      },
+
+      read() {
+         this.banks = [];
+        window.axios.get('{{ url('/payment/show/bank/charges') }}').then(({ data }) => {
+          data.forEach(bank => {
+            this.banks.push(bank);
+          });
+        });
+      },
+
+      update() {
+
+         var bankCharge = document.getElementById('bank-charge').value;
+         var id         = document.getElementById('id').value;
+
+         window.axios.post(`{{ url('/payment/edit/bank/charges/${id}') }}`, { bank_charge : bankCharge }).then(() => {
+            this.read();
+         });
       },
 
       onSubmit() {
          this.isActive    = false;
-         // axios.post('payment/store/bank/charges')
-         // alert('form is submitted');
-      }
+      },
+   },
+
+   created() {
+      this.read();
    }
 })
 
