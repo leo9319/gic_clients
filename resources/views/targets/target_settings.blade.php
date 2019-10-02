@@ -63,10 +63,10 @@
 							<td>{{ $step->step_name }}</td>
 
 							<td>
-								<input type="number" name="{{ $step->id }}[rm_count]" class="form-control" value="{{ $step->target->rm_count ?? 0 }}" step="any" min="0" style="max-width: 100px">
+								<input type="number" name="{{ $step->id }}[rm_count]" class="form-control" value="{{ $step->targetSetting->rm_count ?? 0 }}" step="any" min="0" style="max-width: 100px">
 							</td>
 							<td>
-								<input type="number" name="{{ $step->id }}[counselor_count]" class="form-control" value="{{ $step->target->counselor_count ?? 0 }}" step="any" min="0" style="max-width: 100px">
+								<input type="number" name="{{ $step->id }}[counselor_count]" class="form-control" value="{{ $step->targetSetting->counselor_count ?? 0 }}" step="any" min="0" style="max-width: 100px">
 							</td>
 
 		                  </tr>

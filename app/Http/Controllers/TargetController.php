@@ -29,7 +29,7 @@ class TargetController extends Controller
     public function department()
     {
         $data['active_class']       = 'department-targets';
-        $data['department_targets'] = DepartmentTarget::all();
+        $data['department_targets'] = DepartmentTarget::latest()->get();
         
         return view('targets.department', $data);
     }
@@ -48,6 +48,7 @@ class TargetController extends Controller
 
             DepartmentTarget::updateOrCreate(
             [
+                'steps'      => $request->steps,
                 'department' => $request->department,
                 'start_date' => $request->start_date,
                 'end_date'   => $request->end_date,
@@ -60,6 +61,7 @@ class TargetController extends Controller
 
             DepartmentTarget::updateOrCreate(
             [
+                'steps'      => $request->steps,
                 'department' => $request->department,
                 'month'      => $request->month . '-01'
             ],

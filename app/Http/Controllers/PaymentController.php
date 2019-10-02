@@ -40,7 +40,7 @@ class PaymentController extends Controller
     public function __construct() 
     {
         $this->middleware('auth');
-        $this->middleware('role:admin')->only('edit', 'destroy');
+        $this->middleware('role:admin')->only('edit', 'destroy', 'bankCharges');
         $this->middleware('role:admin,accountant')->only('index', 'bankAccount', 'accountDetails', 'recheck', 'clientRefund', 'showAdvanceIncomes', 'showAdvanceExpenses', 'createIncome', 'createExpense', 'showIncomesAndExpenses', 'recheckPaymentTypeList');
 
     }
@@ -263,7 +263,6 @@ class PaymentController extends Controller
                         break;
 
                     default:
-                    // Do nothing
                 }
 
             } else if($payment_type == 'cheque') {
@@ -366,7 +365,7 @@ class PaymentController extends Controller
         // If the step is a new one then it is added to client profile
         ClientProgram::updateOrCreate(
             ['client_id' => $client_id, 'program_id' => $program_id],
-            ['steps' => json_encode($step_array)]
+            ['steps'     => json_encode($step_array)]
         );
 
         // Getting the list of tasks for the client
@@ -380,9 +379,9 @@ class PaymentController extends Controller
             ClientTask::updateOrCreate(
                 ['client_id' => $client_id, 'step_id' => $step_id, 'task_id' => $program_task->id],
                 ['client_id' => $client_id,
-                 'step_id' => $step_id,
-                 'task_id' => $program_task->id,
-                 'deadline' => Carbon::now()->addDays($program_task->duration),
+                 'step_id'   => $step_id,
+                 'task_id'   => $program_task->id,
+                 'deadline'  => Carbon::now()->addDays($program_task->duration),
                 ]
             );
         }
@@ -806,8 +805,8 @@ class PaymentController extends Controller
     {
         PaymentType::find($request->payment_id)->update([
             'cheque_verified' => 1,
-            'created_at' => $request->date_despisted,
-            'deposit_date' => $request->date_despisted,
+            'created_at'      => $request->date_despisted,
+            'deposit_date'    => $request->date_despisted,
         ]);
 
         return redirect()->back();
@@ -817,10 +816,10 @@ class PaymentController extends Controller
     {
         PaymentType::find($payment_type->id)->update(['cheque_verified' => 0]);
 
-        $payment_id = $payment_type->payment_id;
-        $total_amount = $this->findingTotalAmount($payment_id);
+        $payment_id        = $payment_type->payment_id;
+        $total_amount      = $this->findingTotalAmount($payment_id);
         $total_amount_paid = $this->findingTotalPaidAmount($payment_id);
-        $dues = $total_amount - $total_amount_paid;
+        $dues              = $total_amount - $total_amount_paid;
 
         Payment::find($payment_id)->update(['dues' => $dues]);
 
@@ -947,7 +946,7 @@ class PaymentController extends Controller
     public function statement()
     {
         $data['active_class'] = 'payments';
-        $data['previous'] = URL::to('/dashboard');
+        $data['previous']     = URL::to('/dashboard');
 
         // Get the assigend client for the RMS:
 
@@ -1086,9 +1085,13 @@ class PaymentController extends Controller
 
                     $bank_deposited = 'scb';
                     if($card_type == 'amex') {
-                        $charge = 2.5;
+                        $charge = $bank_charges->where('bank_name', 'city_bank_amex')->first()->bank_charge;
                     } else {
-                        $charge = ($city_bank == 'yes') ? 1 : 2;
+                        if($city_bank == 'yes') {
+                            $charge = $bank_charges->where('bank_name', 'city_bank')->first()->bank_charge;
+                        } else {
+                            $charge = $bank_charges->where('bank_name', 'city_bank_other')->first()->bank_charge;
+                        }
                     }
                     
                     break;
@@ -1096,25 +1099,25 @@ class PaymentController extends Controller
                 case 'brac':
 
                     $bank_deposited = 'brac';
-                    $charge = 1.4;
+                    $charge = $bank_charges->where('bank_name', 'brac_bank')->first()->bank_charge;
                     break;
 
                 case 'ebl':
                     
                     $bank_deposited = 'ebl';
-                    $charge = 1.5;
+                    $charge = $bank_charges->where('bank_name', 'ebl')->first()->bank_charge;
                     break;
 
                 case 'ucb':
                     
                     $bank_deposited = 'ucb';
-                    $charge = 1.5;
+                    $charge = $bank_charges->where('bank_name', 'ucb')->first()->bank_charge;
                     break;
 
                 case 'dbbl':
                     
                     $bank_deposited = 'dbbl';
-                    $charge = 1.5;
+                    $charge = $bank_charges->where('bank_name', 'dbbl')->first()->bank_charge;
                     break;
 
                 default:
@@ -1131,26 +1134,26 @@ class PaymentController extends Controller
 
         } else if($payment_type == 'upay') {
 
-            $charge = 1.5;
+            $charge = $bank_charges->where('bank_name', 'upay')->first()->bank_charge;
 
         } else if($payment_type == 'bkash_corporate') {
 
-            $charge = 1.5;
+            $charge = $bank_charges->where('bank_name', 'bkash_salman')->first()->bank_charge;
             $bkash_corporate_verified = -1;
 
         } else if($payment_type == 'bkash_salman') {
 
-            $charge = 2;
+            $charge = $bank_charges->where('bank_name', 'bkash_salman')->first()->bank_charge;
             $bkash_salman_verified = -1;
 
         } else if($payment_type == 'pay_gic') {
 
-            $charge = 2.2;
+            $charge = $bank_charges->where('bank_name', 'pay_gic')->first()->bank_charge;
             $online_verified = -1;
 
         } else if($payment_type == 'pay_gic_ssl') {
 
-            $charge = 3.5;
+            $charge = $bank_charges->where('bank_name', 'pay_gic_ssl')->first()->bank_charge;
             $online_verified = -1;
 
         } else {
@@ -1262,6 +1265,8 @@ class PaymentController extends Controller
         $banks = [
 
             'cash'           => 0,
+            'cash_dhaka'     => 0,
+            'cash_ctg'       => 0,
             'scb'            => 0,
             'city'           => 0,
             'dbbl'           => 0,
@@ -1282,6 +1287,8 @@ class PaymentController extends Controller
          $data['bank_accounts'] = [
 
             'cash'           => 'CASH',
+            'cash_dhaka'     => 'CASH - DHAKA',
+            'cash_ctg'       => 'CASH - CHITTAGONG',
             'scb'            => 'SCB',
             'city'           => 'CITY',
             'dbbl'           => 'DBBL',
@@ -1368,7 +1375,7 @@ class PaymentController extends Controller
             $payment_breakdowns[$index]['location']    = $value->payment->location;
             $payment_breakdowns[$index]['client_code'] = (isset($value->payment->userInfo->client_code)) ? $value->payment->userInfo->client_code : 'Client Removed';
             $payment_breakdowns[$index]['client_name'] = (isset($value->payment->userInfo->name)) ? $value->payment->userInfo->name : 'Client Removed';
-            $payment_breakdowns[$index]['type'] = (isset($value->payment->programInfo->program_name)) ? $value->payment->programInfo->program_name : 'Program Removed';
+            $payment_breakdowns[$index]['type']        = (isset($value->payment->programInfo->program_name)) ? $value->payment->programInfo->program_name : 'Program Removed';
             
             if($value->refund_payment == 1) {
                 $payment_breakdowns[$index]['paid']        = -$value->amount_paid;
@@ -1414,22 +1421,22 @@ class PaymentController extends Controller
 
         IncomeExpense::create([
             'payment_type' => 'Cash Transfer In',
-            'bank_name' => $request->to_account,
+            'bank_name'    => $request->to_account,
             'total_amount' => $request->amount,
-            'recheck' => 0,
-            'description' => $request->description,
-            'created_by' => Auth::user()->id,
-            'created_at' => $date_timestamp, 
+            'recheck'      => 0,
+            'description'  => $request->description,
+            'created_by'   => Auth::user()->id,
+            'created_at'   => $date_timestamp, 
         ]);
 
         IncomeExpense::create([
             'payment_type' => 'Cash Transfer Out',
-            'bank_name' => $request->from_account,
+            'bank_name'    => $request->from_account,
             'total_amount' => -1 * $request->amount,
-            'recheck' => 0,
-            'description' => $request->description,
-            'created_by' => Auth::user()->id,
-            'created_at' => $date_timestamp, 
+            'recheck'      => 0,
+            'description'  => $request->description,
+            'created_by'   => Auth::user()->id,
+            'created_at'   => $date_timestamp, 
         ]);
 
         return redirect()->back();
@@ -1442,28 +1449,29 @@ class PaymentController extends Controller
         $data['previous'] = URL::to('/dashboard');
 
         $data['bank_accounts'] = [
-            'cash' => 'Cash',
-            'scb' => 'SCB',
-            'city' => 'City Bank',
-            'dbbl' => 'DBBL',
-            'ebl' => 'EBL',
-            'ucb' => 'UCB',
-            'brac' => 'BRAC',
-            'agrani' => 'Agrani Bank',
-            'icb' => 'ICB',
+            'cash_dhaka'     => 'Cash - Dhaka',
+            'cash_ctg'       => 'Cash - Chittagong',
+            'scb'            => 'SCB',
+            'city'           => 'City Bank',
+            'dbbl'           => 'DBBL',
+            'ebl'            => 'EBL',
+            'ucb'            => 'UCB',
+            'brac'           => 'BRAC',
+            'agrani'         => 'Agrani Bank',
+            'icb'            => 'ICB',
             'salman account' => 'Salman Account',
             'kamran account' => 'Kamran Account'
          ];
 
          $data['locations'] = [
-            'dhaka' => 'Dhaka', 
+            'dhaka'      => 'Dhaka', 
             'chittagong' => 'Chittagong',
-            'cox_bazar' => 'Cox\'s bazar',
-            'sylhet' => 'Sylhet',
-            'khulna' => 'Khulna',
-            'comilla' => 'Comilla',
-            'noakhali' => 'Noakhali',
-            'rajshahi' => 'Rajshahi',
+            'cox_bazar'  => 'Cox\'s bazar',
+            'sylhet'     => 'Sylhet',
+            'khulna'     => 'Khulna',
+            'comilla'    => 'Comilla',
+            'noakhali'   => 'Noakhali',
+            'rajshahi'   => 'Rajshahi',
          ];
 
         return view('payments.create_income', $data);
@@ -1480,15 +1488,15 @@ class PaymentController extends Controller
         }
 
         IncomeExpense::create([
-            'payment_type' => $request->type,
-            'total_amount' => $amount,
-            'bank_name' => $request->bank_name,
-            'location' => $request->location,
-            'recheck' => 1,
-            'description' => $request->description,
+            'payment_type'    => $request->type,
+            'total_amount'    => $amount,
+            'bank_name'       => $request->bank_name,
+            'location'        => $request->location,
+            'recheck'         => 1,
+            'description'     => $request->description,
             'advance_payment' => $request->advance_payment,
-            'created_by' => Auth::user()->id,
-            'created_at' => $date_timestamp
+            'created_by'      => Auth::user()->id,
+            'created_at'      => $date_timestamp
         ]);
 
         return redirect()->back()->with('success', 'Entry created successfully!');
@@ -1498,10 +1506,11 @@ class PaymentController extends Controller
     public function createExpense()
     {
         $data['active_class'] = 'payment';
-        $data['previous'] = URL::to('/dashboard');
+        $data['previous']     = URL::to('/dashboard');
         
         $data['bank_accounts'] = [
-            'cash'           => 'Cash',
+            'cash_dhaka'     => 'Cash - Dhaka',
+            'cash_ctg'       => 'Cash - Chittagong',
             'scb'            => 'SCB',
             'city'           => 'City Bank',
             'dbbl'           => 'DBBL',
@@ -1515,14 +1524,14 @@ class PaymentController extends Controller
          ];
 
          $data['locations'] = [
-            'dhaka' => 'Dhaka', 
+            'dhaka'      => 'Dhaka', 
             'chittagong' => 'Chittagong',
-            'cox_bazar' => 'Cox\'s bazar',
-            'sylhet' => 'Sylhet',
-            'khulna' => 'Khulna',
-            'comilla' => 'Comilla',
-            'noakhali' => 'Noakhali',
-            'rajshahi' => 'Rajshahi',
+            'cox_bazar'  => 'Cox\'s bazar',
+            'sylhet'     => 'Sylhet',
+            'khulna'     => 'Khulna',
+            'comilla'    => 'Comilla',
+            'noakhali'   => 'Noakhali',
+            'rajshahi'   => 'Rajshahi',
          ];
 
         return view('payments.create_expense', $data);
@@ -1536,7 +1545,8 @@ class PaymentController extends Controller
         $data['transactions'] = IncomeExpense::orderBy('recheck', 'DESC')->get();
 
         $data['bank_accounts'] = [
-            'cash'           => 'Cash',
+            'cash_dhaka'     => 'Cash - Dhaka',
+            'cash_ctg'       => 'Cash - Chittagong',
             'scb'            => 'SCB',
             'city'           => 'City Bank',
             'dbbl'           => 'DBBL',
@@ -1565,7 +1575,8 @@ class PaymentController extends Controller
         $data['income_expense'] = $income_expense;
 
         $data['bank_accounts'] = [
-            'cash'           => 'Cash',
+            'cash_dhaka'     => 'Cash - Dhaka',
+            'cash_ctg'       => 'Cash - Chittagong',
             'scb'            => 'SCB',
             'city'           => 'City Bank',
             'dbbl'           => 'DBBL',
@@ -1591,7 +1602,8 @@ class PaymentController extends Controller
         ])->get();
 
         $data['bank_accounts'] = [
-            'cash'           => 'Cash',
+            'cash_dhaka'     => 'Cash - Dhaka',
+            'cash_ctg'       => 'Cash - Chittagong',
             'scb'            => 'SCB',
             'city'           => 'City Bank',
             'dbbl'           => 'DBBL',
@@ -1630,15 +1642,16 @@ class PaymentController extends Controller
         ])->get();
 
         $data['bank_accounts'] = [
-            'cash' => 'Cash',
-            'scb' => 'SCB',
-            'city' => 'City Bank',
-            'dbbl' => 'DBBL',
-            'ebl' => 'EBL',
-            'ucb' => 'UCB',
-            'brac' => 'BRAC',
-            'agrani' => 'Agrani Bank',
-            'icb' => 'ICB',
+            'cash_dhaka'     => 'Cash - Dhaka',
+            'cash_ctg'       => 'Cash - Chittagong',
+            'scb'            => 'SCB',
+            'city'           => 'City Bank',
+            'dbbl'           => 'DBBL',
+            'ebl'            => 'EBL',
+            'ucb'            => 'UCB',
+            'brac'           => 'BRAC',
+            'agrani'         => 'Agrani Bank',
+            'icb'            => 'ICB',
             'salman account' => 'Salman Account',
             'kamran account' => 'Kamran Account'
          ];
@@ -1727,7 +1740,11 @@ class PaymentController extends Controller
                 return view('payments.types.card', $data);
                 break;
 
-            case 'cash':
+            case 'cash_dhaka':
+                return view('payments.types.cash_online', $data);
+                break;
+
+            case 'cash_ctg':
                 return view('payments.types.cash_online', $data);
                 break;
 
@@ -1781,7 +1798,7 @@ class PaymentController extends Controller
 
     public function generateIncomeExpensePDF() 
     {
-        $data['incomes'] = IncomeExpense::where('payment_type', 'income')->get();
+        $data['incomes']  = IncomeExpense::where('payment_type', 'income')->get();
         $data['expenses'] = IncomeExpense::where('payment_type', 'expense')->get();
 
         return view('payments.income_expense_pdf', $data);
@@ -1795,7 +1812,8 @@ class PaymentController extends Controller
         $data['programs']     = Program::all();
 
         $data['bank_accounts'] = [
-            'cash'           => 'CASH',
+            'cash_dhaka'     => 'CASH - DHAKA',
+            'cash_ctg'       => 'CASH - CHITTAGONG',
             'scb'            => 'SCB',
             'city'           => 'CITY',
             'dbbl'           => 'DBBL',
@@ -1814,23 +1832,23 @@ class PaymentController extends Controller
     public function storeClientRefund(Request $request)
     {
         $validatedData = $request->validate([
-            'client_id' => 'required|not_in:0',
-            'program_id' => 'required|not_in:0',
+            'client_id'    => 'required|not_in:0',
+            'program_id'   => 'required|not_in:0',
             'payment_type' => 'required|not_in:0',
-            'bank_name' => 'required',
-            'amount' => 'required|min:1',
+            'bank_name'    => 'required',
+            'amount'       => 'required|min:1',
         ]);
 
         PaymentType::create([
-            'payment_id' => $request->payment_id,
-            'payment_type' => $request->payment_type,
-            'bank_name' => $request->bank_name,
-            'cheque_number' => $request->cheque_number,
-            'amount_paid' => $request->amount,
+            'payment_id'      => $request->payment_id,
+            'payment_type'    => $request->payment_type,
+            'bank_name'       => $request->bank_name,
+            'cheque_number'   => $request->cheque_number,
+            'amount_paid'     => $request->amount,
             'amount_received' => $request->amount,
-            'refund_payment' => 1,
-            'notes' => $request->notes,
-            'created_at' => $request->date,
+            'refund_payment'  => 1,
+            'notes'           => $request->notes,
+            'created_at'      => $request->date,
 
         ]);
 
@@ -1841,20 +1859,20 @@ class PaymentController extends Controller
     public function clientRefundHistory()
     {
         $data['active_class'] = 'dues';
-        $user_role = Auth::user()->user_role;
+        $user_role            = Auth::user()->user_role;
 
         if($user_role == 'counselor') {
 
-            $counselor_id = Auth::user()->id;
-            $client_ids = CounsellorClient::where('counsellor_id', $counselor_id)->pluck('client_id');
-            $payment_ids = Payment::whereIn('client_id', $client_ids)->pluck('id');
+            $counselor_id    = Auth::user()->id;
+            $client_ids      = CounsellorClient::where('counsellor_id', $counselor_id)->pluck('client_id');
+            $payment_ids     = Payment::whereIn('client_id', $client_ids)->pluck('id');
             $data['refunds'] = PaymentType::whereIn('payment_id', $payment_ids)->where('refund_payment', 1)->get();
 
         } else if($user_role == 'rm') {
             
-            $rm_id = Auth::user()->id;
-            $client_ids = RmClient::where('rm_id', $rm_id)->pluck('client_id');
-            $payment_ids = Payment::whereIn('client_id', $client_ids)->pluck('id');
+            $rm_id           = Auth::user()->id;
+            $client_ids      = RmClient::where('rm_id', $rm_id)->pluck('client_id');
+            $payment_ids     = Payment::whereIn('client_id', $client_ids)->pluck('id');
             $data['refunds'] = PaymentType::whereIn('payment_id', $payment_ids)->where('refund_payment', 1)->get();
 
         } else {
@@ -1931,20 +1949,23 @@ class PaymentController extends Controller
 
     public function duePayment($payment_id)
     {
-        $data['previous'] = URL::to('/dashboard');
+        $data['previous']     = URL::to('/dashboard');
         $data['active_class'] = 'payments';
-        $data['payment_id'] = $payment_id;
-        $payment_id = Payment::find($payment_id);
+        $data['payment_id']   = $payment_id;
+        $payment_id           = Payment::find($payment_id);
 
-        $program_fee = $payment_id->opening_fee + $payment_id->embassy_student_fee + $payment_id->service_solicitor_fee + $payment_id->other;
+        $program_fee          = $payment_id->opening_fee + 
+                                $payment_id->embassy_student_fee + 
+                                $payment_id->service_solicitor_fee + 
+                                $payment_id->other;
 
-        $payment_types = PaymentType::where('payment_id', $payment_id->id)
-                                 ->where('cheque_verified', '!=', 0)
-                                 ->where('online_verified', '!=', 0)
-                                 ->where('bkash_salman_verified', '!=', 0)
-                                 ->where('bkash_corporate_verified', '!=', 0)
-                                 ->where('refund_payment', '!=', 1)
-                                 ->get();
+        $payment_types        = PaymentType::where('payment_id', $payment_id->id)
+                                ->where('cheque_verified', '!=', 0)
+                                ->where('online_verified', '!=', 0)
+                                ->where('bkash_salman_verified', '!=', 0)
+                                ->where('bkash_corporate_verified', '!=', 0)
+                                ->where('refund_payment', '!=', 1)
+                                ->get();
 
         $data['total_amount'] = $program_fee - $payment_types->sum('amount_paid');
 
@@ -1954,8 +1975,8 @@ class PaymentController extends Controller
     public function paymentNotes($client_id)
     {
         $data['active_class'] = 'payments';
-        $data['client'] = User::find($client_id);
-        $data['notes'] = PaymentNote::where('client_id', $client_id)->get();
+        $data['client']       = User::find($client_id);
+        $data['notes']        = PaymentNote::where('client_id', $client_id)->get();
 
         return view('payments.payment_notes', $data);
     }
@@ -1977,9 +1998,9 @@ class PaymentController extends Controller
     public function editPaymentNote(Request $request)
     {
         PaymentNote::find($request->note_id)->update([
-            'date' => $request->date,
+            'date'        => $request->date,
             'description' => $request->description,
-            'amount' => $request->amount
+            'amount'      => $request->amount
         ]);
 
         return redirect()->back();
@@ -1987,26 +2008,26 @@ class PaymentController extends Controller
 
     public function storeDuePayment(Request $request)
     {
-        $counter = 0;
-        $counter = $request->counter;
+        $counter    = 0;
+        $counter    = $request->counter;
         $payment_id = Input::get('payment_id');
 
         for ($i=0; $i < $counter + 1; $i++) {
-            $charge = 0;
-            $cheque_verified = 1;
-            $online_verified = 1;
-            $bkash_salman_verified = 1;
+            $charge                   = 0;
+            $cheque_verified          = 1;
+            $online_verified          = 1;
+            $bkash_salman_verified    = 1;
             $bkash_corporate_verified = 1;
-            $payment_type = Input::get('payment_type-' . $i);
-            $bank_deposited = Input::get('bank_name-' . $i);
-            $after_charge = 0;
+            $payment_type             = Input::get('payment_type-' . $i);
+            $bank_deposited           = Input::get('bank_name-' . $i);
+            $after_charge             = 0;
 
             if($payment_type == 'card') {
 
-                $POS_machine = Input::get('pos_machine-' . $i);
-                $city_bank = Input::get('city_bank-' . $i);
-                $card_type = Input::get('card_type-' . $i);
-                $charge = 0;
+                $POS_machine    = Input::get('pos_machine-' . $i);
+                $city_bank      = Input::get('city_bank-' . $i);
+                $card_type      = Input::get('card_type-' . $i);
+                $charge         = 0;
                 $bank_deposited = Input::get('bank_name-' . $i);
 
                 switch ($POS_machine) {
@@ -2015,9 +2036,13 @@ class PaymentController extends Controller
 
                         $bank_deposited = 'scb';
                         if($card_type == 'amex') {
-                            $charge = 2.5;
+                            $charge = $bank_charges->where('bank_name', 'city_bank_amex')->first()->bank_charge;
                         } else {
-                            $charge = ($city_bank == 'yes') ? 1 : 2;
+                            if($city_bank == 'yes') {
+                                $charge = $bank_charges->where('bank_name', 'city_bank')->first()->bank_charge;
+                            } else {
+                                $charge = $bank_charges->where('bank_name', 'city_bank_other')->first()->bank_charge;
+                            }
                         }
                         
                         break;
@@ -2025,25 +2050,25 @@ class PaymentController extends Controller
                     case 'brac':
 
                         $bank_deposited = 'brac';
-                        $charge = 1.4;
+                        $charge = $bank_charges->where('bank_name', 'brac_bank')->first()->bank_charge;
                         break;
 
                     case 'ebl':
                         
                         $bank_deposited = 'ebl';
-                        $charge = 1.5;
+                        $charge = $bank_charges->where('bank_name', 'ebl')->first()->bank_charge;
                         break;
 
                     case 'ucb':
                         
                         $bank_deposited = 'ucb';
-                        $charge = 1.5;
+                        $charge = $bank_charges->where('bank_name', 'ucb')->first()->bank_charge;
                         break;
 
                     case 'dbbl':
                         
                         $bank_deposited = 'dbbl';
-                        $charge = 1.5;
+                        $charge = $bank_charges->where('bank_name', 'dbbl')->first()->bank_charge;
                         break;
 
                     default:
@@ -2058,24 +2083,28 @@ class PaymentController extends Controller
 
                 $online_verified = -1;
 
+            } else if($payment_type == 'upay') {
+
+                $charge = $bank_charges->where('bank_name', 'upay')->first()->bank_charge;
+
             } else if($payment_type == 'bkash_corporate') {
 
-                $charge = 1.5;
+                $charge = $bank_charges->where('bank_name', 'bkash_corporate')->first()->bank_charge;
                 $bkash_corporate_verified = -1;
 
             } else if($payment_type == 'bkash_salman') {
 
-                $charge = 2;
+                $charge = $bank_charges->where('bank_name', 'bkash_salman')->first()->bank_charge;
                 $bkash_salman_verified = -1;
 
             } else if($payment_type == 'pay_gic') {
 
-                $charge = 2.2;
+                $charge = $bank_charges->where('bank_name', 'pay_gic')->first()->bank_charge;
                 $online_verified = -1;
 
             } else if($payment_type == 'pay_gic_ssl') {
 
-                $charge = 3.5;
+                $charge = $bank_charges->where('bank_name', 'pay_gic_ssl')->first()->bank_charge;
                 $online_verified = -1;
 
             } else {
@@ -2094,26 +2123,26 @@ class PaymentController extends Controller
             $date = Carbon::parse(Input::get('date-' . $i))->toDateTimeString();
 
             PaymentType::create([
-                'payment_id' => $payment_id,
-                'payment_type' => $payment_type,
-                'card_type' => Input::get('card_type-' . $i),
-                'name_on_card' => Input::get('name_on_card-' . $i),
-                'card_number' => Input::get('card_number-' . $i),
-                'expiry_date' => Input::get('expiry_date-' . $i),
-                'pos_machine' => Input::get('pos_machine-' . $i),
-                'approval_code' => Input::get('approval_code-' . $i),
-                'phone_number' => Input::get('phone_number-' . $i),
-                'cheque_number' => Input::get('cheque_number-' . $i),
-                'bank_name' => $bank_deposited,
-                'cheque_verified' => $cheque_verified,
-                'online_verified' => $online_verified,
-                'bkash_salman_verified' => $bkash_salman_verified,
+                'payment_id'               => $payment_id,
+                'payment_type'             => $payment_type,
+                'card_type'                => Input::get('card_type-' . $i),
+                'name_on_card'             => Input::get('name_on_card-' . $i),
+                'card_number'              => Input::get('card_number-' . $i),
+                'expiry_date'              => Input::get('expiry_date-' . $i),
+                'pos_machine'              => Input::get('pos_machine-' . $i),
+                'approval_code'            => Input::get('approval_code-' . $i),
+                'phone_number'             => Input::get('phone_number-' . $i),
+                'cheque_number'            => Input::get('cheque_number-' . $i),
+                'bank_name'                => $bank_deposited,
+                'cheque_verified'          => $cheque_verified,
+                'online_verified'          => $online_verified,
+                'bkash_salman_verified'    => $bkash_salman_verified,
                 'bkash_corporate_verified' => $bkash_corporate_verified,
-                'due_payment' => 1,
-                'bank_charge' => $charge,
-                'amount_paid' => Input::get('total_amount-' . $i),
-                'amount_received' => $after_charge,
-                'created_at' => $date,
+                'due_payment'              => 1,
+                'bank_charge'              => $charge,
+                'amount_paid'              => Input::get('total_amount-' . $i),
+                'amount_received'          => $after_charge,
+                'created_at'               => $date,
             ]);
             
         }
@@ -2133,25 +2162,24 @@ class PaymentController extends Controller
         $client = User::find($payment->client_id);
         $client_additional_info = ClientFileInfo::where('client_id', $payment->client_id)->first();
 
-        $due['name'] = $client->name;
-        $due['address'] = $client_additional_info->address;
-        $due['country_of_choice'] = json_decode($client_additional_info->country_of_choice);
-        $due['mobile'] = $client->mobile;
-        $due['email'] = $client->email;
-        $due['date'] = Carbon::now()->format('d-m-Y');
-        $due['client_code'] = $client->client_code;
-        $due['program'] = Program::find($payment->program_id)->program_name;
-        $due['step'] = Step::find($payment->step_id);
-        $due['opening_fee'] = $payment->opening_fee;
-        $due['embassy_student_fee'] = $payment->embassy_student_fee;
+        $due['name']                  = $client->name;
+        $due['address']               = $client_additional_info->address;
+        $due['country_of_choice']     = json_decode($client_additional_info->country_of_choice);
+        $due['mobile']                = $client->mobile;
+        $due['email']                 = $client->email;
+        $due['date']                  = Carbon::now()->format('d-m-Y');
+        $due['client_code']           = $client->client_code;
+        $due['program']               = Program::find($payment->program_id)->program_name;
+        $due['step']                  = Step::find($payment->step_id);
+        $due['opening_fee']           = $payment->opening_fee;
+        $due['embassy_student_fee']   = $payment->embassy_student_fee;
         $due['service_solicitor_fee'] = $payment->service_solicitor_fee;
-        $due['other'] = $payment->other;
-        $due['amount_paid'] = PaymentType::where('payment_id', $payment->id)->sum('amount_paid');
-        $due['payments'] = PaymentType::where('payment_id', $payment_id)->first();
+        $due['other']                 = $payment->other;
+        $due['amount_paid']           = PaymentType::where('payment_id', $payment->id)->sum('amount_paid');
+        $due['payments']              = PaymentType::where('payment_id', $payment_id)->first();
 
-
-        $created_by = User::find($payment->created_by);
-        $due['created_by'] = $created_by ? $created_by->name : '';
+        $created_by                   = User::find($payment->created_by);
+        $due['created_by']            = $created_by ? $created_by->name : '';
 
         // $pdf = PDF::loadView('invoice.due', $due);
         // return $pdf->download($client->client_code.'-due-clearance-invoice.pdf');
@@ -2168,13 +2196,13 @@ class PaymentController extends Controller
         if(Auth::user()->user_role == 'counselor') {
 
             $counselor_id = Auth::user()->id;
-            $client_ids = CounsellorClient::where('counsellor_id', $counselor_id)->pluck('client_id');
+            $client_ids   = CounsellorClient::where('counsellor_id', $counselor_id)->pluck('client_id');
 
             $data['due_payments'] = Payment::whereIn('client_id', $client_ids)->orwhereIn('id', $due_payment_type_ids)->get();
 
         } else if(Auth::user()->user_role == 'rm') {
             
-            $rm_id = Auth::user()->id;
+            $rm_id      = Auth::user()->id;
             $client_ids = RmClient::where('rm_id', $rm_id)->pluck('client_id');
 
             $data['due_payments'] = Payment::whereIn('client_id', $client_ids)->orwhereIn('id', $due_payment_type_ids)->get();
@@ -2211,7 +2239,7 @@ class PaymentController extends Controller
 
     public function onlinePayments()
     {
-        $data['active_class'] = 'unverified_payments';
+        $data['active_class']    = 'unverified_payments';
         $data['online_payments'] = PaymentType::where('payment_type', 'online')->where('online_verified', '!=', '1')->get();
 
         $user_role = Auth::user()->user_role;
@@ -2233,7 +2261,7 @@ class PaymentController extends Controller
 
     public function payGICPayments()
     {
-        $data['active_class'] = 'unverified_payments';
+        $data['active_class']     = 'unverified_payments';
         $data['pay_gic_payments'] = PaymentType::where('payment_type', 'pay_gic')->where('online_verified', '!=', '1')->get();
 
         $user_role = Auth::user()->user_role;
@@ -2255,7 +2283,7 @@ class PaymentController extends Controller
 
     public function payGICSSLPayments()
     {
-        $data['active_class'] = 'unverified_payments';
+        $data['active_class']         = 'unverified_payments';
         $data['pay_gic_ssl_payments'] = PaymentType::where('payment_type', 'pay_gic_ssl')->where('online_verified', '!=', '1')->get();
 
         $user_role = Auth::user()->user_role;

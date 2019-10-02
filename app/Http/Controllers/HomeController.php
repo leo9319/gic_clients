@@ -149,7 +149,7 @@ class HomeController extends Controller
         else {
 
            $data['recent_clients']               = Payment::leftJoin('steps', 'payments.step_id', '=', 'steps.id')
-                                                   ->where('steps.order', 1)
+                                                   ->where('steps.step_number', 1)
                                                    ->latest('payments.created_at')
                                                    ->limit(5)
                                                    ->get();

@@ -8,13 +8,9 @@
    <script>
       $(document).ready( function () {
           $('#department-targets').DataTable({
-            'columnDefs' : [
-               {
-                  'targets' : 2
-               }
-            ]
+            "ordering": false
           });
-      } );
+      });
    </script>
 @stop
 
@@ -48,6 +44,7 @@
             <thead>
                <tr>
                   <th>Department</th>
+                  <th>Steps</th>
                   <th>Month</th>
                   <th>Start Date</th>
                   <th>End Date</th>
@@ -60,6 +57,7 @@
                   @foreach($department_targets as $department_target)
                   <tr>
                      <th>{{ ucfirst($department_target->department) }}</th>
+                     <th>{{ ucfirst($department_target->steps) }}</th>
 
                      <th>{{ $department_target->month ? Carbon\Carbon::parse($department_target->month)->format('M Y') : '-' }}</th>
 
@@ -78,6 +76,7 @@
             <thead>
                <tr>
                   <th>Department</th>
+                  <th>Steps</th>
                   <th>Month</th>
                   <th>Start Date</th>
                   <th>End Date</th>
@@ -110,8 +109,10 @@
 
          <div class="form-group">
             {{ Form::label('Select Department:') }}
-            {{ Form::Select('department', ['processing' => 'Processing', 'counseling' => 'Counseling'], null, ['class' => 'form-control']) }}
+            {{ Form::Select('department', ['counseling' => 'Counseling', 'processing' => 'Processing'], null, ['class' => 'form-control', 'onchange' => 'onDepartmentSelect(this)']) }}
          </div>
+
+         <div id="processing-container"></div>
 
          <div class="form-group">
             {{ Form::label('Target Type:') }}
@@ -139,78 +140,102 @@
 
 @section('footer_scripts')
 
-   <script type="text/javascript">
-      
-      function onTargetSelect(elem) {
+<script type="text/javascript">
+  
+  function onDepartmentSelect(elem) {
 
-         var optionValue = elem.value;
+    var department = elem.value;
 
-         $('#date-container').empty();
+    $('#processing-container').empty();
 
-         if(optionValue == 'month') {
+    if(department == 'processing') {
 
-            var monthRangeHTML = `
+      var processingTargetHTML = `
 
-               <div class="form-group">
+           <div class="form-group">
 
-                  {{ Form::label('Select Month:') }}
+              {{ Form::label('Select Target:') }}
 
-                  <input type="month" name="month" class="form-control" required="required">
+              {{ Form::select('steps', ['all' => 'All Steps', '2nd Steps' => '2nd Steps', '3rd Steps' => '3rd Steps'], null, ['class' => 'form-control']) }}
 
-               </div>
+           </div>
 
-            `;
+        `;
+    }
 
-            
-            $('#date-container').append(monthRangeHTML);
+    $('#processing-container').append(processingTargetHTML);
+  }
+  
+  function onTargetSelect(elem) {
 
+     var optionValue = elem.value;
 
-         } else if(optionValue == 'range') {
+     $('#date-container').empty();
 
-            var dateRangeHTML = `
+     if(optionValue == 'month') {
 
-               <div class="row">
+        var monthRangeHTML = `
 
-                  <div class="col-md-6">
+           <div class="form-group">
 
-                     <div class="form-group">
+              {{ Form::label('Select Month:') }}
 
-                        {{ Form::label('Start Date:') }}
+              <input type="month" name="month" class="form-control" required="required">
 
-                        <input type="date" name="start_date" class="form-control" required="required">
+           </div>
 
-                     </div>
+        `;
 
-                  </div>
-
-                  <div class="col-md-6">
-
-                     <div class="form-group">
-
-                        {{ Form::label('End Date:') }}
-
-                        <input type="date" name="end_date" class="form-control" required="required">
-
-                     </div>
-
-                  </div>
-
-               </div>
-
-            `;
+        
+        $('#date-container').append(monthRangeHTML);
 
 
-            $('#date-container').append(dateRangeHTML);
+     } else if(optionValue == 'range') {
 
-         } else {
+        var dateRangeHTML = `
 
-            return 0;
+           <div class="row">
 
-         }
-         
-      }
+              <div class="col-md-6">
 
-   </script>
+                 <div class="form-group">
+
+                    {{ Form::label('Start Date:') }}
+
+                    <input type="date" name="start_date" class="form-control" required="required">
+
+                 </div>
+
+              </div>
+
+              <div class="col-md-6">
+
+                 <div class="form-group">
+
+                    {{ Form::label('End Date:') }}
+
+                    <input type="date" name="end_date" class="form-control" required="required">
+
+                 </div>
+
+              </div>
+
+           </div>
+
+        `;
+
+
+        $('#date-container').append(dateRangeHTML);
+
+     } else {
+
+        return 0;
+
+     }
+     
+  }
+
+</script>
 
 @endsection
 

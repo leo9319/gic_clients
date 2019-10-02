@@ -1,7 +1,5 @@
 @extends('layouts.master')
 
-@section('url', $previous)
-
 @section('title', 'Payment Type')
 
 @section('content')
@@ -233,7 +231,23 @@ input[type="number"] {
 
 		} else if(elem.value == 'pay_gic') {
 
-			var html = '<div class="form-group"> <label>Date:</label> <input type="date" name="date-#" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <label>Select Bank:</label> <select class="select2 form-control" name="bank_name-#" onchange="addCardCharge(this)"> <option value="scb">SCB</option> <option value="city">City</option> <option value="dbbl">DBBL</option> <option value="ebl">EBL</option> <option value="ucb">UCB</option> <option value="brac">BRAC</option> <option value="agrani">Agrani</option> <option value="icb">ICB</option> </select> <br> <label>Total Amount:</label> <input type="number" class="total form-control" placeholder="Amount paid online" name="total_amount-#" onchange="getTotalAmount(this)" required> </div> <br>';
+			var html = `
+						<div class="form-group">
+						    <label>Date:</label>
+						    <input type="date" name="date-#" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> 
+						</div>
+
+						<div class="form-group">
+						    <label>Select Bank:</label>
+						    <input type="text" name="bank_name-#" class="form-control" value="ebl" readonly>
+						</div>
+
+						<div class="form-group">
+						    <label>Total Amount:</label>
+						    <input type="number" class="total form-control" placeholder="Amount paid online" name="total_amount-#" onchange="getTotalAmount(this)" required> 
+						</div>
+
+						`;
 
 			html = html.replace(/#/g, number);
 

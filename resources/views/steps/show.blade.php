@@ -14,43 +14,51 @@
 
 			<span class="h1">{{ $program->program_name }}</span>
 
-			<button type="button" class="btn btn-success button2 pull-right" data-toggle="modal" data-target="#addProgramModal">
-
-				Add Steps
-
+			<button type="button" class="btn btn-success button2 pull-right" data-toggle="modal" data-target="#addProgramModal">Add Steps
 			</button>
 
 		</div>
 
-		@foreach($steps as $step)
+		<div class="panel-footer">
 
-			 <?php $test =  $step->step_name ?>
+			<table class="table table-borderless">
 
-			<div class="panel-footer">
+			  <thead>
+			    <tr>
+			      <th scope="col">#</th>
+			      <th scope="col">Step Name</th>
+			      <th scope="col">Step No.</th>
+			      <th scope="col">Action</th>
+			      <th scope="col">Action</th>
+			      <th scope="col">Action</th>
+			    </tr>
+			  </thead>
 
-				<p>
+			  <tbody>
+				@foreach($steps as $index => $step)
+			    <tr>
+			      <th scope="row">{{ $index + 1 }}</th>
+			      <td>{{ $step->step_name }}</td>
+			      <td>{{ $step->step_number }}</td>
+			      <td>
+			      	<a href="{{ route('task.show', $step->id) }}">
 
-					<span>{{ $step->order . '. ' . $step->step_name }}</span>
+						<button class="btn btn-primary button2 btn-sm">View Tasks</button>
 
-					<span class="pull-right">
+					</a>
+				  </td>
+					<td><button type="button" class="btn btn-secondary button2 btn-sm" id="{{ $step->id }}" name="{{ $step->step_name }}" onclick="editStep(this)"><span class="fa fa-edit fa-lg"></span></button></td>
 
-						<a href="{{ route('task.show', $step->id) }}">
+				  <td>{{ link_to_route('step.delete', 'Delete', ['step_id' => $step->id], ['class' => 'btn btn-danger button2']) }}
+			      </td>
+			    </tr>
+			    @endforeach
+			  </tbody>
 
-							<button class="btn btn-primary button2">View Tasks</button>
+			</table>
 
-						</a>
+		</div>
 
-						<button type="button" class="btn btn-secondary button2" id="{{ $step->id }}" name="{{ $step->step_name }}" onclick="editStep(this)"><span class="fa fa-edit fa-lg"></span></button>
-
-						{{ link_to_route('step.delete', 'Delete', ['step_id' => $step->id], ['class' => 'btn btn-danger button2']) }}
-
-					</span>
-					
-				</p>
-
-			</div>
-
-		@endforeach
 
 		<div class="modal fade" id="addProgramModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 

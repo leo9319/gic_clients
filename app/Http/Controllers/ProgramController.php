@@ -117,7 +117,7 @@ class ProgramController extends Controller
     public function programStep(Request $request)
     {
         $data = DB::table('steps AS S')
-                ->select('S.id', 'S.step_name', 'S.order')
+                ->select('S.id', 'S.step_name', 'S.step_number')
                 ->where('program_id', $request->program_id)
                 ->get();
 

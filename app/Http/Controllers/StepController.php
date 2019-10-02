@@ -47,7 +47,7 @@ class StepController extends Controller
         Step::create([
             'step_name' => $request->step_name,
             'program_id' => $request->program_id,
-            'order' => ++$order,
+            'step_number' => ++$order,
         ]);
 
         return redirect()->back();
