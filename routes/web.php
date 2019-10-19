@@ -198,7 +198,7 @@ Route::post('form', 'FormController@store')->name('home.form.store');
 Route::get('getClientDues', 'PaymentController@getClientDues');
 Route::get('updateTransactionConsent', 'PaymentController@updateTransactionConsent');
 Route::get('deleteTransaction', 'PaymentController@deleteTransaction');
-Route::get('history/payment', 'PaymentController@paymentHistory')->name('payment.history');
+Route::get('history/payment/alpha/{period?}', 'PaymentController@paymentHistory')->name('payment.history');
 Route::get('history/payment/beta', 'PaymentController@paymentHistoryBeta')->name('payment.history.beta');
 Route::get('history/payment/data', 'PaymentController@paymentHistoryData')->name('payment.history.data');
 Route::get('payment/verification/{payment}', 'PaymentController@verification')->name('payment.verification');
@@ -221,7 +221,7 @@ Route::post('payment/account/transfer', 'PaymentController@transfer')->name('pay
 Route::get('payment/create/incomes', 'PaymentController@createIncome')->name('payment.income');
 Route::post('payment/store/incomes', 'PaymentController@storeIncomesAndExpenses')->name('payment.store.income.and.expenses');
 Route::get('payment/create/expenses', 'PaymentController@createExpense')->name('payment.expense');
-Route::get('payment/incomes/expenses', 'PaymentController@showIncomesAndExpenses')->name('payment.show.income.and.expenses');
+Route::get('payment/incomes/expenses/{period?}', 'PaymentController@showIncomesAndExpenses')->name('payment.show.income.and.expenses');
 Route::get('payment/incomes/expenses/{income_expense}/edit', 'PaymentController@editIncomesAndExpenses')->name('payment.edit.income.and.expenses');
 Route::get('payment/advance/incomes', 'PaymentController@showAdvanceIncomes')->name('payment.show.advance.incomes');
 Route::post('update/advance/income/expense', 'PaymentController@updateAdvanceIncomeExpense')->name('payment.update.advance.income.expense');
@@ -241,7 +241,7 @@ Route::get('payment/client/refund/delete/{payment_id}', 'PaymentController@clien
 Route::post('payment/store/client/refund', 'PaymentController@storeClientRefund')->name('payment.store.client.refund');
 Route::get('payment/client/dues', 'PaymentController@clientDues')->name('payment.client.dues');
 Route::get('payment/client/dues/detials/{payment_id}', 'PaymentController@clientDuesDetails')->name('payment.client.dues.details');
-Route::get('payment/client/dues/payment/{payment_id}', 'PaymentController@duePayment')->name('payment.client.dues.payment');
+Route::get('payment/client/dues/payment/{payment}', 'PaymentController@duePayment')->name('payment.client.dues.payment');
 Route::post('payment/client/dues/payment/store', 'PaymentController@storeDuePayment')->name('payment.client.dues.payment.store');
 Route::get('payment/client/dues/history', 'PaymentController@dueHistory')->name('payment.client.dues.history');
 Route::get('payment/client/dues/pdf/{payment_id}', 'PaymentController@generateDuePDF')->name('payment.client.dues.pdf');
@@ -254,7 +254,7 @@ Route::get('payment/client/unverified/bkash-salman', 'PaymentController@unverifi
 Route::get('payment/client/unverified/bkash-corporate', 'PaymentController@unverifiedBkashCorporate')->name('payment.client.unverified.bkash_corporate');
 Route::get('payment/client/recheck/{payment_type_id}', 'PaymentController@recheckPaymentType')->name('payment.client.recheck.payment_type');
 Route::get('payment/client/recheck/types/list', 'PaymentController@recheckPaymentTypeList')->name('payment.client.recheck.types.list');
-Route::get('payment/client/edit/types/{payment_type_id}', 'PaymentController@editPaymentType')->name('payment.client.edit.types.list');
+Route::get('payment/client/edit/types/{payment_type}', 'PaymentController@editPaymentType')->name('payment.client.edit.types.list');
 Route::post('payment/client/update/types/', 'PaymentController@updatePaymentType')->name('payment.client.update.type');
 Route::post('payment/client/delete/reissue/', 'PaymentController@deleteAndReissue')->name('payment.client.delete.and.reissue');
 Route::post('payment/delete/payment', 'PaymentController@deletePayment')->name('payment.delete');
@@ -305,6 +305,7 @@ Route::get('invoice/opening/{client_id}', 'InvoiceController@opening')->name('in
 
 
 Route::get('step/delete/{step_id}', 'StepController@delete')->name('step.delete');
+Route::get('findStep', 'StepController@findStep')->name('step.delete');
 
 
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -13,7 +13,7 @@ $(function() {
 
   var $tableSel = $('#payment-history');
   $tableSel.dataTable({
-    "order": [[ 0, "desc" ]],
+    "ordering": false,
      dom: 'Bfrtip',
         buttons: [
             'csv',
@@ -138,7 +138,7 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>RM</th>
                   <th>Invoice Amount</th>
                   <th>Total Paid</th>
-                  <th>Due Amount</th>
+                  {{-- <th>Due Amount</th> --}}
                   <th>Note</th>
                   <th>Action</th>
                   <th>View Details</th>
@@ -196,7 +196,7 @@ var filterByDate = function(column, startDate, endDate) {
 
                       <td>{{ number_format($payment->totalAmount()) }}</td>
                       <td>{{ number_format($payment->totalApprovedPayment->sum('amount_paid')) }}</td>
-                      <td>{{ number_format($payment->totalAmount() - $payment->totalApprovedPayment->sum('amount_paid')) }}</td>
+                      {{-- <td>{{ number_format($payment->totalAmount() - $payment->totalApprovedPayment->sum('amount_paid')) }}</td> --}}
                       <td>{{ $payment->comments }}</td>
 
                       <td>
@@ -240,7 +240,7 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>RM</th>
                   <th>Invoice Amount</th>
                   <th>Total Paid</th>
-                  <th>Due Amount</th>
+                  {{-- <th>Due Amount</th> --}}
                   <th>Note</th>
                   <th>Action</th>
                   <th>View Details</th>

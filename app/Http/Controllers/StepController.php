@@ -62,9 +62,14 @@ class StepController extends Controller
     public function show($id)
     {
         $data['active_class'] = 'tasks';
-        $data['steps'] = Step::where('program_id', $id)->get();
-        $data['program'] = Program::find($id);
-        $data['previous'] = URL::to('/task');
+        $data['steps']        = Step::where('program_id', $id)->get();
+        $data['program']      = Program::find($id);
+        $data['step_number']  = [
+                                    'not_defined'                     => 'None',
+                                    'file_opening'                    => 'File Opening',
+                                    'second_installment'              => '2nd Installment ',
+                                    'third_fourth_fifth_installment'  => '3rd, 4th and 5th Installment ',
+                                ];
 
         return view('steps.show', $data);
     }
@@ -89,7 +94,13 @@ class StepController extends Controller
      */
     public function update(Request $request, $id)
     {
-        Step::find($request->step_id)->update(['step_name' => $request->step_name]);
+        Step::find($request->step_id)
+            ->update(
+                [
+                    'step_name'   => $request->step_name,
+                    'step_number' => $request->step_number,
+                ]
+            );
 
         return redirect()->back();
 
@@ -111,5 +122,10 @@ class StepController extends Controller
         Step::find($id)->delete();
 
         return redirect()->back();
+    }
+
+    public function findStep(Request $request)
+    {
+        return Step::find($request->step_id);
     }
 }

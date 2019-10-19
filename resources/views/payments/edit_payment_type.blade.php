@@ -160,7 +160,8 @@
 
 				<select class="form-control" name="payment_type" onchange="addPaymentOptions(this)" required>
 					<option value="">Select a payment method</option>
-					<option value="cash">Cash</option>
+					<option value="cash_dhaka">Cash - Dhaka</option>
+					<option value="cash_ctg">Cash - Chittagong</option>
 					<option value="card">POS</option>
 					<option value="cheque">Cheque</option>
 					<option value="bkash_corporate">bKash - Corporate</option>
@@ -204,9 +205,16 @@ function addPaymentOptions(elem) {
 		$('#payment-container').empty();
     	$('#payment-container').append(html);
 
-	} else if (elem.value == 'cash') {
+	} else if (elem.value == 'cash_dhaka') {
 
-		var html = '<div class="form-group"> <label>Date:</label> <input type="date" name="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <div class="form-group"><input type="hidden" name="bank_name" value="cash"><input type="number" class="total form-control" placeholder="Amount paid in cash" name="total_amount" onchange="getTotalAmount(this)" required></div>';
+		var html = '<div class="form-group"> <label>Date:</label> <input type="date" name="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <div class="form-group"><input type="hidden" name="bank_name" value="cash_dhaka"><input type="number" class="total form-control" placeholder="Amount paid in cash" name="total_amount" onchange="getTotalAmount(this)" required></div>';
+
+		$('#payment-container').empty();
+		$('#payment-container').append(html);
+
+	} else if (elem.value == 'cash_ctg') {
+
+		var html = '<div class="form-group"> <label>Date:</label> <input type="date" name="date" class="form-control" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <div class="form-group"><input type="hidden" name="bank_name" value="cash_ctg"><input type="number" class="total form-control" placeholder="Amount paid in cash" name="total_amount" onchange="getTotalAmount(this)" required></div>';
 
 		$('#payment-container').empty();
 		$('#payment-container').append(html);

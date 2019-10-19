@@ -53,7 +53,6 @@
               <tr>
                   <th width="10%">Date</th>
                   <th width="10%">Location</th>
-                  <th width="10%">Receipt ID</th>
                   <th width="10%">Client Code.</th>
                   <th width="10%">Name</th>
                   <th width="20%">Program</th>
@@ -62,7 +61,6 @@
                   <th width="20%">RMs</th>
                   <th width="20%">Invoice Amount</th>
                   <th width="20%">Amount Paid</th>
-                  <th width="20%">Due Amount</th>
                   <th width="20%">Comments</th>
                   <th width="20%">Action</th>
                   <th width="20%">View Details</th>
@@ -155,9 +153,6 @@
                     return data.charAt(0).toUpperCase() + data.slice(1);
                 },
             }, {
-                data: 'receipt_id',
-                name: 'receipt_id'
-            }, {
                 data: 'client_code',
                 name: 'client_code'
             }, {
@@ -184,12 +179,6 @@
             }, {
                 data: 'amount_paid',
                 name: 'amount_paid',
-                render: function(data) {
-                  return data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                }
-            }, {
-                data: 'due_amount',
-                name: 'due_amount',
                 render: function(data) {
                   return data.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 }

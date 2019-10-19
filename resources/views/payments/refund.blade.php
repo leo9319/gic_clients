@@ -124,7 +124,8 @@
 				<select class="form-control" name="payment_type" id="refund-from" onchange="paymentOption(this)">
 
 					<option value="0">Select a payment type</option>
-					<option value="cash">Cash</option>
+					<option value="cash_dhaka">Cash - Dhaka</option>
+					<option value="cash_ctg">Cash - Chittagong</option>
 					<option value="cheque">Cheque</option>
 					<option value="online">Online</option>
 
@@ -332,9 +333,16 @@
 
 		var payment_type = elem.value;
 
-		if(payment_type == 'cash') {
+		if(payment_type == 'cash_dhaka') {
 
-			var html = '<input type="hidden" name="bank_name" value="cash">';
+			var html = '<input type="hidden" name="bank_name" value="cash_dhaka">';
+
+			$('#payment-container').empty();
+			$('#payment-container').append(html);
+
+		} else if(payment_type == 'cash_ctg') {
+
+			var html = '<input type="hidden" name="bank_name" value="cash_ctg">';
 
 			$('#payment-container').empty();
 			$('#payment-container').append(html);

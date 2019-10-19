@@ -55,7 +55,7 @@ input[type="number"] {
 
 			{{ Form::open(['route'=>'payment.client.dues.payment.store', 'id' => 'myForm']) }}
 
-			<input type="hidden" name="payment_id" value="{{ $payment_id }}">
+			<input type="hidden" name="payment_id" value="{{ $payment->id }}">
 
 {{-- 			<div class="form-group">
 
@@ -72,7 +72,8 @@ input[type="number"] {
 				<select id="0" class="form-control" name="payment_type-0" onchange="addPaymentOptions(this)" required="">
 
 					<option value="">Select a payment method</option>
-					<option value="cash">Cash</option>
+					<option value="cash_dhaka">Cash - Dhaka</option>
+					<option value="cash_ctg">Cash - Chittagong</option>
 					<option value="card">POS</option>
 					<option value="cheque">Cheque</option>
 					<option value="bkash_corporate">bKash - Corporate</option>
@@ -141,7 +142,27 @@ input[type="number"] {
 
 	function addPaymentType() {
 
-		var html = '<div id="payment-div-#"> <div class="form-group"> <label class="text-success">Payment Type:</label> <select id=# class="select2 form-control" name="payment_type-#" onchange="addPaymentOptions(this)" required> <option value="">Select a payment method</option> <option value="cash">Cash</option> <option value="card">POS</option> <option value="cheque">Cheque</option> <option value="bkash_corporate">bKash - Corporate</option> <option value="bkash_salman">bKash - Salman</option> <option value="upay">Upay</option> <option value="online">Online</option> <option value="pay_gic">Pay GIC - EBL</option> <option value="pay_gic_ssl">Pay GIC - SSL</option> </select> </div> <div id="payment-container-#"></div> <input type="hidden" name="counter" value="#"><a class="text-danger" href="javascript:void(0)" onclick="removePaymentType(#)">(-) Remove This Payment Type</a> <hr> </div>';
+		var html = `<div id="payment-div-#">
+					    <div class="form-group">
+					        <label class="text-success">Payment Type:</label>
+					        <select id=# class="select2 form-control" name="payment_type-#" onchange="addPaymentOptions(this)" required>
+					            <option value="">Select a payment method</option>
+					            <option value="cash_dhaka">Cash - Dhaka</option>
+					            <option value="cash_ctg">Cash - Chittagong</option>
+					            <option value="card">POS</option>
+					            <option value="cheque">Cheque</option>
+					            <option value="bkash_corporate">bKash - Corporate</option>
+					            <option value="bkash_salman">bKash - Salman</option>
+					            <option value="upay">Upay</option>
+					            <option value="online">Online</option>
+					            <option value="pay_gic">Pay GIC - EBL</option>
+					            <option value="pay_gic_ssl">Pay GIC - SSL</option>
+					        </select>
+					    </div>
+					    <div id="payment-container-#"></div>
+					    <input type="hidden" name="counter" value="#"><a class="text-danger" href="javascript:void(0)" onclick="removePaymentType(#)">(-) Remove This Payment Type</a>
+					    <hr> 
+					</div>`;
 
 		html = html.replace(/#/g, number);
 
@@ -175,9 +196,18 @@ input[type="number"] {
 			$('#payment-container-' + number).empty();
         	$('#payment-container-' + number).append(html);
 
-		} else if (elem.value == 'cash') {
+		} else if (elem.value == 'cash_dhaka') {
 
-			var html = '<input type="hidden" name="bank_name-#" value="cash"> <div class="form-group"> <label>Date:</label> <input type="date" class="form-control" name="date-#" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <div class="form-group"> <label>Amount Paid:</label> <input type="number" class="total form-control" placeholder="Amount paid in cash" name="total_amount-#" onchange="getTotalAmount(this)" required> </div>';
+			var html = '<input type="hidden" name="bank_name-#" value="cash_dhaka"> <div class="form-group"> <label>Date:</label> <input type="date" class="form-control" name="date-#" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <div class="form-group"> <label>Amount Paid:</label> <input type="number" class="total form-control" placeholder="Amount paid in cash" name="total_amount-#" onchange="getTotalAmount(this)" required> </div>';
+
+			html = html.replace(/#/g, number);
+
+			$('#payment-container-' + number).empty();
+			$('#payment-container-' + number).append(html);
+
+		} else if (elem.value == 'cash_ctg') {
+
+			var html = '<input type="hidden" name="bank_name-#" value="cash_ctg"> <div class="form-group"> <label>Date:</label> <input type="date" class="form-control" name="date-#" value="{{ Carbon\Carbon::today()->format('Y-m-d') }}"> </div> <div class="form-group"> <label>Amount Paid:</label> <input type="number" class="total form-control" placeholder="Amount paid in cash" name="total_amount-#" onchange="getTotalAmount(this)" required> </div>';
 
 			html = html.replace(/#/g, number);
 

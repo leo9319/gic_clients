@@ -1,7 +1,5 @@
 @extends('layouts.master')
 
-@section('url', $previous)
-
 @section('title', 'Steps')
 
 @section('content')
@@ -37,28 +35,31 @@
 			  <tbody>
 				@foreach($steps as $index => $step)
 			    <tr>
-			      <th scope="row">{{ $index + 1 }}</th>
-			      <td>{{ $step->step_name }}</td>
-			      <td>{{ $step->step_number }}</td>
-			      <td>
-			      	<a href="{{ route('task.show', $step->id) }}">
+					<td scope="row">{{ $index + 1 }}</td>
+					<td>{{ $step->step_name }}</td>
+					<td>{{ ucwords(str_replace('_', ' ', $step->step_number))  }}</td>
 
-						<button class="btn btn-primary button2 btn-sm">View Tasks</button>
+					<td>
+						<a href="{{ route('task.show', $step->id) }}" class="btn btn-primary button2 btn-sm">
+							View Tasks
+						</a>
+					</td>
 
-					</a>
-				  </td>
-					<td><button type="button" class="btn btn-secondary button2 btn-sm" id="{{ $step->id }}" name="{{ $step->step_name }}" onclick="editStep(this)"><span class="fa fa-edit fa-lg"></span></button></td>
+					<td>
+						<button type="button" class="btn btn-secondary button2 btn-sm" id="{{ $step->id }}" onclick="editStep(this)">
+							<span class="fa fa-edit fa-lg"></span>
+						</button>
+					</td>
 
-				  <td>{{ link_to_route('step.delete', 'Delete', ['step_id' => $step->id], ['class' => 'btn btn-danger button2']) }}
-			      </td>
+					<td>
+						{{ link_to_route('step.delete', 'Delete', ['step_id' => $step->id], ['class' => 'btn btn-danger button2']) }}
+					</td>
 			    </tr>
 			    @endforeach
 			  </tbody>
-
 			</table>
 
 		</div>
-
 
 		<div class="modal fade" id="addProgramModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 
@@ -143,6 +144,14 @@
 
 							</div>
 
+							<div class="form-group">
+
+								{{ Form::label('step_number:' , null, ['class' => 'control-label']) }}
+
+								{{ Form::select('step_number', $step_number, null, ['class' => 'form-control', 'id' => 'step-number']) }}
+
+							</div>
+
 					</div>
 
 					<div class="modal-footer">
@@ -171,10 +180,26 @@
 	
 	function editStep(elem) {
 
-		document.getElementById('step-name').value = elem.name;
-		document.getElementById('step-id').value = elem.id;
+		var step_id     = elem.id;
+		var step_name   = document.getElementById('step-name');
+		var step_number = document.getElementById('step-number');
 
-		$("#editStep").modal();
+		$.ajax({
+			type: 'get',
+			url: '{!! URL::to('findStep') !!}',
+			data: {'step_id': step_id},
+			success: function(data) {
+
+				document.getElementById('step-id').value   = step_id;
+				step_name.value                            = data.step_name;
+				step_number.value                          = data.step_number;
+
+				$("#editStep").modal();
+			},
+			error: function(data) {
+				alert('ERROR!');
+			}
+		});
 
 	}
 

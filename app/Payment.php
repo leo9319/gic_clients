@@ -37,8 +37,8 @@ class Payment extends Model
     public function totalVerifiedPayment()
     {
         return $this->hasMany('App\PaymentType')
-                    ->where('cheque_verified', '!=', 0)
                     ->where('online_verified', '!=', 0)
+                    ->where('cheque_verified', '!=', 0)
                     ->where('bkash_salman_verified', '!=', 0)
                     ->where('bkash_corporate_verified', '!=', 0)
                     ->where('refund_payment', '!=', 1);
@@ -76,6 +76,22 @@ class Payment extends Model
     public static function getPaymentWithDateRange($start_date, $end_date)
     {
         return static::whereBetween('created_at', [$start_date, $end_date])->get();
+    }
+
+    public static function withSpecificSteps($steps)
+    {
+        if ($steps == '2nd Steps') {
+
+            $steps = Step::where('step_number', 'second_installment')->pluck('id');
+
+        } else {
+
+            $steps = Step::where('step_number', 'third_fourth_fifth_installment')->pluck('id');
+       
+        }
+
+        return static::whereIn('step_id', $steps);
+
     }
     
 

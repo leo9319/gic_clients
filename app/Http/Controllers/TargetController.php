@@ -37,6 +37,7 @@ class TargetController extends Controller
     public function storeDepartmentTarget(Request $request)
     {
         $validatedData = $request->validate([
+            'location'      => 'required',
             'department'    => 'required',
             'duration_type' => 'required',
             'target'        => 'required',
@@ -48,6 +49,7 @@ class TargetController extends Controller
 
             DepartmentTarget::updateOrCreate(
             [
+                'location'   => $request->location,
                 'steps'      => $request->steps,
                 'department' => $request->department,
                 'start_date' => $request->start_date,
@@ -61,6 +63,7 @@ class TargetController extends Controller
 
             DepartmentTarget::updateOrCreate(
             [
+                'location'   => $request->location,
                 'steps'      => $request->steps,
                 'department' => $request->department,
                 'month'      => $request->month . '-01'
@@ -84,12 +87,22 @@ class TargetController extends Controller
     {
         $data['active_class'] = 'department-targets';
         $data['department']   = $department_target->department;
-        
-        if ($department_target->month) {
-            $data['payments'] = Payment::getMonthyPayment($department_target->month);
+
+        if ($department_target->steps == 'all' || $department_target->steps == NULL) {
+            $payments = Payment::query();
         } else {
-            $data['payments'] = Payment::getPaymentWithDateRange($department_target->start_date, $department_target->end_date);
+            $payments = Payment::withSpecificSteps($department_target->steps);
         }
+
+        if($department_target->month) {
+            $payments->whereMonth('created_at', Carbon\Carbon::parse($department_target->month)->month)
+                      ->whereYear('created_at', Carbon\Carbon::parse($department_target->month)->year);
+        } else {
+            $payments->whereBetween('created_at', [$department_target->start_date, $department_target->end_date]);
+
+        }
+
+        $data['payments'] = $payments->where('location', $department_target->location)->get();
 
         return view('targets.target_details', $data);
     }

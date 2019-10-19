@@ -17,19 +17,29 @@ class DepartmentTarget extends Model
     	])->first();
     }
 
-    public function getTargetAchieved($department, $month_and_year, $start_date, $end_date)
+    public function getTargetAchieved()
     {
         $target_achieved = 0;
 
-        if($month_and_year) {
-            $payments = Payment::getMonthyPayment($month_and_year);
+        if ($this->steps == 'all' || $this->steps == NULL) {
+            $payments = new Payment;
         } else {
-            $payments = Payment::getPaymentWithDateRange($start_date, $end_date);
+            $payments = Payment::withSpecificSteps($this->steps);
+        }
+
+        if($this->month) {
+            $payments = $payments->whereMonth('created_at', Carbon::parse($this->month)->month)
+                                 ->whereYear('created_at', Carbon::parse($this->month)->year)
+                                 ->where('location', $this->location)
+                                 ->get();
+        } else {
+            $payments = $payments->whereBetween('created_at', [$this->start_date, $this->end_date])->get();
+
         }
 
         foreach ($payments as $key => $payment) {
             if($payment->totalAmount() == $payment->totalApprovedPayment->sum('amount_paid')) {
-                if ($department == 'counseling') {
+                if ($this->department == 'counseling') {
                     $target_achieved += $payment->stepInfo->targetSetting->counselor_count;
                 } else {
                     $target_achieved += $payment->stepInfo->targetSetting->rm_count;

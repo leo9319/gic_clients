@@ -399,8 +399,8 @@
 
                         <tr>
 
-                           <td>{{ $target->user->name }}</td>
-                           <td>{{ ucfirst($target->user->user_role) }}</td>
+                           <td>{{ $target->user->name ?? 'N/A' }}</td>
+                           <td>{{ ucfirst($target->user->user_role ?? 'N/A')  }}</td>
                            <td>{{ $target->target }}</td>
                            <td>{{ $target->getIndividualTargetAchieved($target->user_id, $target->month_year, $target->start_date, $target->end_date) }}</td>
                            <td>{{ Carbon\Carbon::parse($target->month_year)->format('F') }}</td>

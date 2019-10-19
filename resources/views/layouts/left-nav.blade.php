@@ -66,6 +66,7 @@
                      </ul>
 
                   </div>
+                  
                </li>
 
             @endif
@@ -259,9 +260,16 @@
                      </li>
 
                      <li>
+                        <a href="{{ route('payment.show.income.and.expenses', 60) }}" class="">
+                           <i class="fas fa-exchange-alt"></i>
+                           <span>View Income/Expense (60 days)</span>
+                        </a>
+                     </li>
+
+                     <li>
                         <a href="{{ route('payment.show.income.and.expenses') }}" class="">
                            <i class="fas fa-exchange-alt"></i>
-                           <span>View Income/Expense</span>
+                           <span>View Income/Expense (All)</span>
                         </a>
                      </li>
 
@@ -323,9 +331,15 @@
                      </li> --}}
 
                      <li>
+                        <a href="{{ route('payment.history', 60) }}" class="">
+                           <i class="fa fa-credit-card"></i>
+                           <span>Payment History (60 days)</span></a>
+                     </li>
+
+                     <li>
                         <a href="{{ route('payment.history.beta') }}" class="">
                            <i class="fa fa-credit-card"></i>
-                           <span>Client Payment History</span></a>
+                           <span>Payment History (All)</span></a>
                      </li>
 
                      @if (Auth::user()->user_role == 'admin' || Auth::user()->user_role == 'accountant' || Auth::user()->user_role == 'counselor' || Auth::user()->user_role == 'rm')

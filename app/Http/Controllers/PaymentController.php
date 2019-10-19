@@ -609,16 +609,34 @@ class PaymentController extends Controller
         return redirect()->back();
     }
 
-    public function paymentHistory()
+    public function paymentHistory($period = 'all')
     {
         $data['active_class'] = 'payments';
         $user_role            = Auth::user()->user_role;
 
-        if($user_role == 'rm') {
+        if($user_role == 'admin' || $user_role == 'accountant') {
 
-            $rm_id            = Auth::user()->id;
-            $client_ids       = RmClient::where('rm_id', $rm_id)->pluck('client_id');
-            $data['payments'] = Payment::whereIn('client_id', $client_ids)->orderBy('created_at', 'desc')->get();
+            if($period == 60) {
+
+                $from = Carbon::now()->subDays(60);
+                $to   = Carbon::now();
+
+                $data['payments'] = Payment::orderBy('created_at', 'desc')
+                                        ->whereBetween('created_at', [$from, $to])
+                                        ->get();
+            } else {
+                $data['payments'] = Payment::orderBy('created_at', 'desc')->get();
+            }
+
+            if($user_role == 'accountant') {
+
+                return view('payments.accountant.history', $data);
+
+            } elseif($user_role == 'admin') {
+
+                return view('payments.admin.history', $data);
+
+            }
 
         } else if($user_role == 'counselor'){
 
@@ -626,29 +644,30 @@ class PaymentController extends Controller
             $client_ids       = CounsellorClient::where('counsellor_id', $counselor_id)->pluck('client_id');
             $data['payments'] = Payment::whereIn('client_id', $client_ids)->orderBy('created_at', 'desc')->get();
 
+            return view('payments.history', $data);
+
+        } else if($user_role == 'rm') {
+
+            $rm_id            = Auth::user()->id;
+            $client_ids       = RmClient::where('rm_id', $rm_id)->pluck('client_id');
+            $data['payments'] = Payment::whereIn('client_id', $client_ids)->orderBy('created_at', 'desc')->get();
+
+            return view('payments.history', $data);
+
         } else {
 
-            $data['payments'] = Payment::orderBy('created_at', 'desc')->get();
+            //
         }
 
-        if($user_role == 'accountant') {
+        
 
-            return view('payments.accountant.history', $data);
-
-        } elseif($user_role == 'admin') {
-
-            return view('payments.admin.history', $data);
-
-        }
-
-        return view('payments.history', $data);
+        
     }
 
     public function paymentHistoryBeta()
     {
         $data['active_class'] = 'payments';
         $user_role            = Auth::user()->user_role;
-
 
         if($user_role == 'rm') {
 
@@ -705,8 +724,7 @@ class PaymentController extends Controller
                                 ->select(
                                     'P.id', 
                                     'P.created_at AS payment_date', 
-                                    'P.location', 
-                                    'P.receipt_id', 
+                                    'P.location',
                                     'P.comments', 
                                     'P.client_id', 
                                     'U.client_code', 
@@ -752,7 +770,6 @@ class PaymentController extends Controller
             $payment->counselors  = $counselors;
             $payment->rms         = $rms;
             $payment->amount_paid = $amount_paid;
-            $payment->due_amount  = $payment->invoice_amount - $amount_paid;
 
         }
 
@@ -1049,10 +1066,10 @@ class PaymentController extends Controller
         return view('payments.recheck_payment_lists', $data);
     }
 
-    public function editPaymentType($payment_type_id)
+    public function editPaymentType(PaymentType $payment_type)
     {
         $data['active_class'] = 'payments';
-        $data['payment_type'] = PaymentType::find($payment_type_id);
+        $data['payment_type'] = $payment_type;
 
         return view('payments.edit_payment_type', $data);
     }
@@ -1070,6 +1087,7 @@ class PaymentController extends Controller
         $payment_type             = Input::get('payment_type');
         $bank_deposited           = Input::get('bank_name');
         $date                     = Carbon::parse(Input::get('date'))->toDateTimeString();
+        $bank_charges             = BankCharge::all();
       
 
         if($payment_type == 'card') {
@@ -1537,12 +1555,22 @@ class PaymentController extends Controller
         return view('payments.create_expense', $data);
     }
 
-    public function showIncomesAndExpenses() 
+    public function showIncomesAndExpenses($period = 'all') 
     {
         $data['active_class'] = 'payment';
         $data['previous']     = URL::to('/dashboard');
 
-        $data['transactions'] = IncomeExpense::orderBy('recheck', 'DESC')->get();
+        $income_expenses = IncomeExpense::query();
+
+        if($period == 60) {
+
+            $from = Carbon::now()->subDays(60);
+            $to = Carbon::now();
+
+            $income_expenses = $income_expenses->whereBetween('created_at', [$from, $to]);
+        }
+
+        $data['transactions'] = $income_expenses->orderBy('recheck', 'DESC')->get();
 
         $data['bank_accounts'] = [
             'cash_dhaka'     => 'Cash - Dhaka',
@@ -1748,6 +1776,10 @@ class PaymentController extends Controller
                 return view('payments.types.cash_online', $data);
                 break;
 
+            case 'cash':
+                return view('payments.types.cash_online', $data);
+                break;
+
             case 'cheque':
                 return view('payments.types.cheque', $data);
                 break;
@@ -1947,26 +1979,12 @@ class PaymentController extends Controller
         return view('payments.due_details', $data);
     }
 
-    public function duePayment($payment_id)
+    public function duePayment(Payment $payment)
     {
-        $data['previous']     = URL::to('/dashboard');
         $data['active_class'] = 'payments';
-        $data['payment_id']   = $payment_id;
-        $payment_id           = Payment::find($payment_id);
-
-        $program_fee          = $payment_id->opening_fee + 
-                                $payment_id->embassy_student_fee + 
-                                $payment_id->service_solicitor_fee + 
-                                $payment_id->other;
-
-        $payment_types        = PaymentType::where('payment_id', $payment_id->id)
-                                ->where('cheque_verified', '!=', 0)
-                                ->where('online_verified', '!=', 0)
-                                ->where('bkash_salman_verified', '!=', 0)
-                                ->where('bkash_corporate_verified', '!=', 0)
-                                ->where('refund_payment', '!=', 1)
-                                ->get();
-
+        $data['payment']      = $payment;
+        $program_fee          = $payment->totalAmount();
+        $payment_types        = $payment->totalVerifiedPayment();
         $data['total_amount'] = $program_fee - $payment_types->sum('amount_paid');
 
         return view('payments.due_payment', $data);
@@ -2008,9 +2026,10 @@ class PaymentController extends Controller
 
     public function storeDuePayment(Request $request)
     {
-        $counter    = 0;
-        $counter    = $request->counter;
-        $payment_id = Input::get('payment_id');
+        $counter      = 0;
+        $counter      = $request->counter;
+        $payment_id   = Input::get('payment_id');
+        $bank_charges = BankCharge::all();
 
         for ($i=0; $i < $counter + 1; $i++) {
             $charge                   = 0;

@@ -34,30 +34,31 @@
          <h3 class="panel-title">Department Targets</h3>
       </div>
 
-      <button type="button" class="btn btn-success pull-right button2" style="margin: 25px" data-toggle="modal" data-target="#addTarget">
-        Add Target
-      </button>
+      <div id="root">
+        <button class="btn btn-success pull-right button2" style="margin: 25px" @click="addTarget">Add Target</button>  
 
-      <div class="panel-body">
+        <div class="panel-body">
 
-         <table id="department-targets" class="table table-striped table-bordered">
-            <thead>
-               <tr>
-                  <th>Department</th>
-                  <th>Steps</th>
-                  <th>Month</th>
-                  <th>Start Date</th>
-                  <th>End Date</th>
-                  <th>Target</th>
-                  <th>Achieved</th>
-                  <th>Action</th>
-               </tr>
-            </thead>
-            <tbody>
+           <table id="department-targets" class="table table-striped table-bordered">
+              <thead>
+                  <tr>
+                     <th>Location</th>
+                     <th>Department</th>
+                     <th>Steps</th>
+                     <th>Month</th>
+                     <th>Start Date</th>
+                     <th>End Date</th>
+                     <th>Target</th>
+                     <th>Achieved</th>
+                     <th>Action</th>
+                  </tr>
+              </thead>
+              <tbody>
                   @foreach($department_targets as $department_target)
                   <tr>
+                     <th>{{ ucfirst($department_target->location) }}</th>
                      <th>{{ ucfirst($department_target->department) }}</th>
-                     <th>{{ ucfirst($department_target->steps) }}</th>
+                     <th>{{ ucfirst($department_target->steps ?? 'all') }}</th>
 
                      <th>{{ $department_target->month ? Carbon\Carbon::parse($department_target->month)->format('M Y') : '-' }}</th>
 
@@ -67,26 +68,28 @@
 
                      <th>{{ $department_target->target }}</th>
 
-                     <th>{{ $department_target->getTargetAchieved($department_target->department, $department_target->month, $department_target->start_date, $department_target->end_date) }}</th>
+                     <th>{{ $department_target->getTargetAchieved() }}</th>
                      
-                     <th><a href="{{ route('target.department.details', $department_target->id) }}" class="btn btn-info button2">View Details</a></th>
+                     <th><a href="{{ route('target.department.details', $department_target->id) }}" class="btn btn-info button2">View Payment Details</a></th>
                   </tr>
                   @endforeach
-            </tbody>
-            <thead>
-               <tr>
-                  <th>Department</th>
-                  <th>Steps</th>
-                  <th>Month</th>
-                  <th>Start Date</th>
-                  <th>End Date</th>
-                  <th>Target</th>
-                  <th>Achieved</th>
-                  <th>Action</th>
-               </tr>
-            </thead>
-         </table>
+              </tbody>
+              <thead>
+                 <tr>
+                    <th>Location</th>
+                    <th>Department</th>
+                    <th>Steps</th>
+                    <th>Month</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Target</th>
+                    <th>Achieved</th>
+                    <th>Action</th>
+                 </tr>
+              </thead>
+           </table>
 
+        </div>
       </div>
    </div>
 </div>
@@ -106,6 +109,11 @@
       <div class="modal-body">
 
       {{ Form::open(['route' => 'target.department.store', 'autocomplete' => 'off']) }}
+
+         <div class="form-group">
+            {{ Form::label('Select Location:') }}
+            {{ Form::Select('location', ['dhaka' => 'Dhaka', 'chittagong' => 'Chittagong'], null, ['class' => 'form-control']) }}
+         </div>
 
          <div class="form-group">
             {{ Form::label('Select Department:') }}
@@ -139,6 +147,23 @@
 </div>
 
 @section('footer_scripts')
+
+<script type="text/javascript">
+  
+  var app = new Vue({
+
+    el: '#root',
+
+    methods: {
+      addTarget() {
+        $("#addTarget").modal()
+      }
+    },
+    
+  });
+
+
+</script>
 
 <script type="text/javascript">
   

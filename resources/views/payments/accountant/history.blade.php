@@ -135,7 +135,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Step</th>
                   <th>Invoice Amount</th>
                   <th>Total Paid</th>
-                  <th>Due Amount</th>
                   <th>Note</th>
                   <th>View Details</th>
                   <th>View Payment</th>
@@ -168,8 +167,7 @@ var filterByDate = function(column, startDate, endDate) {
                   		<td>{{ $payment->programInfo->program_name ?? ''}}</td>
                   		<td>{{ $payment->stepInfo->step_name ?? 'Step Removed' }}</td>  
                       <td>{{ number_format($payment->totalAmount()) }}</td>
-                      <td>{{ number_format($payment->totalApprovedPayment->sum('amount_paid')) }}</td>
-                      <td>{{ number_format($payment->totalAmount() - $payment->totalApprovedPayment->sum('amount_paid')) }}</td>                
+                      <td>{{ number_format($payment->totalApprovedPayment->sum('amount_paid')) }}</td>                
                       <td>{{ $payment->comments }} <i id="{{ $payment->id }}" class="fa fa-edit" onclick="editNote(this)"></i></td>                
 
                       <td>
@@ -179,10 +177,6 @@ var filterByDate = function(column, startDate, endDate) {
                       <td>
                         <a href="{{ route('payment.show', $payment->id) }}" class="btn btn-defualt btn-sm button2">View Payment</a>
                       </td>
-
-                      {{-- <td>
-                        <a href="{{ route('payment.edit', $payment->id) }}"><i class="fa fa-edit"></i></a>
-                      </td> --}}
 
                   	</tr>
 
@@ -205,7 +199,6 @@ var filterByDate = function(column, startDate, endDate) {
                   <th>Step</th>
                   <th>Invoice Amount</th>
                   <th>Total Paid</th>
-                  <th>Due Amount</th>
                   <th>Note</th>
                   <th>View Details</th>
                   <th>View Payment</th>
@@ -270,7 +263,7 @@ var filterByDate = function(column, startDate, endDate) {
         success:function(data){
 
           document.getElementById('payment-id').value = payment_id;
-          document.getElementById('notes').value = data.comments;
+          document.getElementById('notes').value      = data.comments;
 
           $('#edit-note').modal();
         },

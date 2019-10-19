@@ -56,6 +56,8 @@ $(document).ready( function () {
 
             <th>Name</th>
 
+            <th>Location</th>
+
             <th>Mobile</th>
 
             <th>Email</th>
@@ -83,6 +85,8 @@ $(document).ready( function () {
             <td>{{ $index + 1 }}</td>
 
             <td>{{ $user->name }}</td>
+
+            <td>{{ ucfirst($user->location) }}</td>
 
             <td>{{ $user->mobile }}</td>
 
@@ -137,6 +141,8 @@ $(document).ready( function () {
           <th>SL.</th>
 
           <th>Name</th>
+
+          <th>Location</th>
 
           <th>Mobile</th>
 

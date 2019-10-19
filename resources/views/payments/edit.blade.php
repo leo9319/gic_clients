@@ -161,7 +161,7 @@
 				<hr>
 
 				@forelse($payment_types as $index => $payment_type)
-					@if($payment_type->payment_type == 'cash')
+					@if($payment_type->payment_type == 'cash' || $payment_type->payment_type == 'cash_dhaka'|| $payment_type->payment_type == 'cash_ctg')
 
 						<div class="form-group">
 							<label>Payment Type:</label>
