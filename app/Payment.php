@@ -14,6 +14,11 @@ class Payment extends Model
     	return $this->hasOne('App\User', 'id', 'client_id');
     }
 
+    public function createdBy()
+    {
+        return $this->hasOne('App\User', 'id', 'created_by');
+    }
+
     public function userInfo()
     {
         return $this->hasOne('App\User', 'id', 'client_id');

@@ -244,7 +244,7 @@ Route::get('payment/client/dues/detials/{payment_id}', 'PaymentController@client
 Route::get('payment/client/dues/payment/{payment}', 'PaymentController@duePayment')->name('payment.client.dues.payment');
 Route::post('payment/client/dues/payment/store', 'PaymentController@storeDuePayment')->name('payment.client.dues.payment.store');
 Route::get('payment/client/dues/history', 'PaymentController@dueHistory')->name('payment.client.dues.history');
-Route::get('payment/client/dues/pdf/{payment_id}', 'PaymentController@generateDuePDF')->name('payment.client.dues.pdf');
+Route::get('payment/client/dues/pdf/{payment}', 'PaymentController@generateDuePDF')->name('payment.client.dues.pdf');
 Route::get('payment/client/payment/recheck/{payment_id}', 'PaymentController@recheckPayment')->name('payment.client.payment.recheck');
 Route::get('payment/client/unverified/cheque', 'PaymentController@unverifiedCheques')->name('payment.client.unverified.cheques');
 Route::get('payment/client/online/payments', 'PaymentController@onlinePayments')->name('payment.client.online.payments');

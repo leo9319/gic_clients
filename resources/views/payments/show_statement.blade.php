@@ -98,7 +98,7 @@
 	      @foreach($refunds as $refund)
 
 	      <tr class="item-row">
-	       <td>{{ Carbon\Carbon::parse($refund->payment->programInfo->created_at)->format('d-M-y') }}</td>
+	       <td>{{ Carbon\Carbon::parse($refund->created_at)->format('d-M-y') }}</td>
          <td>{{ $refund->payment->programInfo->program_name }}</td>
 	       <td>{{ $refund->payment->stepInfo->step_name }}</td>
 	       <td>{{ strtoupper($refund->bank_name) }}</td>

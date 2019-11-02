@@ -658,9 +658,6 @@ class PaymentController extends Controller
 
             //
         }
-
-        
-
         
     }
 
@@ -711,7 +708,7 @@ class PaymentController extends Controller
             if($start_date && $end_date){
 
                 $start_date = date('Y-m-d', strtotime($start_date));
-                $end_date = date('Y-m-d', strtotime($end_date));
+                $end_date   = date('Y-m-d', strtotime($end_date));
 
                 $payments->whereDate('P.created_at', '>=', $start_date)->whereDate('P.created_at', '<=', $end_date);
 
@@ -1565,7 +1562,7 @@ class PaymentController extends Controller
         if($period == 60) {
 
             $from = Carbon::now()->subDays(60);
-            $to = Carbon::now();
+            $to   = Carbon::now();
 
             $income_expenses = $income_expenses->whereBetween('created_at', [$from, $to]);
         }
@@ -2325,7 +2322,9 @@ class PaymentController extends Controller
     public function unverifiedBkashSalman()
     {
         $data['active_class'] = 'unverified_payments';
-        $data['unverified_bkashes_salman'] = PaymentType::where('payment_type', 'bkash_salman')->where('bkash_salman_verified', '!=', '1')->get();
+        $data['unverified_bkashes_salman'] = PaymentType::where('payment_type', 'bkash_salman')
+                                                         ->where('bkash_salman_verified', '!=', '1')
+                                                         ->get();
 
         $user_role = Auth::user()->user_role;
 
@@ -2341,8 +2340,10 @@ class PaymentController extends Controller
 
     public function unverifiedBkashCorporate()
     {
-        $data['active_class'] = 'unverified_payments';
-        $data['unverified_bkashes_corporate'] = PaymentType::where('payment_type', 'bkash_corporate')->where('bkash_corporate_verified', '!=', '1')->get();
+        $data['active_class']                 = 'unverified_payments';
+        $data['unverified_bkashes_corporate'] = PaymentType::where('payment_type', 'bkash_corporate')
+                                                ->where('bkash_corporate_verified', '!=', '1')
+                                                ->get();
 
         $user_role = Auth::user()->user_role;
 
@@ -2354,42 +2355,11 @@ class PaymentController extends Controller
 
     }
 
-    public function generateDuePDF($payment_id)
+    public function generateDuePDF(Payment $payment)
     {
-        $due['payment'] = $payment = Payment::find($payment_id);
+        $due['payment'] = $payment;
+        $pdf            = PDF::loadView('invoice.due', $due);
 
-        $client = User::findOrFail($payment->client_id);
-        $client_additional_info = ClientFileInfo::where('client_id', $payment->client_id)->first();
-
-        $due['name'] = $client->name;
-        $due['address'] = $client_additional_info->address;
-        $due['country_of_choice'] = json_decode($client_additional_info->country_of_choice);
-        $due['mobile'] = $client->mobile;
-        $due['email'] = $client->email;
-        $due['date'] = Carbon::now()->format('d-m-Y');
-        $due['client_code'] = $client->client_code;
-        $due['program'] = Program::find($payment->program_id)->program_name;
-        $due['step'] = Step::find($payment->step_id);
-        $due['opening_fee'] = $payment->opening_fee;
-        $due['embassy_student_fee'] = $payment->embassy_student_fee;
-        $due['service_solicitor_fee'] = $payment->service_solicitor_fee;
-        $due['other'] = $payment->other;
-        $due['comments'] = $payment->comments;
-
-        // finding the previously paid amount:
-
-        $due['payments'] = PaymentType::where('payment_id', $payment_id)
-                            ->where('cheque_verified', '=', 1)
-                            ->where('online_verified', '=', 1)
-                            ->where('bkash_salman_verified', '=', 1)
-                            ->where('bkash_corporate_verified', '=', 1)
-                            ->where('refund_payment', '!=', 1)
-                            ->get();
-
-        $created_by = User::find($payment->created_by);
-        $due['created_by'] = $created_by ? $created_by->name : '';
-
-        $pdf = PDF::loadView('invoice.due', $due);
         return $pdf->download('due_clearance_invoice.pdf');
     }
 
@@ -2415,7 +2385,7 @@ class PaymentController extends Controller
                                             ->sum('amount_paid');
 
         $data['amount_paid'] = $amount_paid_without_refunds - $refunds;
-        $data['payment_id'] = $payment->id;
+        $data['payment_id']  = $payment->id;
 
         return $data;
     }
@@ -2423,9 +2393,9 @@ class PaymentController extends Controller
     public function updateChequeInfo(Request $request)
     {
         PaymentType::find($request->payment_id)->update([
-            'cheque_number' => $request->cheque_number,
-            'bank_name' => $request->bank_name,
-            'deposit_date' => $request->deposit_date,
+            'cheque_number'   => $request->cheque_number,
+            'bank_name'       => $request->bank_name,
+            'deposit_date'    => $request->deposit_date,
             'cheque_verified' => -1,
         ]);
 
@@ -2435,8 +2405,8 @@ class PaymentController extends Controller
     public function updateOnlineInfo(Request $request)
     {
         PaymentType::find($request->payment_id)->update([
-            'bank_name' => $request->bank_name,
-            'deposit_date' => $request->deposit_date,
+            'bank_name'       => $request->bank_name,
+            'deposit_date'    => $request->deposit_date,
             'online_verified' => -1,
         ]);
 

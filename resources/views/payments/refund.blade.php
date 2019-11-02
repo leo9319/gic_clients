@@ -113,8 +113,7 @@
 
 				<label>Total Amount Paid By Client:</label>
 
-				<input type="number" class="form-control" placeholder="Total Amount" name="total_amount" id="total-amount">
-				
+				<input type="number" class="form-control" placeholder="Total Amount" name="total_amount" id="total-amount" readonly="readonly">
 			</div>
 
 			<div class="form-group">

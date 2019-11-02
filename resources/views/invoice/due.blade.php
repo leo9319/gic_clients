@@ -5,6 +5,10 @@
     <title>Customer Invoice</title>
 
     <style>
+        body {
+          font-size: 12px;
+        }
+        
         #page-wrap{
             padding: 1em;
         }
@@ -114,23 +118,23 @@
 
 
 
-                <div >
+                <div>
                     <table class="table-personal-info">
                         <tr>
                             <td class="tr">Full Name:</td>
-                            <td>{{ $name }}</td>
+                            <td>{{ $payment->user->name }}</td>
                         </tr>
                         <tr>
                             <td class="tr">Present Address:</td>
-                            <td>{{ $address }}</td>
+                            <td>{{ $payment->user->getAdditionalInfo->address }}</td>
                         </tr>
                         <tr>
                             <td class="tr">Phone Number:</td>
-                            <td>{{ $mobile }}</td>
+                            <td>{{ $payment->user->mobile }}</td>
                         </tr>
                         <tr>
                             <td class="tr">Email Address:</td>
-                            <td>{{ $email }}</td>
+                            <td>{{ $payment->user->email }}</td>
                         </tr>
                     </table>
                 </div>
@@ -151,15 +155,15 @@
                     </tr>
                     <tr>
                         <td class="back">Due Cleared On</td>
-                        <td>{{ Carbon\Carbon::parse($payments->first()->payment->due_cleared_date)->format('d-M-y') }}</td>
+                        <td>{{ Carbon\Carbon::parse($payment->totalApprovedPayment()->get()->first()->payment->due_cleared_date)->format('d-M-y') }}</td>
                     </tr>
                     <tr>
                         <td class="back">Client Code</td>
-                        <td>{{$client_code}}</td>
+                        <td>{{ $payment->user->client_code }}</td>
                     </tr>
                     <tr>
                         <td class="back">Invoice created by</td>
-                        <td>{{ $created_by }}</td>
+                        <td>{{ $payment->createdBy->name }}</td>
                     </tr>
                 </table>
             </div>
@@ -179,11 +183,11 @@
                 <th>Total Amount Paid</th>
             </tr>
             <tr id="hiderow">
-                <td>{{ $program }}</td>
-                <td>{{ $step->step_name }}</td>
-                <td>{{ number_format($payments->where('due_payment', 0)->sum('amount_paid')) }}</td>
-                <td>{{ number_format($payments->where('due_payment', 1)->sum('amount_paid')) }}</td>
-                <td>{{ number_format($payments->sum('amount_paid')) }}</td>
+                <td>{{ $payment->programInfo->program_name }}</td>
+                <td>{{ $payment->stepInfo->step_name }}</td>
+                <td>{{ number_format($payment->totalApprovedPayment()->get()->where('due_payment', 0)->sum('amount_paid')) }}</td>
+                <td>{{ number_format($payment->totalApprovedPayment()->get()->where('due_payment', 1)->sum('amount_paid')) }}</td>
+                <td>{{ number_format($payment->totalApprovedPayment()->get()->sum('amount_paid')) }}</td>
             </tr>
         </table>
 
@@ -194,7 +198,7 @@
                 <th>Method</th>
                 <th>Amount Paid</th>
             </tr>
-            @foreach($payments as $payment)
+            @foreach($payment->totalApprovedPayment()->get() as $payment)
             <tr id="hiderow">
                 @if($payment->payment_type == 'bkash_salman' || $payment->payment_type == 'bkash_corporate')
                 <td>bKash</td>
@@ -208,7 +212,7 @@
 
         <div>
             <h4>Notes:</h4>
-            <p>{{ $comments }}</p>
+            <p>{{ $payment->comments }}</p>
         </div>
         
         <div id="terms">

@@ -45,8 +45,8 @@ class StepController extends Controller
     {
         $order = Step::where('program_id', $request->program_id)->count();
         Step::create([
-            'step_name' => $request->step_name,
-            'program_id' => $request->program_id,
+            'step_name'   => $request->step_name,
+            'program_id'  => $request->program_id,
             'step_number' => ++$order,
         ]);
 

@@ -1,9 +1,6 @@
 @extends('layouts.master')
-
 @section('title', 'Due Payment History')
-
 @section('content')
-
 @section('header_scripts')
 
 <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
@@ -165,15 +162,19 @@ var filterByDate = function(column, startDate, endDate) {
             <tbody>
               @foreach($due_payments as $due_payment)
               <tr>
+
                 <td>
-
                   {{ Carbon\Carbon::parse($due_payment->totalPayment->first()->created_at)->format('d-M-y') }}
-
                 </td>
+
                 <td>{{ ucfirst($due_payment->location ?? 'N/A') }}</td>
+
                 <td>{{ $due_payment->userInfo->client_code ?? 'Client Removed' }}</td>
+
                 <td>{{ $due_payment->userInfo->name ?? 'Client Removed' }}</td>
+
                 <td>{{ $due_payment->programInfo->program_name }}</td>
+
                 <td>{{ $due_payment->stepInfo->step_name }}</td>
 
                 <td>
@@ -184,9 +185,9 @@ var filterByDate = function(column, startDate, endDate) {
 
                   @endforeach
 
-                  </td>
+                </td>
 
-                  <td>
+                <td>
 
                   @foreach($due_payment->userInfo->getAssignedRms as $rms)
 
@@ -196,13 +197,20 @@ var filterByDate = function(column, startDate, endDate) {
 
                 </td>
 
-                <td>{{ number_format($due_payment->totalApprovedPayment->where('due_payment', 1)->sum('amount_paid')) }}</td>
+                <td>
+                  {{ number_format($due_payment->totalApprovedPayment->where('due_payment', 1)->sum('amount_paid')) }}
+                </td>
 
-                <td>{{ number_format($due_payment->totalAmount() - $due_payment->totalApprovedPayment->sum('amount_paid')) }}</td>
-
+                <td>
+                  {{ number_format($due_payment->totalAmount() - $due_payment->totalApprovedPayment->sum('amount_paid')) }}
+                </td>
 
                 <td>{{ $due_payment->comments }}</td>
-                <td><a href="{{ route('payment.client.dues.pdf', $due_payment->id) }}" class="btn btn-primary btn-sm button button2">Generate Invoice</a></td>
+
+                <td>
+                  <a href="{{ route('payment.client.dues.pdf', $due_payment->id) }}" class="btn btn-primary btn-sm button button2">Generate Invoice</a>
+                </td>
+                
               </tr>
               @endforeach
             </tbody>

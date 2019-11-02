@@ -128,7 +128,7 @@ class ProgramController extends Controller
     public function clientProgramStep(Request $request)
     {
         $steps = ClientProgram::where([
-                    'client_id' => $request->client_id,
+                    'client_id'  => $request->client_id,
                     'program_id' => $request->program_id,
                 ])->first()->steps;
 
