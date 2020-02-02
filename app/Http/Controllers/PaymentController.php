@@ -62,6 +62,7 @@ class PaymentController extends Controller
             'comilla'    => 'Comilla',
             'noakhali'   => 'Noakhali',
             'rajshahi'   => 'Rajshahi',
+            'bagura'   => 'Bagura',
          ];
 
         return view('payments.index', $data);
@@ -488,6 +489,7 @@ class PaymentController extends Controller
             'comilla'    => 'Comilla',
             'noakhali'   => 'Noakhali',
             'rajshahi'   => 'Rajshahi',
+            'bagura'   => 'Bagura',
          ];
 
         return view('payments.edit', $data);
@@ -1487,6 +1489,7 @@ class PaymentController extends Controller
             'comilla'    => 'Comilla',
             'noakhali'   => 'Noakhali',
             'rajshahi'   => 'Rajshahi',
+            'bagura'   => 'Bagura',
          ];
 
         return view('payments.create_income', $data);
@@ -1547,6 +1550,7 @@ class PaymentController extends Controller
             'comilla'    => 'Comilla',
             'noakhali'   => 'Noakhali',
             'rajshahi'   => 'Rajshahi',
+            'bagura'   => 'Bagura',
          ];
 
         return view('payments.create_expense', $data);

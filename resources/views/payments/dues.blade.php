@@ -213,7 +213,7 @@ var filterByDate = function(column, startDate, endDate) {
                   
                   @foreach($all_due->userInfo->getAssignedRms as $rms)
 
-                      {{ $rms->user->name }}
+                      {{ $rms->user->name ?? "RM Not Found!" }}
 
                   @endforeach
 
